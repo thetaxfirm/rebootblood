@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,92 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Patient eligibility questionnaire submissions.
+ *
+ * HIPAA-alignment: ALL personally identifiable / protected health information
+ * is stored ONLY inside `encryptedPayload`, an AES-256-GCM encrypted JSON blob
+ * (see server/_core/phi.ts). No PHI is stored in plaintext columns.
+ *
+ * Non-PHI operational metadata (status, treatment interest, timestamps) is kept
+ * in plaintext to allow filtering/sorting without decrypting individual records.
+ */
+export const questionnaireSubmissions = mysqlTable("questionnaire_submissions", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Public reference id (non-sequential) shown to staff; safe to display. */
+  publicId: varchar("publicId", { length: 32 }).notNull().unique(),
+  /** AES-256-GCM encrypted JSON containing all answers + contact PHI. */
+  encryptedPayload: text("encryptedPayload").notNull(),
+  /** Which treatment the patient is primarily interested in (non-PHI, for routing). */
+  treatmentInterest: mysqlEnum("treatmentInterest", ["eboo", "plasmapheresis", "both", "unsure"])
+    .default("unsure")
+    .notNull(),
+  /** Workflow status for clinic staff (non-PHI). */
+  status: mysqlEnum("status", ["new", "reviewing", "contacted", "scheduled", "closed"])
+    .default("new")
+    .notNull(),
+  /** Consent flags captured explicitly at submission time (non-PHI booleans). */
+  consentTreatmentInfo: boolean("consentTreatmentInfo").default(false).notNull(),
+  consentPrivacy: boolean("consentPrivacy").default(false).notNull(),
+  consentContact: boolean("consentContact").default(false).notNull(),
+  /** Coarse origin metadata for audit (hashed, no precise tracking). */
+  submittedIpHash: varchar("submittedIpHash", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type QuestionnaireSubmission = typeof questionnaireSubmissions.$inferSelect;
+export type InsertQuestionnaireSubmission = typeof questionnaireSubmissions.$inferInsert;
+
+/**
+ * Lead-capture submissions ("Talk to Our Team" / gated guide).
+ * Contact PII is encrypted at rest in `encryptedPayload`.
+ */
+export const leads = mysqlTable("leads", {
+  id: int("id").autoincrement().primaryKey(),
+  publicId: varchar("publicId", { length: 32 }).notNull().unique(),
+  /** AES-256-GCM encrypted JSON containing name, email, phone, message, etc. */
+  encryptedPayload: text("encryptedPayload").notNull(),
+  /** Non-PHI routing/source metadata. */
+  source: varchar("source", { length: 64 }).default("lead_form").notNull(),
+  treatmentInterest: mysqlEnum("treatmentInterest", ["eboo", "plasmapheresis", "both", "unsure"])
+    .default("unsure")
+    .notNull(),
+  status: mysqlEnum("status", ["new", "reviewing", "contacted", "scheduled", "closed"])
+    .default("new")
+    .notNull(),
+  consentContact: boolean("consentContact").default(false).notNull(),
+  submittedIpHash: varchar("submittedIpHash", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
+
+/**
+ * Immutable audit log. A row is written for EVERY access event involving
+ * patient data (list, view/decrypt, export, status change). This is a core
+ * HIPAA-alignment control. Rows are append-only by convention.
+ */
+export const auditLogs = mysqlTable("audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Acting user (admin) id; null only for system/anonymous events. */
+  actorUserId: int("actorUserId"),
+  actorOpenId: varchar("actorOpenId", { length: 64 }),
+  actorName: text("actorName"),
+  /** What happened, e.g. "submission.view", "submission.list", "lead.view". */
+  action: varchar("action", { length: 64 }).notNull(),
+  /** Entity type the action targeted: "questionnaire" | "lead" | "system". */
+  targetType: varchar("targetType", { length: 32 }).notNull(),
+  /** Public id / identifier of the targeted entity (non-PHI). */
+  targetId: varchar("targetId", { length: 64 }),
+  /** Optional non-PHI detail (e.g. filter used, count returned, new status). */
+  detail: text("detail"),
+  ipHash: varchar("ipHash", { length: 64 }),
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;

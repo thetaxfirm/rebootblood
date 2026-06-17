@@ -7,4 +7,10 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  /**
+   * Application-layer encryption key for PHI (protected health information).
+   * Must be a 64-char hex string (32 bytes) for AES-256-GCM.
+   * Falls back to JWT_SECRET-derived key in dev if unset (NOT for production PHI).
+   */
+  phiEncryptionKey: process.env.PHI_ENCRYPTION_KEY ?? "",
 };
