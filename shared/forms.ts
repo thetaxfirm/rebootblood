@@ -9,6 +9,10 @@ import { z } from "zod";
 export const treatmentInterestEnum = z.enum(["eboo", "plasmapheresis", "both", "unsure"]);
 export type TreatmentInterest = z.infer<typeof treatmentInterestEnum>;
 
+/** EBO3 treatment volume tiers (drive duration + price on the EBO3 page). */
+export const ebo3VolumeEnum = z.enum(["3L", "4.5L", "6L"]);
+export type Ebo3Volume = z.infer<typeof ebo3VolumeEnum>;
+
 export const workflowStatusEnum = z.enum(["new", "reviewing", "contacted", "scheduled", "closed"]);
 export type WorkflowStatus = z.infer<typeof workflowStatusEnum>;
 
@@ -73,6 +77,7 @@ export const questionnaireSchema = z.object({
   // Step 4 — goals
   goals: z.array(z.string()).default([]),
   treatmentInterest: treatmentInterestEnum,
+  ebo3Volume: z.enum(["3L", "4.5L", "6L"]).optional(),
   additionalNotes: z.string().max(2000).optional().default(""),
   // Step 5 — contact
   firstName: z.string().min(1, "First name is required").max(100),

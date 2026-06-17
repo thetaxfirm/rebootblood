@@ -14,7 +14,10 @@ import {
   Thermometer,
   Volume2,
   Heart,
+  Clock,
+  HeartPulse,
 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -85,10 +88,31 @@ const CONDITIONS = [
   "Athletic recovery & performance",
 ];
 
-const PRICING = [
-  { name: "Single Session", price: "$1,200", per: "per session", points: ["One full EBO3 session", "Pre-session safety screening", "In-session monitoring"], featured: false },
-  { name: "Package of 3", price: "$3,300", per: "$1,100 / session", points: ["Three EBO3 sessions", "Progress check-ins", "Best for an initial protocol"], featured: true },
-  { name: "Package of 6", price: "$6,000", per: "$1,000 / session", points: ["Six EBO3 sessions", "Comprehensive protocol", "Maximum value per session"], featured: false },
+type VolumeKey = "3L" | "4.5L" | "6L";
+
+const VOLUMES: {
+  key: VolumeKey;
+  label: string;
+  blurb: string;
+  duration: string;
+  single: number;
+  pkg3: number;
+  pkg6: number;
+}[] = [
+  { key: "3L", label: "3 Liters", blurb: "Entry protocol — a focused systemic reset.", duration: "~45–60 min", single: 1000, pkg3: 2700, pkg6: 4500 },
+  { key: "4.5L", label: "4.5 Liters", blurb: "Our most popular balance of depth and time.", duration: "~60–90 min", single: 1250, pkg3: 3300, pkg6: 5500 },
+  { key: "6L", label: "6 Liters", blurb: "Maximum whole-blood volume treated per session.", duration: "~90–120 min", single: 1500, pkg3: 3750, pkg6: 6600 },
+];
+
+const money = (n: number) => `$${n.toLocaleString()}`;
+
+const AFTERCARE = [
+  { title: "First few hours", body: "Plan to rest. Mild fatigue, lightheadedness, or a slight headache can occur as your body responds — this is usually short-lived." },
+  { title: "Hydrate & refuel", body: "Drink plenty of water and have a light, nourishing meal. Avoid alcohol and strenuous exercise for the remainder of the day." },
+  { title: "Rest of the day", body: "Keep your schedule light and prioritize good sleep. Many people feel back to normal — often more energized — by the next morning." },
+  { title: "Following days", body: "Resume normal activity as you feel ready. We'll review how you responded and confirm timing for any subsequent sessions in your protocol." },
+  { title: "IV site care", body: "Keep the IV site clean and dry. Minor bruising or tenderness is normal and typically resolves within a few days." },
+  { title: "When to call us", body: "Contact us for persistent or worsening symptoms; seek emergency care for chest pain, severe shortness of breath, or fainting that does not resolve." },
 ];
 
 const PREP = [
@@ -112,6 +136,8 @@ const FAQS = [
 ];
 
 export default function Eboo() {
+  const [volIdx, setVolIdx] = useState(1);
+  const vol = VOLUMES[volIdx];
   return (
     <SiteLayout>
       {/* HERO */}
@@ -329,19 +355,82 @@ export default function Eboo() {
         </div>
       </section>
 
-      {/* PRICING */}
+      {/* AFTERCARE */}
+      <section className="border-t border-border/70 py-20 md:py-28">
+        <div className="container">
+          <div className="flex items-center gap-3">
+            <HeartPulse className="h-6 w-6 text-[color:var(--gold)]" />
+            <Eyebrow tone="gold">Aftercare & What to Expect</Eyebrow>
+          </div>
+          <h2 className="mt-3 max-w-2xl text-3xl md:text-4xl">Your recovery window</h2>
+          <p className="mt-4 max-w-2xl text-muted-foreground">
+            EBO3 has little to no downtime for most people. Here's what the hours and days after your session
+            typically look like, and how to support a smooth recovery.
+          </p>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {AFTERCARE.map((a) => (
+              <div key={a.title} className="rounded-2xl border border-border bg-card/50 p-6">
+                <p className="font-medium">{a.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{a.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING + VOLUME SELECTOR */}
       <section className="border-y border-border/70 bg-card/30 py-20 md:py-28">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
             <Eyebrow>Investment</Eyebrow>
             <h2 className="mt-3 text-4xl md:text-5xl">EBO3 session pricing</h2>
             <p className="mt-4 text-muted-foreground">
-              Transparent pricing for our research-oriented EBO3 protocol. Personalized programs are confirmed
-              after your consultation and screening.
+              Choose how much of your blood volume you'd like treated. Session length and pricing update with your
+              selection. Personalized programs are confirmed after your consultation and screening.
             </p>
           </div>
+
+          {/* Volume selector */}
+          <div className="mx-auto mt-10 max-w-2xl">
+            <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border bg-background/50 p-2">
+              {VOLUMES.map((v, i) => {
+                const active = i === volIdx;
+                return (
+                  <button
+                    key={v.key}
+                    type="button"
+                    onClick={() => setVolIdx(i)}
+                    aria-pressed={active}
+                    className={`btn-press rounded-xl px-3 py-4 text-center transition-colors ${
+                      active
+                        ? "bg-[color:var(--garnet)] text-[color:var(--garnet-foreground)]"
+                        : "text-muted-foreground hover:bg-card/70"
+                    }`}
+                  >
+                    <span className="block font-serif text-2xl">{v.key}</span>
+                    <span className={`mt-0.5 block text-xs ${active ? "text-[color:var(--garnet-foreground)]/80" : "text-muted-foreground"}`}>
+                      {v.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-4 flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-center sm:gap-4">
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 text-[color:var(--gold)]" /> Session length: <strong className="text-foreground">{vol.duration}</strong>
+              </span>
+              <span className="hidden text-border sm:inline">|</span>
+              <span className="text-sm text-muted-foreground">{vol.blurb}</span>
+            </div>
+          </div>
+
+          {/* Pricing cards driven by selected volume */}
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {PRICING.map((p) => (
+            {[
+              { name: "Single Session", price: vol.single, per: "per session", points: [`One full ${vol.key} EBO3 session`, "Pre-session safety screening", "In-session monitoring"], featured: false },
+              { name: "Package of 3", price: vol.pkg3, per: `${money(Math.round(vol.pkg3 / 3))} / session`, points: [`Three ${vol.key} EBO3 sessions`, "Progress check-ins", "Best for an initial protocol"], featured: true },
+              { name: "Package of 6", price: vol.pkg6, per: `${money(Math.round(vol.pkg6 / 6))} / session`, points: [`Six ${vol.key} EBO3 sessions`, "Comprehensive protocol", "Maximum value per session"], featured: false },
+            ].map((p) => (
               <div
                 key={p.name}
                 className={`relative rounded-2xl border p-7 ${
@@ -356,8 +445,11 @@ export default function Eboo() {
                   </span>
                 )}
                 <p className="text-sm text-muted-foreground">{p.name}</p>
-                <p className="mt-2 font-serif text-4xl">{p.price}</p>
+                <p className="mt-2 font-serif text-4xl tabular-nums">{money(p.price)}</p>
                 <p className="text-sm text-muted-foreground">{p.per}</p>
+                <p className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5 text-[color:var(--gold)]" /> {vol.duration} per session · {vol.key}
+                </p>
                 <ul className="mt-5 space-y-2.5">
                   {p.points.map((pt) => (
                     <li key={pt} className="flex items-start gap-2.5 text-sm text-muted-foreground">
@@ -365,7 +457,7 @@ export default function Eboo() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/#contact">
+                <Link href={`/eligibility?volume=${encodeURIComponent(vol.key)}`}>
                   <Button variant={p.featured ? "default" : "outline"} className={`btn-press mt-6 w-full ${p.featured ? "" : "border-border bg-background/40"}`}>
                     Request Appointment
                   </Button>
@@ -373,6 +465,10 @@ export default function Eboo() {
               </div>
             ))}
           </div>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground">
+            Pricing shown is for the selected {vol.key} volume tier and is provided for informational purposes.
+            Final pricing and protocol are confirmed after your consultation and screening.
+          </p>
         </div>
       </section>
 

@@ -310,6 +310,7 @@ function SubmissionDrawer({
             {p.symptoms.length > 0 && <Field label="Symptoms">{p.symptoms.join(", ")}</Field>}
             {p.symptomDuration && <Field label="Symptom duration">{p.symptomDuration}</Field>}
             {p.goals.length > 0 && <Field label="Goals">{p.goals.join(", ")}</Field>}
+            {p.ebo3Volume && <Field label="Preferred EBO3 volume">{p.ebo3Volume}</Field>}
             {p.additionalNotes && <Field label="Notes">{p.additionalNotes}</Field>}
 
             <div className="h-px bg-border" />

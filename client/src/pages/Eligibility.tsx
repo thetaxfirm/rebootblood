@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, ShieldCheck, Lock } from "lucide-react";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ type FormState = {
   symptomDuration: "lt1m" | "1to6m" | "6to12m" | "gt12m" | "na" | "";
   goals: string[];
   treatmentInterest: TreatmentInterest | "";
+  ebo3Volume: "3L" | "4.5L" | "6L" | "";
   additionalNotes: string;
   firstName: string;
   lastName: string;
@@ -68,6 +69,7 @@ const INITIAL: FormState = {
   symptomDuration: "",
   goals: [],
   treatmentInterest: "",
+  ebo3Volume: "",
   additionalNotes: "",
   firstName: "",
   lastName: "",
@@ -118,12 +120,26 @@ function RadioRow({
 }
 
 export default function Eligibility() {
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const [step, setStep] = useState(0);
   const [f, setF] = useState<FormState>(INITIAL);
   const [done, setDone] = useState(false);
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((s) => ({ ...s, [k]: v }));
+
+  // Prefill EBO3 volume + treatment interest from the EBO3 page (?volume=3L|4.5L|6L).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("volume");
+    if (v === "3L" || v === "4.5L" || v === "6L") {
+      setF((s) => ({
+        ...s,
+        ebo3Volume: v,
+        treatmentInterest: s.treatmentInterest === "" ? "eboo" : s.treatmentInterest,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   const submit = trpc.intake.submitQuestionnaire.useMutation({
     onSuccess: () => {
@@ -186,6 +202,7 @@ export default function Eligibility() {
       symptomDuration: f.symptomDuration || undefined,
       goals: f.goals,
       treatmentInterest: f.treatmentInterest as TreatmentInterest,
+      ebo3Volume: f.ebo3Volume || undefined,
       additionalNotes: f.additionalNotes,
       firstName: f.firstName,
       lastName: f.lastName,
@@ -381,6 +398,18 @@ export default function Eligibility() {
                     { value: "unsure", label: "Not sure yet" },
                   ]}
                 />
+                {(f.treatmentInterest === "eboo" || f.treatmentInterest === "both" || f.ebo3Volume !== "") && (
+                  <RadioRow
+                    label="Preferred EBO3 treatment volume (optional)"
+                    value={f.ebo3Volume}
+                    onChange={(v) => set("ebo3Volume", v as FormState["ebo3Volume"])}
+                    options={[
+                      { value: "3L", label: "3L (~45–60 min)" },
+                      { value: "4.5L", label: "4.5L (~60–90 min)" },
+                      { value: "6L", label: "6L (~90–120 min)" },
+                    ]}
+                  />
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="notes">Additional notes</Label>
                   <Textarea id="notes" rows={3} value={f.additionalNotes} onChange={(e) => set("additionalNotes", e.target.value)} placeholder="Anything else you'd like us to know (optional)." />

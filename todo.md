@@ -60,3 +60,10 @@
 ## Exact-string constraints (must verify)
 - [x] Device name appears exactly: "EBOO O3 Research Device 2026"
 - [x] Tier names appear exactly: "Core" and "Complete"
+
+## Enhancement: EBO3 volume selector, pricing, aftercare (requested)
+- [x] EBO3 volume selector (3L / 4.5L / 6L) updating duration + price together
+- [x] Apply pricing: single $1000/$1250/$1500; pkg3 $2700/$3300/$3750; pkg6 $4500/$5500/$6600
+- [x] Show session length in pricing cards
+- [x] Pass chosen volume into eligibility questionnaire (prefill via ?volume=)
+- [x] Aftercare / what-to-expect section (post-session recovery window)

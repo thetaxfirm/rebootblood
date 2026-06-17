@@ -249,6 +249,7 @@ export const adminRouter = router({
           reference: r.publicId,
           status: r.status,
           interest: TREATMENT_INTEREST_LABELS[r.treatmentInterest],
+          ebo3Volume: p.ebo3Volume ?? "",
           firstName: p.firstName,
           lastName: p.lastName,
           email: p.email,
