@@ -35,7 +35,7 @@
 - [x] Encrypt lead capture PII at rest
 - [x] Role-based access control — admin only can view patient data
 - [x] Audit log table: record every access (view/list/decrypt/status) event with actor, target, action, timestamp, hashed IP (IP hashed by design so the audit log itself stores no raw PII)
-- [ ] (Optional) Audited CSV export flow for submissions/leads from admin dashboard
+- [x] Audited CSV export flow for submissions/leads from admin dashboard (every export logged)
 - [x] Owner notification fires on every lead capture submission (HARD REQ)
 - [x] Owner notification on questionnaire submission (operational alert)
 
@@ -55,7 +55,7 @@
 - [x] Vitest: questionnaire submission persists encrypted
 - [x] Verify flows + screenshots
 - [x] End-to-end live submit test (questionnaire + lead) — owner notification confirmed; DB scan shows 0 plaintext leaks
-- [ ] Checkpoint + deliver with HIPAA compliance documentation
+- [x] Checkpoint + deliver with HIPAA compliance documentation
 
 ## Exact-string constraints (must verify)
 - [x] Device name appears exactly: "EBOO O3 Research Device 2026"

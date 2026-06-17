@@ -9,6 +9,7 @@ import {
   Users,
   ScrollText,
   LogOut,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -60,6 +61,18 @@ function StatusBadge({ status }: { status: WorkflowStatus }) {
 
 function fmt(d: Date | string | number) {
   return new Date(d).toLocaleString();
+}
+
+function downloadCsv(csv: string, filename: string) {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 export default function Admin() {
@@ -185,13 +198,27 @@ function SubmissionsTab() {
     status: status === "all" ? undefined : status,
   });
 
+  const exportCsv = trpc.admin.exportSubmissions.useMutation({
+    onSuccess: (res) => {
+      if (!res.count) return toast.info("No records to export");
+      downloadCsv(res.csv, `submissions-${Date.now()}.csv`);
+      toast.success(`Exported ${res.count} record(s)`);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
         <FilterSelect value={status} onChange={setStatus} />
-        <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
-          <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="btn-press border-border" disabled={exportCsv.isPending} onClick={() => exportCsv.mutate({ status: status === "all" ? undefined : status })}>
+            {exportCsv.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />} Export CSV
+          </Button>
+          <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
+          </Button>
+        </div>
       </div>
 
       <RecordTable
@@ -305,13 +332,27 @@ function LeadsTab() {
   const utils = trpc.useUtils();
   const list = trpc.admin.listLeads.useQuery({ status: status === "all" ? undefined : status });
 
+  const exportCsv = trpc.admin.exportLeads.useMutation({
+    onSuccess: (res) => {
+      if (!res.count) return toast.info("No records to export");
+      downloadCsv(res.csv, `leads-${Date.now()}.csv`);
+      toast.success(`Exported ${res.count} record(s)`);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
         <FilterSelect value={status} onChange={setStatus} />
-        <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
-          <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="btn-press border-border" disabled={exportCsv.isPending} onClick={() => exportCsv.mutate({ status: status === "all" ? undefined : status })}>
+            {exportCsv.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />} Export CSV
+          </Button>
+          <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
+          </Button>
+        </div>
       </div>
 
       <RecordTable

@@ -232,4 +232,82 @@ export const adminRouter = router({
       });
       return rows;
     }),
+
+  /** Audited CSV export. Decrypts PHI for the matching set — every export is logged. */
+  exportSubmissions: adminProcedure
+    .input(listFilterSchema)
+    .mutation(async ({ input, ctx }) => {
+      const rows = await listQuestionnaireSubmissions(input);
+      await recordAudit(ctx, {
+        action: "questionnaire.export",
+        targetType: "questionnaire",
+        detail: `count=${rows.length}${input.status ? ` status=${input.status}` : ""}`,
+      });
+      const records = rows.map((r) => {
+        const p = decryptJson<QuestionnairePayload>(r.encryptedPayload);
+        return {
+          reference: r.publicId,
+          status: r.status,
+          interest: TREATMENT_INTEREST_LABELS[r.treatmentInterest],
+          firstName: p.firstName,
+          lastName: p.lastName,
+          email: p.email,
+          phone: p.phone,
+          preferredContact: p.preferredContact,
+          location: [p.city, p.state].filter(Boolean).join(" "),
+          age: String(p.age ?? ""),
+          knownG6PDDeficiency: p.knownG6PDDeficiency,
+          pregnantOrNursing: p.pregnantOrNursing,
+          bleedingOrClottingDisorder: p.bleedingOrClottingDisorder,
+          recentCardiacOrStrokeEvent: p.recentCardiacOrStrokeEvent,
+          medications: p.currentMedications ?? "",
+          conditions: [...p.conditions, p.conditionsOther].filter(Boolean).join("; "),
+          symptoms: p.symptoms.join("; "),
+          symptomDuration: p.symptomDuration ?? "",
+          goals: p.goals.join("; "),
+          notes: p.additionalNotes ?? "",
+          submittedAt: new Date(p.submittedAt).toISOString(),
+        };
+      });
+      return { csv: toCsv(records), count: records.length } as const;
+    }),
+
+  exportLeads: adminProcedure
+    .input(listFilterSchema)
+    .mutation(async ({ input, ctx }) => {
+      const rows = await listLeads(input);
+      await recordAudit(ctx, {
+        action: "lead.export",
+        targetType: "lead",
+        detail: `count=${rows.length}`,
+      });
+      const records = rows.map((r) => {
+        const p = decryptJson<LeadPayload>(r.encryptedPayload);
+        return {
+          reference: r.publicId,
+          status: r.status,
+          source: r.source,
+          interest: TREATMENT_INTEREST_LABELS[r.treatmentInterest],
+          name: p.name,
+          email: p.email,
+          phone: p.phone ?? "",
+          message: p.message ?? "",
+          submittedAt: new Date(p.submittedAt).toISOString(),
+        };
+      });
+      return { csv: toCsv(records), count: records.length } as const;
+    }),
 });
+
+/** Minimal RFC-4180-ish CSV serializer. */
+function toCsv(rows: Record<string, string>[]): string {
+  if (rows.length === 0) return "";
+  const headers = Object.keys(rows[0]);
+  const escape = (v: string) => {
+    const s = v ?? "";
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const lines = [headers.join(",")];
+  for (const row of rows) lines.push(headers.map((h) => escape(row[h])).join(","));
+  return lines.join("\r\n");
+}
