@@ -41,7 +41,7 @@ const STEPS = [
   {
     icon: RefreshCw,
     title: "Return purified blood",
-    body: "The treated, oxygen-rich blood is continuously returned to your body. A full EBO3 session typically takes around 50–60 minutes under monitoring.",
+    body: "The treated, oxygen-rich blood is continuously returned to your body. A typical EBO3 session takes about 45–120 minutes depending on whether you want to treat 3L, 4.5L or 6L of your blood treated, under monitoring throughout.",
   },
 ];
 
@@ -105,7 +105,7 @@ const PREP = [
 const FAQS = [
   { q: "What is the difference between EBOO, EBO2, and EBO3?", a: "EBOO and EBO2 refer to extracorporeal blood oxygenation and ozonation at different ozone concentrations and flow configurations. Our EBO3 protocol is an advanced approach that filters the entire blood volume and integrates UVBI (ultraviolet blood irradiation) alongside oxygenation and ozonation. The EBOO O3 Research Device 2026 supports all of these in a single platform." },
   { q: "What is UVBI and why is it included?", a: "UVBI (ultraviolet blood irradiation) exposes blood to specific ultraviolet light wavelengths. In our EBO3 protocol it is paired with oxygenation and ozonation for a combined photo-oxidative approach. The device includes a 5-lamp UVBI light chamber for integrated UV exposure." },
-  { q: "How long does a session take?", a: "A typical EBO3 session takes about 50–60 minutes, during which your blood is continuously filtered, oxygenated, ozonated, exposed to UVBI, and returned. You'll be monitored throughout." },
+  { q: "How long does a session take?", a: "A typical EBO3 session takes about 45–120 minutes depending on whether you want to treat 3L, 4.5L or 6L of your blood, during which your blood is continuously filtered, oxygenated, ozonated, exposed to UVBI, and returned. You'll be monitored throughout." },
   { q: "How is this different from an ozone IV or major autohemotherapy?", a: "Ozone IV and major autohemotherapy treat a limited volume of blood at a time. EBO3 / EBOO is a dialysis-style, continuous-flow process that filters and treats a far larger volume of blood in a single session, which is why it is considered a more comprehensive systemic approach." },
   { q: "Is EBOO FDA-approved?", a: "EBOO, EBO2, ozone, and UVBI therapies are not approved by the FDA to diagnose, treat, cure, or prevent any disease, and the EBOO O3 Research Device 2026 is positioned as a research-oriented platform. We offer these as supportive wellness procedures. Please review the disclaimers in our footer and discuss with your provider." },
   { q: "Will it hurt?", a: "Most patients experience only the minor discomfort of IV placement. Some may feel temporary fatigue, lightheadedness, or a mild headache afterward. Our team monitors you throughout and reviews what to expect during your consultation." },
