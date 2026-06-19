@@ -9,6 +9,9 @@ import Eboo from "./pages/Eboo";
 import Plasmapheresis from "./pages/Plasmapheresis";
 import Eligibility from "./pages/Eligibility";
 import Admin from "./pages/Admin";
+import Learn from "./pages/Learn";
+import Partners from "./pages/Partners";
+import Calculator from "./pages/Calculator";
 import { Privacy, Terms } from "./pages/Legal";
 
 function Router() {
@@ -18,6 +21,10 @@ function Router() {
       <Route path="/eboo" component={Eboo} />
       <Route path="/plasmapheresis" component={Plasmapheresis} />
       <Route path="/eligibility" component={Eligibility} />
+      <Route path="/learn" component={Learn} />
+      <Route path="/learn/:slug" component={Learn} />
+      <Route path="/partners" component={Partners} />
+      <Route path="/calculator" component={Calculator} />
       <Route path="/admin" component={Admin} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />

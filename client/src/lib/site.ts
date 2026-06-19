@@ -21,6 +21,8 @@ export const ASSETS = {
 export const NAV_LINKS = [
   { label: "EBO3 / EBOO", href: "/eboo" },
   { label: "Plasmapheresis", href: "/plasmapheresis" },
+  { label: "Learning Center", href: "/learn" },
   { label: "Eligibility Quiz", href: "/eligibility" },
+  { label: "Partners", href: "/partners" },
   { label: "Contact", href: "/#contact" },
 ] as const;

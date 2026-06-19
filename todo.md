@@ -67,3 +67,20 @@
 - [x] Show session length in pricing cards
 - [x] Pass chosen volume into eligibility questionnaire (prefill via ?volume=)
 - [x] Aftercare / what-to-expect section (post-session recovery window)
+
+## Enhancement: Learning Center hub
+- [x] /learn index page (hub) listing pillars + spokes, linked from navbar + footer
+- [x] Pillar: What is EBO3/EBOO blood therapy (/learn/ebo3-eboo-blood-therapy)
+- [x] Pillar: UVBI explained (/learn/uvbi-ultraviolet-blood-irradiation)
+- [x] Pillar: Plasmapheresis & TPE (/learn/plasmapheresis-tpe)
+- [x] Pillar: EBOO vs EBO2 vs EBO3 vs ozone IV (/learn/eboo-comparison-guide)
+- [x] Condition spokes (7) mapped to questionnaire, each deep-linking quiz ?condition=
+- [x] Article layout component (hero, body, medical-review/last-updated, FAQ, CTA into quiz)
+- [x] FAQ accordions + non-claim/FDA disclaimer on every article
+- [x] Internal linking: spokes->pillar, pillar->quiz/treatment
+- [x] Research & Publications section: ozonedoctor.net papers + jmedicalcasereports.org case report, cited with honest framing, linking to source PDFs
+
+## Enhancement: Partner program
+- [x] Partner recruitment page (/partners) with sales-sheet content + apply CTA (routes to submitLead source=partner_inquiry)
+- [x] Interactive partner economics calculator (price/volume, COGS, nurse time, utilization -> clinic & MSO split) at /calculator + embedded in /partners
+- [x] Standalone partner sales sheet + outreach email doc (delivered as file: Partner-Outreach-Kit.md)
