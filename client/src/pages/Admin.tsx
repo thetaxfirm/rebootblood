@@ -542,7 +542,8 @@ function AuditTab() {
 }
 
 function TierStatsTab() {
-  const stats = trpc.admin.tierStats.useQuery();
+  const [range, setRange] = useState<TierRange>("all");
+  const stats = trpc.admin.tierStats.useQuery({ range });
   const utils = trpc.useUtils();
   const totals = useMemo(() => {
     const data = stats.data ?? [];
@@ -561,13 +562,17 @@ function TierStatsTab() {
           <StatPill label="Book this tier" value={totals.book} />
           <StatPill label="Check eligibility" value={totals.check} />
         </div>
-        <Button variant="outline" size="sm" className="btn-press" onClick={() => utils.admin.tierStats.invalidate()}>
-          <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <TierRangeSelect value={range} onChange={setRange} />
+          <Button variant="outline" size="sm" className="btn-press" onClick={() => utils.admin.tierStats.invalidate()}>
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
+          </Button>
+        </div>
       </div>
       <p className="text-xs text-muted-foreground">
         Lightweight, anonymous interest signals — counts how often each pricing tier's “Book this tier” or
-        “Check eligibility” link was clicked. No personal data is captured; these are intent metrics, not submitted leads.
+        “Check eligibility” link was clicked, within the selected window. No personal data is captured; these are
+        intent metrics, not submitted leads.
       </p>
       <div className="rounded-xl border border-border">
         <Table>
@@ -600,6 +605,28 @@ function TierStatsTab() {
         </Table>
       </div>
     </div>
+  );
+}
+
+type TierRange = "7d" | "30d" | "90d" | "all";
+
+const TIER_RANGE_LABELS: Record<TierRange, string> = {
+  "7d": "Last 7 days",
+  "30d": "Last 30 days",
+  "90d": "Last 90 days",
+  all: "All time",
+};
+
+function TierRangeSelect({ value, onChange }: { value: TierRange; onChange: (v: TierRange) => void }) {
+  return (
+    <Select value={value} onValueChange={(v) => onChange(v as TierRange)}>
+      <SelectTrigger className="h-9 w-40"><SelectValue /></SelectTrigger>
+      <SelectContent>
+        {(Object.keys(TIER_RANGE_LABELS) as TierRange[]).map((k) => (
+          <SelectItem key={k} value={k}>{TIER_RANGE_LABELS[k]}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 

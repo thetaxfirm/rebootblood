@@ -111,3 +111,6 @@
 - [x] Quiz review step: surface the selected tier (from notes/param) so visitors confirm it before submitting
 - [x] Lightweight conversion event on "Book this tier" / "Check eligibility for this tier" clicks (tier + source captured server-side)
 - [x] Admin view for tier-conversion events (counts by tier) + vitest coverage
+
+## Enhancement: tier-interest date range filter (requested)
+- [x] Add date-range filter (7d / 30d / 90d / All time) to admin "Tier interest" tab; server-side aggregation respects the range + vitest coverage

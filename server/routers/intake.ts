@@ -250,15 +250,18 @@ export const adminRouter = router({
       return { success: true } as const;
     }),
 
-  tierStats: adminProcedure.query(async ({ ctx }) => {
-    const stats = await getTierEventStats();
-    await recordAudit(ctx, {
-      action: "tier.stats",
-      targetType: "system",
-      detail: `tiers=${stats.length}`,
-    });
-    return stats;
-  }),
+  tierStats: adminProcedure
+    .input(z.object({ range: z.enum(["7d", "30d", "90d", "all"]).default("all") }).optional())
+    .query(async ({ input, ctx }) => {
+      const range = input?.range ?? "all";
+      const stats = await getTierEventStats(range);
+      await recordAudit(ctx, {
+        action: "tier.stats",
+        targetType: "system",
+        detail: `range=${range} tiers=${stats.length}`,
+      });
+      return stats;
+    }),
 
   listAuditLogs: adminProcedure
     .input(z.object({ limit: z.number().int().min(1).max(500).optional() }))

@@ -243,10 +243,36 @@ export type TierEventStat = {
   total: number;
 };
 
-/** Aggregate tier-CTA clicks grouped by tier, split by action kind. */
-export async function getTierEventStats(): Promise<TierEventStat[]> {
+/** Selectable rolling windows for the tier-interest report. */
+export type TierEventRange = "7d" | "30d" | "90d" | "all";
+
+const RANGE_DAYS: Record<Exclude<TierEventRange, "all">, number> = {
+  "7d": 7,
+  "30d": 30,
+  "90d": 90,
+};
+
+/**
+ * Pure: resolve a range to an inclusive cutoff timestamp (ms). Returns null for
+ * "all" (no lower bound). `nowMs` is injectable so this is deterministic in tests.
+ */
+export function tierEventRangeStartMs(
+  range: TierEventRange,
+  nowMs: number = Date.now(),
+): number | null {
+  if (range === "all") return null;
+  return nowMs - RANGE_DAYS[range] * 24 * 60 * 60 * 1000;
+}
+
+/** Aggregate tier-CTA clicks grouped by tier, split by action kind, within a window. */
+export async function getTierEventStats(
+  range: TierEventRange = "all",
+): Promise<TierEventStat[]> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  const startMs = tierEventRangeStartMs(range);
+  const where =
+    startMs === null ? undefined : sql`${tierEvents.createdAt} >= ${new Date(startMs)}`;
   const rows = await db
     .select({
       tier: tierEvents.tier,
@@ -255,6 +281,7 @@ export async function getTierEventStats(): Promise<TierEventStat[]> {
       count: sql<number>`count(*)`,
     })
     .from(tierEvents)
+    .where(where)
     .groupBy(tierEvents.tier, tierEvents.treatmentInterest, tierEvents.action);
 
   return aggregateTierEventRows(rows);
