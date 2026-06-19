@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearch } from "wouter";
 import { Phone, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,14 +18,52 @@ import { trpc } from "@/lib/trpc";
 import { SITE } from "@/lib/site";
 import type { TreatmentInterest } from "@shared/forms";
 
+const INTEREST_LABELS: Record<TreatmentInterest, string> = {
+  eboo: "EBO3 / EBOO",
+  plasmapheresis: "Plasmapheresis",
+  both: "Both treatments",
+  unsure: "Not sure yet",
+};
+
+const VALID_INTERESTS: TreatmentInterest[] = ["eboo", "plasmapheresis", "both", "unsure"];
+
+function readBookingParams(searchStr: string) {
+  const params = new URLSearchParams(searchStr || (typeof window !== "undefined" ? window.location.search : ""));
+  const rawInterest = params.get("interest");
+  const interest = rawInterest && VALID_INTERESTS.includes(rawInterest as TreatmentInterest)
+    ? (rawInterest as TreatmentInterest)
+    : null;
+  const tier = params.get("tier");
+  return { interest, tier };
+}
+
 export default function ContactSection() {
+  const search = useSearch();
+
+  // Read "Book this tier" deep-link params (?interest=&tier=) synchronously on
+  // first render so the Select and message start with the correct values and
+  // never depend on effect timing or the controlled Select re-rendering late.
+  const initial = readBookingParams(search);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [interest, setInterest] = useState<TreatmentInterest>("unsure");
-  const [message, setMessage] = useState("");
+  const [interest, setInterest] = useState<TreatmentInterest>(initial.interest ?? "unsure");
+  const [message, setMessage] = useState(initial.tier ? `I'm interested in: ${initial.tier}.` : "");
   const [consent, setConsent] = useState(false);
   const [done, setDone] = useState(false);
+  const [prefilledTier, setPrefilledTier] = useState<string | null>(initial.tier);
+
+  // Also react to in-app navigations that change the query string without a
+  // full remount (e.g. clicking a "Book this tier" link while already on the page).
+  useEffect(() => {
+    const { interest: i, tier } = readBookingParams(search);
+    if (i) setInterest(i);
+    if (tier) {
+      setPrefilledTier(tier);
+      setMessage((prev) => (prev ? prev : `I'm interested in: ${tier}.`));
+    }
+  }, [search]);
 
   const submit = trpc.intake.submitLead.useMutation({
     onSuccess: () => {
@@ -110,17 +149,25 @@ export default function ContactSection() {
                 <Label htmlFor="c-email">Email</Label>
                 <Input id="c-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" />
               </div>
+              {prefilledTier && (
+                <div className="flex items-start gap-2 rounded-lg border border-[color:var(--gold)]/40 bg-[color:var(--gold)]/10 px-3.5 py-2.5 text-sm">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--gold)]" />
+                  <span className="text-muted-foreground">
+                    Selected: <span className="font-medium text-foreground">{prefilledTier}</span>
+                  </span>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label>Treatment of interest</Label>
                 <Select value={interest} onValueChange={(v) => setInterest(v as TreatmentInterest)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder="Select">{INTEREST_LABELS[interest]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="eboo">EBO3 / EBOO</SelectItem>
-                    <SelectItem value="plasmapheresis">Plasmapheresis</SelectItem>
-                    <SelectItem value="both">Both treatments</SelectItem>
-                    <SelectItem value="unsure">Not sure yet</SelectItem>
+                    <SelectItem value="eboo">{INTEREST_LABELS.eboo}</SelectItem>
+                    <SelectItem value="plasmapheresis">{INTEREST_LABELS.plasmapheresis}</SelectItem>
+                    <SelectItem value="both">{INTEREST_LABELS.both}</SelectItem>
+                    <SelectItem value="unsure">{INTEREST_LABELS.unsure}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -181,9 +181,9 @@ export default function Plasmapheresis() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/#contact">
+                <Link href={`/?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}#contact`}>
                   <Button variant={t.featured ? "default" : "outline"} className={`btn-press mt-7 w-full ${t.featured ? "" : "border-border bg-background/40"}`}>
-                    Request Appointment
+                    Book this tier
                   </Button>
                 </Link>
               </div>

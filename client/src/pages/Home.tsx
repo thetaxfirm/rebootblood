@@ -233,6 +233,17 @@ export default function Home() {
                   <p className="mt-4 rounded-lg border border-border bg-background/40 px-3 py-2 text-xs text-muted-foreground">
                     Packages: 3 for {money(vol.pkg3)} &middot; 6 for {money(vol.pkg6)}
                   </p>
+                  <Link
+                    href={`/?interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} session`)}#contact`}
+                    className="mt-auto pt-6"
+                  >
+                    <Button
+                      variant={featured ? "default" : "outline"}
+                      className={`btn-press w-full ${featured ? "" : "border-border bg-background/40"}`}
+                    >
+                      Book this tier
+                    </Button>
+                  </Link>
                 </div>
               );
             })}
@@ -283,14 +294,21 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/plasmapheresis#pricing" className="mt-auto pt-7">
-                  <Button
-                    variant={tier.featured ? "default" : "outline"}
-                    className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}
-                  >
-                    View {tier.name} details <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </Button>
-                </Link>
+                <div className="mt-auto flex flex-col gap-2 pt-7">
+                  <Link href={`/?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${tier.name}`)}#contact`}>
+                    <Button
+                      variant={tier.featured ? "default" : "outline"}
+                      className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}
+                    >
+                      Book this tier
+                    </Button>
+                  </Link>
+                  <Link href="/plasmapheresis#pricing">
+                    <Button variant="ghost" className="btn-press w-full text-muted-foreground hover:text-foreground">
+                      View {tier.name} details <ArrowRight className="ml-1.5 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

@@ -96,3 +96,4 @@
 - [x] Show both Core & Complete pricing tiers on Home page (shared PLASMAPHERESIS_TIERS in site.ts as single source of truth, consumed by Home + Plasmapheresis)
 - [x] Add EBO3 pricing block on Home (3 volume tiers w/ from-price, duration, packages; shared EBO3_VOLUME_TIERS in site.ts consumed by Home + Eboo)
 - [x] Deep-link Home pricing blocks to matching sections (/eboo#pricing, /plasmapheresis#pricing) via shared scroll-on-hash in SiteLayout + id="pricing" anchors
+- [x] "Book this tier" buttons in all pricing sections (Home EBO3 + plasmapheresis, Eboo, Plasmapheresis) deep-linking to /#contact with ?interest= & ?tier= prefilled; ContactSection reads params synchronously to pre-select dropdown + prefill message + show selected chip

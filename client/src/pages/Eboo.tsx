@@ -508,9 +508,9 @@ export default function Eboo() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/eligibility?volume=${encodeURIComponent(vol.key)}`}>
+                <Link href={`/?interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}#contact`}>
                   <Button variant={p.featured ? "default" : "outline"} className={`btn-press mt-6 w-full ${p.featured ? "" : "border-border bg-background/40"}`}>
-                    Request Appointment
+                    Book this tier
                   </Button>
                 </Link>
               </div>
