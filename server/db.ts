@@ -9,6 +9,8 @@ import {
   InsertLead,
   auditLogs,
   InsertAuditLog,
+  tierEvents,
+  InsertTierEvent,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -220,6 +222,67 @@ export async function listAuditLogs(limit = 200) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(limit);
+}
+
+/* --------------------------- Tier conversion events --------------------------- */
+
+export async function insertTierEvent(data: InsertTierEvent) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[TierEvent] Database unavailable, event dropped:", data.tier);
+    return;
+  }
+  await db.insert(tierEvents).values(data);
+}
+
+export type TierEventStat = {
+  tier: string;
+  treatmentInterest: TreatmentInterest;
+  bookClicks: number;
+  checkEligibilityClicks: number;
+  total: number;
+};
+
+/** Aggregate tier-CTA clicks grouped by tier, split by action kind. */
+export async function getTierEventStats(): Promise<TierEventStat[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const rows = await db
+    .select({
+      tier: tierEvents.tier,
+      treatmentInterest: tierEvents.treatmentInterest,
+      action: tierEvents.action,
+      count: sql<number>`count(*)`,
+    })
+    .from(tierEvents)
+    .groupBy(tierEvents.tier, tierEvents.treatmentInterest, tierEvents.action);
+
+  return aggregateTierEventRows(rows);
+}
+
+/** Pure aggregation of raw tier-event group rows into per-tier stats. Exported for testing. */
+export function aggregateTierEventRows(
+  rows: Array<{ tier: string; treatmentInterest: string; action: string; count: number }>,
+): TierEventStat[] {
+  const byTier = new Map<string, TierEventStat>();
+  for (const r of rows) {
+    const key = `${r.tier}\u0000${r.treatmentInterest}`;
+    const entry =
+      byTier.get(key) ??
+      {
+        tier: r.tier,
+        treatmentInterest: r.treatmentInterest as TreatmentInterest,
+        bookClicks: 0,
+        checkEligibilityClicks: 0,
+        total: 0,
+      };
+    const n = Number(r.count ?? 0);
+    if (r.action === "book") entry.bookClicks += n;
+    else if (r.action === "check_eligibility") entry.checkEligibilityClicks += n;
+    entry.total += n;
+    byTier.set(key, entry);
+  }
+  return Array.from(byTier.values()).sort((a, b) => b.total - a.total);
 }
 
 /* --------------------------- Dashboard stats --------------------------- */

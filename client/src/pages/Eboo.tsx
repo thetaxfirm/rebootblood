@@ -30,6 +30,7 @@ import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE, EBO3_VOLUME_TIERS } from "@/lib/site";
+import { useTierCta } from "@/hooks/useTierCta";
 
 const STEPS = [
   {
@@ -147,6 +148,7 @@ const FAQS = [
 export default function Eboo() {
   const [volIdx, setVolIdx] = useState(1);
   const vol = VOLUMES[volIdx];
+  const fireTierCta = useTierCta();
   return (
     <SiteLayout>
       {/* HERO */}
@@ -509,13 +511,18 @@ export default function Eboo() {
                   ))}
                 </ul>
                 <Link href={`/?interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}#contact`}>
-                  <Button variant={p.featured ? "default" : "outline"} className={`btn-press mt-6 w-full ${p.featured ? "" : "border-border bg-background/40"}`}>
+                  <Button
+                    variant={p.featured ? "default" : "outline"}
+                    className={`btn-press mt-6 w-full ${p.featured ? "" : "border-border bg-background/40"}`}
+                    onClick={() => fireTierCta(`EBO3 ${vol.key} — ${p.name}`, "book", "eboo")}
+                  >
                     Book this tier
                   </Button>
                 </Link>
                 <Link
                   href={`/eligibility?interest=eboo&volume=${encodeURIComponent(vol.key)}&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}`}
                   className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"
+                  onClick={() => fireTierCta(`EBO3 ${vol.key} — ${p.name}`, "check_eligibility", "eboo")}
                 >
                   Check eligibility for this tier
                 </Link>

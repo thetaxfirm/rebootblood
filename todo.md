@@ -105,3 +105,9 @@
 - [x] Add real quiz entry points: "Check eligibility for this tier" links on every EBO3 + plasmapheresis pricing card -> /eligibility?interest=&volume=&tier=
 - [x] Extract quiz prefill into pure shared/quizPrefill.ts helper (fills only empty fields, explicit interest overrides volume-implied)
 - [x] Added vitest coverage: selectedTier persists on lead + surfaces to admin; quizPrefill helper pass-through (25 tests pass)
+
+## Enhancement: tier triage + quiz confirm + conversion events (requested)
+- [x] Admin Leads: add a Tier filter (dropdown of known tiers + "Any") and a sortable Tier column for triage
+- [x] Quiz review step: surface the selected tier (from notes/param) so visitors confirm it before submitting
+- [x] Lightweight conversion event on "Book this tier" / "Check eligibility for this tier" clicks (tier + source captured server-side)
+- [x] Admin view for tier-conversion events (counts by tier) + vitest coverage

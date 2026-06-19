@@ -15,6 +15,7 @@ import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import GuideCapture from "@/components/site/GuideCapture";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE, PLASMAPHERESIS_TIERS, EBO3_VOLUME_TIERS } from "@/lib/site";
+import { useTierCta } from "@/hooks/useTierCta";
 
 const money = (n: number) => `$${n.toLocaleString()}`;
 
@@ -85,6 +86,7 @@ function TreatmentCard({
 }
 
 export default function Home() {
+  const fireTierCta = useTierCta();
   return (
     <SiteLayout>
       {/* HERO */}
@@ -240,6 +242,7 @@ export default function Home() {
                     <Button
                       variant={featured ? "default" : "outline"}
                       className={`btn-press w-full ${featured ? "" : "border-border bg-background/40"}`}
+                      onClick={() => fireTierCta(`EBO3 ${vol.key} session`, "book", "eboo")}
                     >
                       Book this tier
                     </Button>
@@ -299,6 +302,7 @@ export default function Home() {
                     <Button
                       variant={tier.featured ? "default" : "outline"}
                       className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}
+                      onClick={() => fireTierCta(`Plasmapheresis — ${tier.name}`, "book", "plasmapheresis")}
                     >
                       Book this tier
                     </Button>

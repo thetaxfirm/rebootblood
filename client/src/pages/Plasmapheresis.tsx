@@ -19,6 +19,7 @@ import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, PLASMAPHERESIS_TIERS } from "@/lib/site";
+import { useTierCta } from "@/hooks/useTierCta";
 
 const PATH = [
   { icon: ClipboardList, title: "Consultation & labs", body: "We review your history and goals, confirm eligibility, and draw baseline labs to establish a safe, individualized starting point." },
@@ -47,6 +48,7 @@ const FAQS = [
 ];
 
 export default function Plasmapheresis() {
+  const fireTierCta = useTierCta();
   return (
     <SiteLayout>
       {/* HERO */}
@@ -182,13 +184,18 @@ export default function Plasmapheresis() {
                   ))}
                 </ul>
                 <Link href={`/?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}#contact`}>
-                  <Button variant={t.featured ? "default" : "outline"} className={`btn-press mt-7 w-full ${t.featured ? "" : "border-border bg-background/40"}`}>
+                  <Button
+                    variant={t.featured ? "default" : "outline"}
+                    className={`btn-press mt-7 w-full ${t.featured ? "" : "border-border bg-background/40"}`}
+                    onClick={() => fireTierCta(`Plasmapheresis — ${t.name}`, "book", "plasmapheresis")}
+                  >
                     Book this tier
                   </Button>
                 </Link>
                 <Link
                   href={`/eligibility?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}`}
                   className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"
+                  onClick={() => fireTierCta(`Plasmapheresis — ${t.name}`, "check_eligibility", "plasmapheresis")}
                 >
                   Check eligibility for this tier
                 </Link>

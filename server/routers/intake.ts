@@ -25,6 +25,8 @@ import {
   updateLeadStatus,
   listAuditLogs,
   getDashboardCounts,
+  insertTierEvent,
+  getTierEventStats,
 } from "../db";
 
 const listFilterSchema = z.object({
@@ -73,6 +75,29 @@ export const intakeRouter = router({
       }).catch(() => undefined);
 
       return { success: true, reference: publicId } as const;
+    }),
+
+  /**
+   * Record a lightweight tier-CTA conversion event (public, fire-and-forget).
+   * No PII is captured — only the tier label, interest, action kind, and path.
+   */
+  recordTierEvent: publicProcedure
+    .input(
+      z.object({
+        tier: z.string().trim().min(1).max(120),
+        treatmentInterest: treatmentInterestEnum.default("unsure"),
+        action: z.enum(["book", "check_eligibility"]),
+        sourcePath: z.string().max(200).optional(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await insertTierEvent({
+        tier: input.tier,
+        treatmentInterest: input.treatmentInterest,
+        action: input.action,
+        sourcePath: input.sourcePath ?? null,
+      });
+      return { success: true } as const;
     }),
 
   /** Lead-capture form (public). Owner notification fires on EVERY submission. */
@@ -224,6 +249,16 @@ export const adminRouter = router({
       });
       return { success: true } as const;
     }),
+
+  tierStats: adminProcedure.query(async ({ ctx }) => {
+    const stats = await getTierEventStats();
+    await recordAudit(ctx, {
+      action: "tier.stats",
+      targetType: "system",
+      detail: `tiers=${stats.length}`,
+    });
+    return stats;
+  }),
 
   listAuditLogs: adminProcedure
     .input(z.object({ limit: z.number().int().min(1).max(500).optional() }))

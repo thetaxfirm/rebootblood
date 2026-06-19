@@ -116,3 +116,27 @@ export const auditLogs = mysqlTable("audit_logs", {
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
+
+/**
+ * Lightweight, privacy-safe conversion events fired when a visitor clicks a
+ * "Book this tier" or "Check eligibility for this tier" CTA on a pricing card.
+ * No PII is stored — only the tier label, the treatment interest, the action
+ * kind, and the originating page path. Used to measure which tiers drive intent.
+ */
+export const tierEvents = mysqlTable("tier_events", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Pricing tier label, e.g. "EBO3 4.5L — Package of 3" or "Plasmapheresis — Complete". */
+  tier: varchar("tier", { length: 120 }).notNull(),
+  /** Treatment interest associated with the tier (non-PHI). */
+  treatmentInterest: mysqlEnum("treatmentInterest", ["eboo", "plasmapheresis", "both", "unsure"])
+    .default("unsure")
+    .notNull(),
+  /** Which CTA was used. */
+  action: mysqlEnum("action", ["book", "check_eligibility"]).notNull(),
+  /** Page path the click originated from (non-PHI, e.g. "/eboo"). */
+  sourcePath: varchar("sourcePath", { length: 200 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TierEvent = typeof tierEvents.$inferSelect;
+export type InsertTierEvent = typeof tierEvents.$inferInsert;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ShieldCheck,
   Lock,
@@ -11,6 +11,10 @@ import {
   LogOut,
   Download,
   Handshake,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -165,10 +169,12 @@ function AdminPanel({ email, onLogout }: { email: string; onLogout: () => void }
           <TabsList>
             <TabsTrigger value="submissions"><FileText className="mr-1.5 h-4 w-4" /> Submissions</TabsTrigger>
             <TabsTrigger value="leads"><Users className="mr-1.5 h-4 w-4" /> Leads</TabsTrigger>
+            <TabsTrigger value="tiers"><BarChart3 className="mr-1.5 h-4 w-4" /> Tier interest</TabsTrigger>
             <TabsTrigger value="audit"><ScrollText className="mr-1.5 h-4 w-4" /> Audit log</TabsTrigger>
           </TabsList>
           <TabsContent value="submissions" className="mt-6"><SubmissionsTab /></TabsContent>
           <TabsContent value="leads" className="mt-6"><LeadsTab /></TabsContent>
+          <TabsContent value="tiers" className="mt-6"><TierStatsTab /></TabsContent>
           <TabsContent value="audit" className="mt-6"><AuditTab /></TabsContent>
         </Tabs>
       </main>
@@ -367,12 +373,37 @@ function LeadGroup({
   showSource: boolean;
 }) {
   const [status, setStatus] = useState<WorkflowStatus | "all">("all");
+  const [tier, setTier] = useState<string>("all");
+  const [tierSort, setTierSort] = useState<"none" | "asc" | "desc">("none");
   const [openId, setOpenId] = useState<string | null>(null);
   const utils = trpc.useUtils();
   const list = trpc.admin.listLeads.useQuery({
     status: status === "all" ? undefined : status,
     sourceGroup,
   });
+
+  // Distinct tier labels present in the current result set, for the filter dropdown.
+  const tierOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const r of list.data ?? []) if (r.selectedTier) set.add(r.selectedTier);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [list.data]);
+
+  // Apply tier filter + optional tier sort on the client for instant triage.
+  const rows = useMemo(() => {
+    let out = list.data ?? [];
+    if (tier === "__none__") out = out.filter((r) => !r.selectedTier);
+    else if (tier !== "all") out = out.filter((r) => r.selectedTier === tier);
+    if (tierSort !== "none") {
+      out = [...out].sort((a, b) => {
+        const av = a.selectedTier ?? "";
+        const bv = b.selectedTier ?? "";
+        const cmp = av.localeCompare(bv);
+        return tierSort === "asc" ? cmp : -cmp;
+      });
+    }
+    return out;
+  }, [list.data, tier, tierSort]);
 
   const exportCsv = trpc.admin.exportLeads.useMutation({
     onSuccess: (res) => {
@@ -383,12 +414,16 @@ function LeadGroup({
     onError: (e) => toast.error(e.message),
   });
 
+  const cycleTierSort = () =>
+    setTierSort((s) => (s === "none" ? "asc" : s === "asc" ? "desc" : "none"));
+
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <FilterSelect value={status} onChange={setStatus} />
-          <span className="text-xs text-muted-foreground">{list.data ? `${list.data.length} record(s)` : ""}</span>
+          <TierFilterSelect value={tier} options={tierOptions} onChange={setTier} />
+          <span className="text-xs text-muted-foreground">{`${rows.length} record(s)`}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="btn-press border-border" disabled={exportCsv.isPending} onClick={() => exportCsv.mutate({ status: status === "all" ? undefined : status, sourceGroup })}>
@@ -402,11 +437,13 @@ function LeadGroup({
 
       <RecordTable
         loading={list.isLoading}
-        rows={list.data ?? []}
+        rows={rows}
         emptyLabel={emptyLabel}
         onOpen={setOpenId}
         showSource={showSource}
         showTier
+        tierSort={tierSort}
+        onToggleTierSort={cycleTierSort}
       />
 
       <LeadDrawer
@@ -504,6 +541,77 @@ function AuditTab() {
   );
 }
 
+function TierStatsTab() {
+  const stats = trpc.admin.tierStats.useQuery();
+  const utils = trpc.useUtils();
+  const totals = useMemo(() => {
+    const data = stats.data ?? [];
+    return {
+      book: data.reduce((s, r) => s + r.bookClicks, 0),
+      check: data.reduce((s, r) => s + r.checkEligibilityClicks, 0),
+      all: data.reduce((s, r) => s + r.total, 0),
+    };
+  }, [stats.data]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="grid grid-cols-3 gap-3">
+          <StatPill label="Total clicks" value={totals.all} />
+          <StatPill label="Book this tier" value={totals.book} />
+          <StatPill label="Check eligibility" value={totals.check} />
+        </div>
+        <Button variant="outline" size="sm" className="btn-press" onClick={() => utils.admin.tierStats.invalidate()}>
+          <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Lightweight, anonymous interest signals — counts how often each pricing tier's “Book this tier” or
+        “Check eligibility” link was clicked. No personal data is captured; these are intent metrics, not submitted leads.
+      </p>
+      <div className="rounded-xl border border-border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tier</TableHead>
+              <TableHead>Therapy</TableHead>
+              <TableHead className="text-right">Book</TableHead>
+              <TableHead className="text-right">Check eligibility</TableHead>
+              <TableHead className="text-right">Total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {stats.isLoading && (
+              <TableRow><TableCell colSpan={5} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" /></TableCell></TableRow>
+            )}
+            {stats.data?.length === 0 && (
+              <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">No tier interest recorded yet.</TableCell></TableRow>
+            )}
+            {stats.data?.map((r) => (
+              <TableRow key={`${r.tier}-${r.treatmentInterest}`}>
+                <TableCell className="text-sm font-medium">{r.tier}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{TREATMENT_INTEREST_LABELS[r.treatmentInterest]}</TableCell>
+                <TableCell className="text-right text-sm tabular-nums">{r.bookClicks}</TableCell>
+                <TableCell className="text-right text-sm tabular-nums">{r.checkEligibilityClicks}</TableCell>
+                <TableCell className="text-right text-sm font-semibold tabular-nums">{r.total}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
+
+function StatPill({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-border bg-card/40 px-4 py-2">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="font-serif text-2xl tabular-nums">{value}</p>
+    </div>
+  );
+}
+
 /* ------------------------------- Shared UI ------------------------------ */
 
 function FilterSelect({ value, onChange }: { value: WorkflowStatus | "all"; onChange: (v: WorkflowStatus | "all") => void }) {
@@ -513,6 +621,27 @@ function FilterSelect({ value, onChange }: { value: WorkflowStatus | "all"; onCh
       <SelectContent>
         <SelectItem value="all">All statuses</SelectItem>
         {STATUSES.map((s) => <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>)}
+      </SelectContent>
+    </Select>
+  );
+}
+
+function TierFilterSelect({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="h-9 w-56"><SelectValue /></SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All tiers</SelectItem>
+        <SelectItem value="__none__">No tier selected</SelectItem>
+        {options.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
       </SelectContent>
     </Select>
   );
@@ -534,6 +663,8 @@ function RecordTable({
   onOpen,
   showSource,
   showTier = false,
+  tierSort = "none",
+  onToggleTierSort,
 }: {
   loading: boolean;
   rows: Row[];
@@ -541,6 +672,8 @@ function RecordTable({
   onOpen: (id: string) => void;
   showSource: boolean;
   showTier?: boolean;
+  tierSort?: "none" | "asc" | "desc";
+  onToggleTierSort?: () => void;
 }) {
   const colCount = 5 + (showSource ? 1 : 0) + (showTier ? 1 : 0);
   return (
@@ -550,7 +683,28 @@ function RecordTable({
           <TableRow>
             <TableHead>Reference</TableHead>
             <TableHead>Interest</TableHead>
-            {showTier && <TableHead>Tier</TableHead>}
+            {showTier && (
+              <TableHead>
+                {onToggleTierSort ? (
+                  <button
+                    type="button"
+                    onClick={onToggleTierSort}
+                    className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+                  >
+                    Tier
+                    {tierSort === "asc" ? (
+                      <ArrowUp className="h-3.5 w-3.5" />
+                    ) : tierSort === "desc" ? (
+                      <ArrowDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ArrowUpDown className="h-3.5 w-3.5 opacity-50" />
+                    )}
+                  </button>
+                ) : (
+                  "Tier"
+                )}
+              </TableHead>
+            )}
             {showSource && <TableHead>Source</TableHead>}
             <TableHead>Status</TableHead>
             <TableHead>Received</TableHead>

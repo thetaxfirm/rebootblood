@@ -22,6 +22,8 @@ export type QuizPrefillPatch = {
   addCondition?: string;
   /** A line to prepend into additionalNotes recording the chosen pricing tier. */
   notesLine?: string;
+  /** The raw tier label (for explicit display/confirmation in the UI). */
+  tierLabel?: string;
 };
 
 const VALID_INTERESTS: readonly TreatmentInterestParam[] = [
@@ -61,6 +63,7 @@ export function computeQuizPrefill(
 
   const tier = params.get("tier");
   if (tier && tier.trim()) {
+    patch.tierLabel = tier.trim();
     patch.notesLine = `${TIER_NOTE_PREFIX} ${tier.trim()}`;
   }
 

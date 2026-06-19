@@ -27,7 +27,7 @@ import {
   type QuestionnaireInput,
   type TreatmentInterest,
 } from "@shared/forms";
-import { computeQuizPrefill } from "@shared/quizPrefill";
+import { computeQuizPrefill, TIER_NOTE_PREFIX } from "@shared/quizPrefill";
 
 type FormState = {
   age: string;
@@ -126,6 +126,7 @@ export default function Eligibility() {
   const [step, setStep] = useState(0);
   const [f, setF] = useState<FormState>(INITIAL);
   const [done, setDone] = useState(false);
+  const [selectedTierLabel, setSelectedTierLabel] = useState<string>("");
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((s) => ({ ...s, [k]: v }));
   const otherRef = useRef<HTMLTextAreaElement>(null);
@@ -152,10 +153,12 @@ export default function Eligibility() {
       patch.ebo3Volume === undefined &&
       patch.treatmentInterest === undefined &&
       patch.notesLine === undefined &&
-      patch.addCondition === undefined
+      patch.addCondition === undefined &&
+      patch.tierLabel === undefined
     ) {
       return;
     }
+    if (patch.tierLabel) setSelectedTierLabel(patch.tierLabel);
     setF((s) => {
       const next = { ...s };
       if (patch.ebo3Volume && next.ebo3Volume === "") next.ebo3Volume = patch.ebo3Volume;
@@ -476,6 +479,35 @@ export default function Eligibility() {
             {step === 4 && (
               <div className="space-y-6">
                 <h2 className="text-2xl">Your details</h2>
+                {selectedTierLabel && (
+                  <div className="flex items-start justify-between gap-3 rounded-xl border border-[color:var(--gold)]/40 bg-[oklch(0.22_0.04_85)]/30 p-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">Selected option</p>
+                      <p className="mt-1 text-base font-medium text-foreground">{selectedTierLabel}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        This is carried from the pricing page. You can change your mind anytime — final pricing is confirmed with our team.
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="btn-press shrink-0 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        setSelectedTierLabel("");
+                        setF((s) => ({
+                          ...s,
+                          additionalNotes: s.additionalNotes
+                            .split("\n")
+                            .filter((line) => !line.startsWith(TIER_NOTE_PREFIX))
+                            .join("\n")
+                            .trim(),
+                        }));
+                      }}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                )}
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="fn">First name <span className="text-[color:var(--garnet)]">*</span></Label>
