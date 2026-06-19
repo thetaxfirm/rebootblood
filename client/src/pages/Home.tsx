@@ -238,7 +238,7 @@ export default function Home() {
             })}
           </div>
           <div className="mt-10 text-center">
-            <Link href="/eboo">
+            <Link href="/eboo#pricing">
               <Button variant="outline" className="btn-press border-border bg-background/40">
                 See full EBO3 pricing & packages <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
@@ -283,7 +283,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/plasmapheresis" className="mt-auto pt-7">
+                <Link href="/plasmapheresis#pricing" className="mt-auto pt-7">
                   <Button
                     variant={tier.featured ? "default" : "outline"}
                     className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}

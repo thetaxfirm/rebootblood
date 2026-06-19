@@ -143,7 +143,7 @@ export default function Plasmapheresis() {
       </section>
 
       {/* TIERS / PRICING */}
-      <section className="border-y border-border/70 bg-card/30 py-20 md:py-28">
+      <section id="pricing" className="scroll-mt-24 border-y border-border/70 bg-card/30 py-20 md:py-28">
         <div className="container">
           <div className="mx-auto max-w-2xl text-center">
             <Eyebrow tone="gold">Program Tiers</Eyebrow>
