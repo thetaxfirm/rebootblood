@@ -7,7 +7,7 @@ import ContactSection from "@/components/site/ContactSection";
 import ArticleLayout from "@/components/site/ArticleLayout";
 import NotFound from "@/pages/NotFound";
 import { ASSETS } from "@/lib/site";
-import { PILLARS, SPOKES, PUBLICATIONS, getArticle, type LearnArticle } from "@/lib/learn";
+import { PILLARS, SPOKES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
 
 function ArticleCard({ a }: { a: LearnArticle }) {
   return (
@@ -135,6 +135,14 @@ function LearnIndex() {
                   {p.authors} &middot; <span className="italic">{p.venue}</span>
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{p.summary}</p>
+                <p className="mt-4 border-t border-border/60 pt-3 text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80">
+                  Reviewed by our care team &middot;{" "}
+                  {new Date((p.lastReviewed ?? PUBLICATIONS_LAST_REVIEWED) + "T00:00:00").toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
               </a>
             ))}
           </div>

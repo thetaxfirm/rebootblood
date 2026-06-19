@@ -464,9 +464,18 @@ export const SPOKES: LearnArticle[] = [
  * education only; listing them is not an efficacy claim. Each links to the
  * original source document.
  */
+/**
+ * Date our care team last verified the citation details and framing of the
+ * publications list. Update this single constant whenever the list is reviewed;
+ * individual entries may override it via the optional `lastReviewed` field.
+ */
+export const PUBLICATIONS_LAST_REVIEWED = "2026-06-18";
+
 export type Publication = {
   title: string;
   authors: string;
+  /** ISO date (YYYY-MM-DD) this entry was last reviewed; falls back to PUBLICATIONS_LAST_REVIEWED. */
+  lastReviewed?: string;
   venue: string; // journal + year
   summary: string;
   url: string;
