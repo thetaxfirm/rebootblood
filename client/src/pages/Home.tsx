@@ -7,12 +7,13 @@ import {
   Sparkles,
   Microscope,
   HeartPulse,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import GuideCapture from "@/components/site/GuideCapture";
 import ContactSection from "@/components/site/ContactSection";
-import { ASSETS, SITE } from "@/lib/site";
+import { ASSETS, SITE, PLASMAPHERESIS_TIERS } from "@/lib/site";
 
 const HERO_CONDITIONS = [
   "Long COVID",
@@ -188,6 +189,60 @@ export default function Home() {
               href="/plasmapheresis"
             />
           </div>
+        </div>
+      </section>
+
+      {/* PLASMAPHERESIS PRICING TIERS */}
+      <section className="border-t border-border/70 bg-card/20 py-20 md:py-28">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow tone="gold">Plasmapheresis Programs</Eyebrow>
+            <h2 className="mt-3 text-4xl md:text-5xl">Choose Core or Complete</h2>
+            <p className="mt-5 text-muted-foreground">
+              Two therapeutic plasma exchange programs — start with a single foundational exchange, or commit to a
+              comprehensive multi-session protocol with an optional EBO3 add-on.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-4xl gap-7 md:grid-cols-2">
+            {PLASMAPHERESIS_TIERS.map((tier) => (
+              <div
+                key={tier.name}
+                className={`relative flex flex-col rounded-2xl border bg-card/60 p-8 ${
+                  tier.featured ? "border-[color:var(--gold)]/60" : "border-border"
+                }`}
+              >
+                {tier.featured && (
+                  <span className="absolute right-6 top-6 rounded-full border border-[color:var(--gold)]/50 bg-[color:var(--gold)]/10 px-3 py-1 text-xs font-medium text-[color:var(--gold)]">
+                    Most comprehensive
+                  </span>
+                )}
+                <h3 className="text-2xl">{tier.name}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{tier.tagline}</p>
+                <p className="mt-5 text-4xl font-medium">{tier.price}</p>
+                <ul className="mt-6 space-y-3">
+                  {tier.points.map((p) => (
+                    <li key={p} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--gold)]" />
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/plasmapheresis" className="mt-auto pt-7">
+                  <Button
+                    variant={tier.featured ? "default" : "outline"}
+                    className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}
+                  >
+                    View {tier.name} details <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+          <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-relaxed text-muted-foreground">
+            Final pricing and protocol are confirmed during your consultation and may vary based on your
+            individualized plan. See the Plasmapheresis page for full details.
+          </p>
         </div>
       </section>
 

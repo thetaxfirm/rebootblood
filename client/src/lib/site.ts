@@ -27,6 +27,45 @@ export const PARTNER_PROGRAM: { defaultRevenueSharePct: number } = {
   defaultRevenueSharePct: 30,
 };
 
+/**
+ * Plasmapheresis program tiers — single source of truth shared by the
+ * Plasmapheresis page and the Home page pricing section so prices stay in sync.
+ */
+export type PlasmaTier = {
+  name: string;
+  price: string;
+  tagline: string;
+  points: string[];
+  featured: boolean;
+};
+
+export const PLASMAPHERESIS_TIERS: PlasmaTier[] = [
+  {
+    name: "Core",
+    price: "$6,500",
+    tagline: "A foundational single-exchange program",
+    points: [
+      "Consultation & baseline labs",
+      "One therapeutic plasma exchange",
+      "In-session monitoring",
+      "Follow-up review",
+    ],
+    featured: false,
+  },
+  {
+    name: "Complete",
+    price: "$18,000",
+    tagline: "A comprehensive multi-session program",
+    points: [
+      "Full diagnostic workup",
+      "A series of plasma exchanges",
+      "Optional EBO3 add-on",
+      "Concierge follow-up & optimization",
+    ],
+    featured: true,
+  },
+];
+
 export const NAV_LINKS = [
   { label: "EBO3 / EBOO", href: "/eboo" },
   { label: "Plasmapheresis", href: "/plasmapheresis" },

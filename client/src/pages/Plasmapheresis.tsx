@@ -18,7 +18,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
-import { ASSETS } from "@/lib/site";
+import { ASSETS, PLASMAPHERESIS_TIERS } from "@/lib/site";
 
 const PATH = [
   { icon: ClipboardList, title: "Consultation & labs", body: "We review your history and goals, confirm eligibility, and draw baseline labs to establish a safe, individualized starting point." },
@@ -36,32 +36,7 @@ const BENEFITS = [
   "Pairs well with an EBO3 protocol",
 ];
 
-const TIERS = [
-  {
-    name: "Core",
-    price: "$6,500",
-    tagline: "A foundational single-exchange program",
-    points: [
-      "Consultation & baseline labs",
-      "One therapeutic plasma exchange",
-      "In-session monitoring",
-      "Follow-up review",
-    ],
-    featured: false,
-  },
-  {
-    name: "Complete",
-    price: "$18,000",
-    tagline: "A comprehensive multi-session program",
-    points: [
-      "Full diagnostic workup",
-      "A series of plasma exchanges",
-      "Optional EBO3 add-on",
-      "Concierge follow-up & optimization",
-    ],
-    featured: true,
-  },
-];
+const TIERS = PLASMAPHERESIS_TIERS;
 
 const FAQS = [
   { q: "What is plasmapheresis / therapeutic plasma exchange?", a: "Plasmapheresis (therapeutic plasma exchange) is a procedure in which blood is drawn and separated into plasma and cells. The plasma — which carries inflammatory mediators, autoantibodies, and accumulated toxins — is removed and replaced with a replacement fluid such as albumin or saline, while your blood cells are returned to you." },
