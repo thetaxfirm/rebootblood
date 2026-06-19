@@ -66,6 +66,28 @@ export const PLASMAPHERESIS_TIERS: PlasmaTier[] = [
   },
 ];
 
+/**
+ * EBO3 / EBOO session pricing by blood-volume tier — single source of truth
+ * shared by the EBO3 page (full pricing grid) and the Home page summary block.
+ */
+export type Ebo3VolumeKey = "3L" | "4.5L" | "6L";
+
+export type Ebo3VolumeTier = {
+  key: Ebo3VolumeKey;
+  label: string;
+  blurb: string;
+  duration: string;
+  single: number;
+  pkg3: number;
+  pkg6: number;
+};
+
+export const EBO3_VOLUME_TIERS: Ebo3VolumeTier[] = [
+  { key: "3L", label: "3 Liters", blurb: "Entry protocol — a focused systemic reset.", duration: "~45–60 min", single: 1000, pkg3: 2700, pkg6: 4500 },
+  { key: "4.5L", label: "4.5 Liters", blurb: "Our most popular balance of depth and time.", duration: "~60–90 min", single: 1250, pkg3: 3300, pkg6: 5500 },
+  { key: "6L", label: "6 Liters", blurb: "Maximum whole-blood volume treated per session.", duration: "~90–120 min", single: 1500, pkg3: 3750, pkg6: 6600 },
+];
+
 export const NAV_LINKS = [
   { label: "EBO3 / EBOO", href: "/eboo" },
   { label: "Plasmapheresis", href: "/plasmapheresis" },

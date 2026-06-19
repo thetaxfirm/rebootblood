@@ -8,12 +8,15 @@ import {
   Microscope,
   HeartPulse,
   CheckCircle2,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import GuideCapture from "@/components/site/GuideCapture";
 import ContactSection from "@/components/site/ContactSection";
-import { ASSETS, SITE, PLASMAPHERESIS_TIERS } from "@/lib/site";
+import { ASSETS, SITE, PLASMAPHERESIS_TIERS, EBO3_VOLUME_TIERS } from "@/lib/site";
+
+const money = (n: number) => `$${n.toLocaleString()}`;
 
 const HERO_CONDITIONS = [
   "Long COVID",
@@ -188,6 +191,58 @@ export default function Home() {
               ]}
               href="/plasmapheresis"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* EBO3 PRICING BLOCK */}
+      <section className="border-t border-border/70 py-20 md:py-28">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow tone="garnet">EBO3 / EBOO Sessions</Eyebrow>
+            <h2 className="mt-3 text-4xl md:text-5xl">Transparent EBO3 pricing</h2>
+            <p className="mt-5 text-muted-foreground">
+              Pricing scales with how much of your blood volume you choose to treat per session. Multi-session
+              packages lower the per-session cost — see the full breakdown on the EBO3 / EBOO page.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-14 grid max-w-5xl gap-7 md:grid-cols-3">
+            {EBO3_VOLUME_TIERS.map((vol) => {
+              const featured = vol.key === "4.5L";
+              return (
+                <div
+                  key={vol.key}
+                  className={`relative flex flex-col rounded-2xl border bg-card/60 p-8 ${
+                    featured ? "border-[color:var(--garnet)]/60" : "border-border"
+                  }`}
+                >
+                  {featured && (
+                    <span className="absolute right-6 top-6 rounded-full border border-[color:var(--garnet)]/50 bg-[color:var(--garnet)]/10 px-3 py-1 text-xs font-medium text-[color:var(--garnet)]">
+                      Most popular
+                    </span>
+                  )}
+                  <h3 className="text-2xl">{vol.label}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{vol.blurb}</p>
+                  <p className="mt-5 text-sm text-muted-foreground">From</p>
+                  <p className="font-serif text-4xl tabular-nums">{money(vol.single)}</p>
+                  <p className="text-sm text-muted-foreground">per session</p>
+                  <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5 text-[color:var(--gold)]" /> {vol.duration} per session
+                  </p>
+                  <p className="mt-4 rounded-lg border border-border bg-background/40 px-3 py-2 text-xs text-muted-foreground">
+                    Packages: 3 for {money(vol.pkg3)} &middot; 6 for {money(vol.pkg6)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-10 text-center">
+            <Link href="/eboo">
+              <Button variant="outline" className="btn-press border-border bg-background/40">
+                See full EBO3 pricing & packages <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

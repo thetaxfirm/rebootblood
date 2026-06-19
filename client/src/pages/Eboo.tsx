@@ -29,7 +29,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
-import { ASSETS, SITE } from "@/lib/site";
+import { ASSETS, SITE, EBO3_VOLUME_TIERS } from "@/lib/site";
 
 const STEPS = [
   {
@@ -111,21 +111,7 @@ const CONDITIONS = [
   "Athletic recovery & performance",
 ];
 
-type VolumeKey = "3L" | "4.5L" | "6L";
-
-const VOLUMES: {
-  key: VolumeKey;
-  label: string;
-  blurb: string;
-  duration: string;
-  single: number;
-  pkg3: number;
-  pkg6: number;
-}[] = [
-  { key: "3L", label: "3 Liters", blurb: "Entry protocol — a focused systemic reset.", duration: "~45–60 min", single: 1000, pkg3: 2700, pkg6: 4500 },
-  { key: "4.5L", label: "4.5 Liters", blurb: "Our most popular balance of depth and time.", duration: "~60–90 min", single: 1250, pkg3: 3300, pkg6: 5500 },
-  { key: "6L", label: "6 Liters", blurb: "Maximum whole-blood volume treated per session.", duration: "~90–120 min", single: 1500, pkg3: 3750, pkg6: 6600 },
-];
+const VOLUMES = EBO3_VOLUME_TIERS;
 
 const money = (n: number) => `$${n.toLocaleString()}`;
 
