@@ -64,6 +64,18 @@ const SAFETY_SUITE = [
   { icon: Wind, label: "Air / bubble sensor" },
 ];
 
+const BENEFIT_DETAILS = [
+  { area: "Cardiovascular & circulation", body: "Cleaner oxygen delivery, reduced oxidative load, and improved endothelial function may ease the burden on organs that depend on healthy circulation." },
+  { area: "Blood pressure & vascular tone", body: "Better microcirculation and endothelial response may support a healthier baseline blood pressure." },
+  { area: "Long COVID & post-viral", body: "Aims to address the microclots, microvascular inflammation, and circulating residue associated with lingering post-COVID fatigue, brain fog, and breathlessness." },
+  { area: "Inflammation", body: "Designed to help recalibrate the inflammatory response without immunosuppression." },
+  { area: "Energy & cognition", body: "As inflammatory drag falls, mitochondrial output may rise — and cognition often tends to follow." },
+  { area: "Autoimmune balance", body: "Intended to help interrupt the self-attacking cycle and recalibrate immune memory, without broad suppression." },
+  { area: "Chronic infection & immune load", body: "Integrated UV exposure may help inactivate circulating pathogens while immune capacity rebuilds and load drops." },
+  { area: "Detox & toxin clearance", body: "Supports the clearance of heavy metals, mycotoxins, and oxidized compounds through controlled oxidation." },
+  { area: "Longevity & healthy aging", body: "May reduce senescent burden and sharpen repair signaling, areas reflected in biological-age markers." },
+];
+
 const BENEFITS = [
   "Modulate systemic inflammation",
   "Support and balance immune response",
@@ -265,6 +277,34 @@ export default function Eboo() {
                 </span>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* POTENTIAL BENEFITS BY AREA */}
+      <section className="border-t border-border/70 bg-card/30 py-20 md:py-28">
+        <div className="container">
+          <div className="max-w-2xl">
+            <Eyebrow tone="gold">Potential Benefits by Area</Eyebrow>
+            <h2 className="mt-3 text-3xl md:text-4xl">Where EBO3 may help</h2>
+            <p className="mt-4 text-muted-foreground">
+              EBO3 works in the bloodstream itself. Below are the areas of interest people most often explore,
+              with what the protocol is designed to address in each. Provided for educational purposes only —
+              not a claim of treatment or cure, and individual responses vary.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {BENEFIT_DETAILS.map((b, i) => (
+              <div key={b.area} className="rounded-2xl border border-border bg-background/50 p-6">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[color:var(--gold)]/40 font-serif text-sm text-[color:var(--gold)]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="font-medium leading-tight">{b.area}</p>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.body}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
