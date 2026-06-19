@@ -76,6 +76,8 @@ export const leads = mysqlTable("leads", {
   treatmentInterest: mysqlEnum("treatmentInterest", ["eboo", "plasmapheresis", "both", "unsure"])
     .default("unsure")
     .notNull(),
+  /** Pricing tier the lead clicked "Book this tier" from (non-PHI, for routing/triage). */
+  selectedTier: varchar("selectedTier", { length: 120 }),
   status: mysqlEnum("status", ["new", "reviewing", "contacted", "scheduled", "closed"])
     .default("new")
     .notNull(),

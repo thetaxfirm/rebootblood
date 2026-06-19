@@ -97,3 +97,11 @@
 - [x] Add EBO3 pricing block on Home (3 volume tiers w/ from-price, duration, packages; shared EBO3_VOLUME_TIERS in site.ts consumed by Home + Eboo)
 - [x] Deep-link Home pricing blocks to matching sections (/eboo#pricing, /plasmapheresis#pricing) via shared scroll-on-hash in SiteLayout + id="pricing" anchors
 - [x] "Book this tier" buttons in all pricing sections (Home EBO3 + plasmapheresis, Eboo, Plasmapheresis) deep-linking to /#contact with ?interest= & ?tier= prefilled; ContactSection reads params synchronously to pre-select dropdown + prefill message + show selected chip
+
+## Enhancement: tier persistence + UX polish + quiz pass-through (requested)
+- [x] Persist selected tier into lead record (selectedTier in leadSchema + plaintext column) and show it in admin Leads list, detail, CSV export, and owner notification
+- [x] Add subtle highlight + scroll-focus on the prefilled contact dropdown when arriving via a "Book this tier" link
+- [x] Carry tier/volume through the Eligibility Quiz funnel (quiz reads ?interest=&tier=&volume=; tier persisted into submission notes)
+- [x] Add real quiz entry points: "Check eligibility for this tier" links on every EBO3 + plasmapheresis pricing card -> /eligibility?interest=&volume=&tier=
+- [x] Extract quiz prefill into pure shared/quizPrefill.ts helper (fills only empty fields, explicit interest overrides volume-implied)
+- [x] Added vitest coverage: selectedTier persists on lead + surfaces to admin; quizPrefill helper pass-through (25 tests pass)

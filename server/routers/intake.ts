@@ -84,11 +84,13 @@ export const intakeRouter = router({
       submittedAt: Date.now(),
     };
 
+    const selectedTier = (input.selectedTier || "").trim();
     await insertLead({
       publicId,
       encryptedPayload: encryptJson(payload),
       source: input.source || "lead_form",
       treatmentInterest: input.treatmentInterest,
+      selectedTier: selectedTier || null,
       consentContact: input.consentContact,
       submittedIpHash: requestIpHash(ctx),
     });
@@ -103,7 +105,7 @@ export const intakeRouter = router({
     // HARD REQUIREMENT: owner notification on every lead submission.
     const delivered = await notifyOwner({
       title: "New lead — Talk to Our Team",
-      content: `A new lead was captured (ref ${publicId}) with interest in ${TREATMENT_INTEREST_LABELS[input.treatmentInterest]}. Open the admin dashboard to view contact details securely.`,
+      content: `A new lead was captured (ref ${publicId}) with interest in ${TREATMENT_INTEREST_LABELS[input.treatmentInterest]}${selectedTier ? ` (tier: ${selectedTier})` : ""}. Open the admin dashboard to view contact details securely.`,
     }).catch(() => false);
 
     return { success: true, reference: publicId, notified: !!delivered } as const;
@@ -181,6 +183,7 @@ export const adminRouter = router({
       treatmentInterest: r.treatmentInterest,
       status: r.status,
       source: r.source,
+      selectedTier: r.selectedTier ?? "",
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
     }));
@@ -202,6 +205,7 @@ export const adminRouter = router({
         treatmentInterest: row.treatmentInterest,
         status: row.status,
         source: row.source,
+        selectedTier: row.selectedTier ?? "",
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,
         payload,
@@ -290,6 +294,7 @@ export const adminRouter = router({
           status: r.status,
           source: r.source,
           interest: TREATMENT_INTEREST_LABELS[r.treatmentInterest],
+          selectedTier: r.selectedTier ?? "",
           name: p.name,
           email: p.email,
           phone: p.phone ?? "",

@@ -132,6 +132,50 @@ describe("intake — public submissions", () => {
     expect(store.leads[0].encryptedPayload).not.toContain("john@example.com");
   });
 
+  it("persists the selected pricing tier on the lead and exposes it to admins", async () => {
+    const anon = appRouter.createCaller(makeCtx(null));
+    const res = await anon.intake.submitLead({
+      name: "Tier Tester",
+      email: "tier@example.com",
+      phone: "5550001111",
+      treatmentInterest: "eboo",
+      message: "",
+      source: "request_appointment",
+      selectedTier: "EBO3 4.5L — Package of 3",
+      consentContact: true,
+    });
+    expect(res.success).toBe(true);
+    // Plaintext, non-PHI routing column is stored on the lead row.
+    expect(store.leads[0].selectedTier).toBe("EBO3 4.5L — Package of 3");
+    // The owner notification mentions the tier for fast triage.
+    expect(notifyOwnerMock).toHaveBeenCalledTimes(1);
+    const notifyArg = notifyOwnerMock.mock.calls[0][0] as { content: string };
+    expect(notifyArg.content).toContain("EBO3 4.5L — Package of 3");
+
+    // Admin list surfaces the tier as non-PHI metadata.
+    const admin = appRouter.createCaller(makeCtx("admin"));
+    const list = await admin.admin.listLeads({});
+    expect(list[0]).toHaveProperty("selectedTier", "EBO3 4.5L — Package of 3");
+  });
+
+  it("defaults selectedTier to empty when no tier is provided", async () => {
+    const anon = appRouter.createCaller(makeCtx(null));
+    await anon.intake.submitLead({
+      name: "No Tier",
+      email: "notier@example.com",
+      phone: "5552223333",
+      treatmentInterest: "unsure",
+      message: "",
+      source: "lead_form",
+      consentContact: true,
+    });
+    // null in DB, normalized to "" in the admin list mapping.
+    expect(store.leads[0].selectedTier ?? null).toBeNull();
+    const admin = appRouter.createCaller(makeCtx("admin"));
+    const list = await admin.admin.listLeads({});
+    expect(list[0].selectedTier).toBe("");
+  });
+
   it("rejects a questionnaire missing explicit consent", async () => {
     const caller = appRouter.createCaller(makeCtx(null));
     await expect(

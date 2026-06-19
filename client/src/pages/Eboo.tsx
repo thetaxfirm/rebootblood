@@ -513,6 +513,12 @@ export default function Eboo() {
                     Book this tier
                   </Button>
                 </Link>
+                <Link
+                  href={`/eligibility?interest=eboo&volume=${encodeURIComponent(vol.key)}&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}`}
+                  className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"
+                >
+                  Check eligibility for this tier
+                </Link>
               </div>
             ))}
           </div>

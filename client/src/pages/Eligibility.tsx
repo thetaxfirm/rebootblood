@@ -27,6 +27,7 @@ import {
   type QuestionnaireInput,
   type TreatmentInterest,
 } from "@shared/forms";
+import { computeQuizPrefill } from "@shared/quizPrefill";
 
 type FormState = {
   age: string;
@@ -142,22 +143,34 @@ export default function Eligibility() {
     }
   };
 
-  // Prefill EBO3 volume + treatment interest from the EBO3 page (?volume=3L|4.5L|6L).
+  // Prefill the quiz from inbound links (Book this tier / Check eligibility /
+  // home hero). Logic lives in a pure, unit-tested helper; we only fill empty
+  // fields here so we never clobber input the visitor has already entered.
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get("volume");
-    if (v === "3L" || v === "4.5L" || v === "6L") {
-      setF((s) => ({
-        ...s,
-        ebo3Volume: v,
-        treatmentInterest: s.treatmentInterest === "" ? "eboo" : s.treatmentInterest,
-      }));
+    const patch = computeQuizPrefill(window.location.search, CONDITION_OPTIONS as readonly string[]);
+    if (
+      patch.ebo3Volume === undefined &&
+      patch.treatmentInterest === undefined &&
+      patch.notesLine === undefined &&
+      patch.addCondition === undefined
+    ) {
+      return;
     }
-    // Prefill the primary condition from the home hero selector (?condition=...).
-    const cond = params.get("condition");
-    if (cond && (CONDITION_OPTIONS as readonly string[]).includes(cond)) {
-      setF((s) => (s.conditions.includes(cond) ? s : { ...s, conditions: [...s.conditions, cond] }));
-    }
+    setF((s) => {
+      const next = { ...s };
+      if (patch.ebo3Volume && next.ebo3Volume === "") next.ebo3Volume = patch.ebo3Volume;
+      if (patch.treatmentInterest && next.treatmentInterest === "")
+        next.treatmentInterest = patch.treatmentInterest;
+      if (patch.notesLine && !next.additionalNotes.includes(patch.notesLine)) {
+        next.additionalNotes = next.additionalNotes
+          ? `${patch.notesLine}\n${next.additionalNotes}`
+          : patch.notesLine;
+      }
+      if (patch.addCondition && !next.conditions.includes(patch.addCondition)) {
+        next.conditions = [...next.conditions, patch.addCondition];
+      }
+      return next;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 

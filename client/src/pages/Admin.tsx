@@ -228,6 +228,7 @@ function SubmissionsTab() {
         emptyLabel="No questionnaire submissions yet."
         onOpen={setOpenId}
         showSource={false}
+        showTier={false}
       />
 
       <SubmissionDrawer
@@ -405,6 +406,7 @@ function LeadGroup({
         emptyLabel={emptyLabel}
         onOpen={setOpenId}
         showSource={showSource}
+        showTier
       />
 
       <LeadDrawer
@@ -453,6 +455,7 @@ function LeadDrawer({ publicId, onClose, onChanged }: { publicId: string | null;
             {p.phone && <Field label="Phone">{p.phone}</Field>}
             <Field label="Interest">{TREATMENT_INTEREST_LABELS[detail.data.treatmentInterest]}</Field>
             <Field label="Source">{detail.data.source}</Field>
+            {detail.data.selectedTier && <Field label="Selected tier">{detail.data.selectedTier}</Field>}
             {p.message && <Field label="Message">{p.message}</Field>}
             <Field label="Consent to contact">{p.consentContact ? "Yes" : "No"}</Field>
             <Field label="Submitted">{fmt(p.submittedAt)}</Field>
@@ -520,6 +523,7 @@ type Row = {
   treatmentInterest: keyof typeof TREATMENT_INTEREST_LABELS;
   status: WorkflowStatus;
   source?: string;
+  selectedTier?: string;
   createdAt: Date | string | number;
 };
 
@@ -529,13 +533,16 @@ function RecordTable({
   emptyLabel,
   onOpen,
   showSource,
+  showTier = false,
 }: {
   loading: boolean;
   rows: Row[];
   emptyLabel: string;
   onOpen: (id: string) => void;
   showSource: boolean;
+  showTier?: boolean;
 }) {
+  const colCount = 5 + (showSource ? 1 : 0) + (showTier ? 1 : 0);
   return (
     <div className="rounded-xl border border-border">
       <Table>
@@ -543,6 +550,7 @@ function RecordTable({
           <TableRow>
             <TableHead>Reference</TableHead>
             <TableHead>Interest</TableHead>
+            {showTier && <TableHead>Tier</TableHead>}
             {showSource && <TableHead>Source</TableHead>}
             <TableHead>Status</TableHead>
             <TableHead>Received</TableHead>
@@ -551,15 +559,16 @@ function RecordTable({
         </TableHeader>
         <TableBody>
           {loading && (
-            <TableRow><TableCell colSpan={showSource ? 6 : 5} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" /></TableCell></TableRow>
+            <TableRow><TableCell colSpan={colCount} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" /></TableCell></TableRow>
           )}
           {!loading && rows.length === 0 && (
-            <TableRow><TableCell colSpan={showSource ? 6 : 5} className="py-10 text-center text-muted-foreground">{emptyLabel}</TableCell></TableRow>
+            <TableRow><TableCell colSpan={colCount} className="py-10 text-center text-muted-foreground">{emptyLabel}</TableCell></TableRow>
           )}
           {rows.map((r) => (
             <TableRow key={r.publicId}>
               <TableCell className="font-mono text-xs">{r.publicId}</TableCell>
               <TableCell className="text-sm">{TREATMENT_INTEREST_LABELS[r.treatmentInterest]}</TableCell>
+              {showTier && <TableCell className="text-xs text-muted-foreground">{r.selectedTier || "—"}</TableCell>}
               {showSource && <TableCell className="text-xs text-muted-foreground">{r.source}</TableCell>}
               <TableCell><StatusBadge status={r.status} /></TableCell>
               <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{fmt(r.createdAt)}</TableCell>

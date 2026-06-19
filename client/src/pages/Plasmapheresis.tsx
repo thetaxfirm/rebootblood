@@ -186,6 +186,12 @@ export default function Plasmapheresis() {
                     Book this tier
                   </Button>
                 </Link>
+                <Link
+                  href={`/eligibility?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}`}
+                  className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"
+                >
+                  Check eligibility for this tier
+                </Link>
               </div>
             ))}
           </div>

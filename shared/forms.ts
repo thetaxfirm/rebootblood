@@ -128,6 +128,8 @@ export const leadSchema = z.object({
   treatmentInterest: treatmentInterestEnum.default("unsure"),
   message: z.string().max(2000).optional().default(""),
   source: z.string().max(64).optional().default("lead_form"),
+  /** Pricing tier the lead clicked "Book this tier" from (optional, non-PHI). */
+  selectedTier: z.string().max(120).optional().default(""),
   consentContact: z.literal(true, {
     message: "You must consent to be contacted.",
   }),

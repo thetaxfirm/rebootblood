@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearch } from "wouter";
 import { Phone, Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -53,6 +53,8 @@ export default function ContactSection() {
   const [consent, setConsent] = useState(false);
   const [done, setDone] = useState(false);
   const [prefilledTier, setPrefilledTier] = useState<string | null>(initial.tier);
+  const [highlight, setHighlight] = useState(false);
+  const selectWrapRef = useRef<HTMLDivElement | null>(null);
 
   // Also react to in-app navigations that change the query string without a
   // full remount (e.g. clicking a "Book this tier" link while already on the page).
@@ -64,6 +66,29 @@ export default function ContactSection() {
       setMessage((prev) => (prev ? prev : `I'm interested in: ${tier}.`));
     }
   }, [search]);
+
+  // When arriving via a "Book this tier" link (a tier is prefilled), gently
+  // scroll the treatment dropdown into view and pulse a highlight ring so the
+  // user notices it was pre-selected for them.
+  useEffect(() => {
+    if (!prefilledTier) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const scrollTimer = window.setTimeout(() => {
+      selectWrapRef.current?.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+        block: "center",
+      });
+    }, 350);
+    setHighlight(true);
+    const offTimer = window.setTimeout(() => setHighlight(false), 2200);
+    return () => {
+      window.clearTimeout(scrollTimer);
+      window.clearTimeout(offTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefilledTier, search]);
 
   const submit = trpc.intake.submitLead.useMutation({
     onSuccess: () => {
@@ -86,6 +111,7 @@ export default function ContactSection() {
       treatmentInterest: interest,
       message,
       source: "request_appointment",
+      selectedTier: prefilledTier ?? "",
       consentContact: true,
     });
   };
@@ -157,10 +183,16 @@ export default function ContactSection() {
                   </span>
                 </div>
               )}
-              <div className="space-y-2">
+              <div className="space-y-2" ref={selectWrapRef}>
                 <Label>Treatment of interest</Label>
                 <Select value={interest} onValueChange={(v) => setInterest(v as TreatmentInterest)}>
-                  <SelectTrigger>
+                  <SelectTrigger
+                    className={
+                      highlight
+                        ? "ring-2 ring-[color:var(--gold)] ring-offset-2 ring-offset-card transition-shadow duration-300"
+                        : "transition-shadow duration-300"
+                    }
+                  >
                     <SelectValue placeholder="Select">{INTEREST_LABELS[interest]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
