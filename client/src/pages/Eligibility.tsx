@@ -21,6 +21,7 @@ import { trpc } from "@/lib/trpc";
 import { SITE } from "@/lib/site";
 import {
   CONDITION_OPTIONS,
+  CONDITION_DESCRIPTIONS,
   SYMPTOM_OPTIONS,
   GOAL_OPTIONS,
   type QuestionnaireInput,
@@ -329,15 +330,24 @@ export default function Eligibility() {
             {/* STEP 2 — CONDITIONS */}
             {step === 1 && (
               <div className="space-y-5">
-                <h2 className="text-2xl">Conditions</h2>
+                <h2 className="text-2xl">What are you treating?</h2>
                 <p className="text-sm text-muted-foreground">Select any that apply. This helps our team understand your situation — it is not a diagnosis.</p>
                 <div className="grid gap-2.5 sm:grid-cols-2">
-                  {CONDITION_OPTIONS.map((c) => (
-                    <label key={c} className={`flex items-start gap-3 rounded-lg border p-3.5 text-sm transition-colors ${f.conditions.includes(c) ? "border-[color:var(--garnet)] bg-[oklch(0.22_0.04_25)]/40" : "border-border bg-background/40"}`}>
-                      <Checkbox checked={f.conditions.includes(c)} onCheckedChange={() => set("conditions", toggle(f.conditions, c))} className="mt-0.5" />
-                      <span className="text-muted-foreground">{c}</span>
-                    </label>
-                  ))}
+                  {CONDITION_OPTIONS.map((c) => {
+                    const selected = f.conditions.includes(c);
+                    return (
+                      <label
+                        key={c}
+                        className={`flex items-start gap-3 rounded-lg border p-3.5 transition-colors ${selected ? "border-[color:var(--garnet)] bg-[oklch(0.22_0.04_25)]/40" : "border-border bg-background/40"}`}
+                      >
+                        <Checkbox checked={selected} onCheckedChange={() => set("conditions", toggle(f.conditions, c))} className="mt-0.5" />
+                        <span>
+                          <span className="block text-sm font-medium text-foreground">{c}</span>
+                          <span className="block text-xs text-muted-foreground">{CONDITION_DESCRIPTIONS[c]}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cond-other">Anything else?</Label>

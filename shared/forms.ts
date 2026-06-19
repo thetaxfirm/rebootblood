@@ -16,21 +16,29 @@ export type Ebo3Volume = z.infer<typeof ebo3VolumeEnum>;
 export const workflowStatusEnum = z.enum(["new", "reviewing", "contacted", "scheduled", "closed"]);
 export type WorkflowStatus = z.infer<typeof workflowStatusEnum>;
 
-/** Conditions a patient can select interest/history in (non-diagnostic checklist). */
+/** "What are you treating?" options shown as cards with a short descriptor (non-diagnostic checklist). */
 export const CONDITION_OPTIONS = [
-  "Chronic fatigue / low energy",
-  "Chronic inflammation",
-  "Autoimmune condition",
-  "Lyme disease / chronic infection",
-  "Long COVID / post-viral syndrome",
-  "Cardiovascular / circulation concerns",
-  "High cholesterol / lipids",
-  "Cognitive concerns (brain fog, memory)",
-  "Mold / heavy metal / toxin exposure",
-  "Neurological condition",
-  "Longevity / healthy aging optimization",
-  "Athletic recovery / performance",
+  "Long COVID",
+  "Lyme Disease",
+  "Autoimmune",
+  "Cardiovascular",
+  "Chronic Fatigue",
+  "Mold / Toxin",
+  "Longevity",
+  "Something else",
 ] as const;
+
+/** Short descriptors paired with each condition option for the card UI. */
+export const CONDITION_DESCRIPTIONS: Record<string, string> = {
+  "Long COVID": "Fatigue, brain fog",
+  "Lyme Disease": "Tick-borne load",
+  "Autoimmune": "Immune misfire",
+  "Cardiovascular": "BP, circulation",
+  "Chronic Fatigue": "Energy, brain fog",
+  "Mold / Toxin": "Mycotoxins, metals",
+  "Longevity": "Performance, aging",
+  "Something else": "Tell us in notes",
+};
 
 export const SYMPTOM_OPTIONS = [
   "Fatigue",
