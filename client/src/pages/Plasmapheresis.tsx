@@ -39,7 +39,7 @@ const BENEFITS = [
 const TIERS = [
   {
     name: "Core",
-    price: "$6,000",
+    price: "$6,500",
     tagline: "A foundational single-exchange program",
     points: [
       "Consultation & baseline labs",
