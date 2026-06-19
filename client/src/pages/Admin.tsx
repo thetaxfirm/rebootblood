@@ -289,6 +289,15 @@ function SubmissionDrawer({
               </Select>
             </div>
 
+            {(p.conditions.length > 0 || p.conditionsOther) && (
+              <div className="rounded-lg border border-[color:var(--garnet)]/40 bg-[oklch(0.22_0.04_25)]/40 p-4">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Primary concern</p>
+                <p className="mt-1 text-base font-medium text-foreground">
+                  {[...p.conditions, p.conditionsOther].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+            )}
+
             <Field label="Name">{p.firstName} {p.lastName}</Field>
             <Field label="Email">{p.email}</Field>
             <Field label="Phone">{p.phone}</Field>

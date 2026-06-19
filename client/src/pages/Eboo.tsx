@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import {
   ArrowRight,
   Droplets,
+  Filter,
   Sun,
   RefreshCw,
   ShieldCheck,
@@ -33,18 +34,28 @@ import { ASSETS, SITE } from "@/lib/site";
 const STEPS = [
   {
     icon: Droplets,
-    title: "Draw & circulate",
-    body: "Using two IV lines, blood is gently drawn and routed through a sterile, closed-loop circuit — a dialysis-style process that keeps blood moving continuously and safely.",
+    title: "Draw",
+    body: "Using two IV lines placed by your clinician, blood is gently drawn into a sterile, single-use closed-loop circuit. The flow is continuous and controlled — no rush, no improvisation.",
+  },
+  {
+    icon: Filter,
+    title: "Filter",
+    body: "Blood passes through a PES H200 high-flux dialyzer membrane that filters inflammatory debris, oxidized lipids, and circulating waste — the core whole-blood filtration stage of the protocol.",
+  },
+  {
+    icon: Wind,
+    title: "Oxygenate & ozonate",
+    body: "A precision oxygen-ozone exchange charges the blood across an adjustable 1–35 gamma range, designed to support cellular respiration and oxygen delivery.",
   },
   {
     icon: Sun,
-    title: "Filter, oxygenate, ozonate & UVBI",
-    body: "Blood passes through a PES H200 high-flux dialyzer where it is oxygenated and ozonated, then through a 5-lamp UVBI light chamber for integrated ultraviolet exposure.",
+    title: "UVBI cycle",
+    body: "The flow then passes through a 5-lamp UVBI light chamber, where ultraviolet blood irradiation is applied for integrated photo-oxidative exposure within the same closed loop.",
   },
   {
     icon: RefreshCw,
-    title: "Return purified blood",
-    body: "The treated, oxygen-rich blood is continuously returned to your body. A typical EBO3 session takes about 45–120 minutes depending on whether you want to treat 3L, 4.5L or 6L of your blood treated, under monitoring throughout.",
+    title: "Return",
+    body: "The treated, oxygen-rich blood is continuously returned to your body. A typical EBO3 session runs about 45–120 minutes depending on whether you treat 3L, 4.5L, or 6L, under continuous monitoring throughout.",
   },
 ];
 
@@ -185,12 +196,13 @@ export default function Eboo() {
         <div className="container">
           <div className="max-w-2xl">
             <Eyebrow>How It Works</Eyebrow>
-            <h2 className="mt-3 text-4xl md:text-5xl">Three continuous steps</h2>
+            <h2 className="mt-3 text-4xl md:text-5xl">Inside the loop — five continuous steps</h2>
             <p className="mt-4 text-muted-foreground">
-              EBO3 runs as a closed, continuous loop — your blood is treated and returned without interruption.
+              EBO3 runs as a sealed, single-use closed loop. From line to line the cycle runs roughly 45–120 minutes
+              under continuous clinical monitoring — your blood is drawn, treated, and returned without interruption.
             </p>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {STEPS.map((s, i) => (
               <div key={s.title} className="relative rounded-2xl border border-border bg-card/60 p-7">
                 <span className="font-serif text-5xl text-[color:var(--garnet)]/40">0{i + 1}</span>
@@ -305,6 +317,19 @@ export default function Eboo() {
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{b.body}</p>
               </div>
             ))}
+          </div>
+          <div className="mt-8 rounded-2xl border border-border bg-background/50 p-6">
+            <p className="text-sm font-medium text-foreground">How the mechanism maps to these benefits</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Each potential benefit traces back to the three things EBO3 does to your blood outside the body.
+              <strong className="text-foreground/90"> Filtration</strong> through the H200 high-flux membrane removes
+              inflammatory debris, oxidized lipids, and circulating waste — the basis for the detox, inflammation,
+              and cardiovascular effects. <strong className="text-foreground/90">Ozonation &amp; oxygenation</strong>
+              charge red blood cells with reactive oxygen, supporting microcirculation, mitochondrial energy, and
+              cognition. <strong className="text-foreground/90">UVBI</strong> exposure in the 5-lamp chamber helps
+              inactivate circulating pathogens, supporting immune and post-viral recovery. Provided for educational
+              purposes only; individual responses vary.
+            </p>
           </div>
         </div>
       </section>

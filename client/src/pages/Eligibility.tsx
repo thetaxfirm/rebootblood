@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, ShieldCheck, Lock } from "lucide-react";
 import { toast } from "sonner";
@@ -127,6 +127,20 @@ export default function Eligibility() {
   const [done, setDone] = useState(false);
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((s) => ({ ...s, [k]: v }));
+  const otherRef = useRef<HTMLTextAreaElement>(null);
+
+  // Toggle a condition; when "Something else" is newly selected, reveal + focus the inline
+  // explanation field right on this step so the patient can explain immediately.
+  const toggleCondition = (c: string) => {
+    const willSelect = !f.conditions.includes(c);
+    setF((s) => ({ ...s, conditions: toggle(s.conditions, c) }));
+    if (c === "Something else" && willSelect) {
+      setTimeout(() => {
+        otherRef.current?.focus();
+        otherRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    }
+  };
 
   // Prefill EBO3 volume + treatment interest from the EBO3 page (?volume=3L|4.5L|6L).
   useEffect(() => {
@@ -138,6 +152,11 @@ export default function Eligibility() {
         ebo3Volume: v,
         treatmentInterest: s.treatmentInterest === "" ? "eboo" : s.treatmentInterest,
       }));
+    }
+    // Prefill the primary condition from the home hero selector (?condition=...).
+    const cond = params.get("condition");
+    if (cond && (CONDITION_OPTIONS as readonly string[]).includes(cond)) {
+      setF((s) => (s.conditions.includes(cond) ? s : { ...s, conditions: [...s.conditions, cond] }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
@@ -340,7 +359,7 @@ export default function Eligibility() {
                         key={c}
                         className={`flex items-start gap-3 rounded-lg border p-3.5 transition-colors ${selected ? "border-[color:var(--garnet)] bg-[oklch(0.22_0.04_25)]/40" : "border-border bg-background/40"}`}
                       >
-                        <Checkbox checked={selected} onCheckedChange={() => set("conditions", toggle(f.conditions, c))} className="mt-0.5" />
+                        <Checkbox checked={selected} onCheckedChange={() => toggleCondition(c)} className="mt-0.5" />
                         <span>
                           <span className="block text-sm font-medium text-foreground">{c}</span>
                           <span className="block text-xs text-muted-foreground">{CONDITION_DESCRIPTIONS[c]}</span>
@@ -350,8 +369,21 @@ export default function Eligibility() {
                   })}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cond-other">Anything else?</Label>
-                  <Textarea id="cond-other" rows={2} value={f.conditionsOther} onChange={(e) => set("conditionsOther", e.target.value)} placeholder="Other conditions or context (optional)." />
+                  <Label htmlFor="cond-other">
+                    {f.conditions.includes("Something else")
+                      ? "Please tell us what you're hoping to treat"
+                      : "Anything else?"}
+                    {f.conditions.includes("Something else") && <span className="text-[color:var(--garnet)]"> *</span>}
+                  </Label>
+                  <Textarea
+                    id="cond-other"
+                    ref={otherRef}
+                    rows={f.conditions.includes("Something else") ? 3 : 2}
+                    value={f.conditionsOther}
+                    onChange={(e) => set("conditionsOther", e.target.value)}
+                    placeholder={f.conditions.includes("Something else") ? "Describe the condition, symptom, or goal you'd like us to focus on." : "Other conditions or context (optional)."}
+                    className={f.conditions.includes("Something else") ? "border-[color:var(--garnet)]/60" : undefined}
+                  />
                 </div>
               </div>
             )}

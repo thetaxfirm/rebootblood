@@ -14,6 +14,27 @@ import GuideCapture from "@/components/site/GuideCapture";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE } from "@/lib/site";
 
+const HERO_CONDITIONS = [
+  "Long COVID",
+  "Lyme Disease",
+  "Autoimmune",
+  "Cardiovascular",
+  "Chronic Fatigue",
+  "Mold / Toxin",
+  "Longevity",
+] as const;
+
+const HOME_BENEFITS = [
+  { title: "Cardiovascular & circulation", body: "Cleaner oxygen delivery and improved endothelial function." },
+  { title: "Long COVID & post-viral", body: "Targets microclots, microvascular inflammation, and brain fog." },
+  { title: "Inflammation", body: "Designed to recalibrate the inflammatory response." },
+  { title: "Energy & cognition", body: "Mitochondrial output may rise as inflammatory drag falls." },
+  { title: "Autoimmune balance", body: "Aims to interrupt the self-attacking cycle without suppression." },
+  { title: "Detox & toxin clearance", body: "Clears metals, mycotoxins, and oxidized compounds." },
+  { title: "Chronic infection", body: "Integrated UVBI helps inactivate circulating pathogens." },
+  { title: "Longevity", body: "Reduced senescent burden and sharper repair signaling." },
+];
+
 function TreatmentCard({
   tone,
   eyebrow,
@@ -98,7 +119,21 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted-foreground">
+            <div className="mt-10 rounded-2xl border border-border bg-background/40 p-5 backdrop-blur">
+              <p className="text-sm font-medium text-foreground">What are you looking to address?</p>
+              <p className="mt-1 text-xs text-muted-foreground">Pick one to start your eligibility quiz with it pre-filled.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {HERO_CONDITIONS.map((c) => (
+                  <Link key={c} href={`/eligibility?condition=${encodeURIComponent(c)}`}>
+                    <button className="btn-press rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-sm text-foreground/90 transition-colors hover:border-[color:var(--garnet)]/60 hover:text-foreground">
+                      {c}
+                    </button>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-muted-foreground">
               {[
                 { icon: ShieldCheck, label: "Safety-first screening" },
                 { icon: Microscope, label: "ISO 13485 platform" },
@@ -172,6 +207,35 @@ export default function Home() {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* CONDENSED BENEFITS */}
+      <section className="py-20 md:py-28">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow tone="gold">Where It May Help</Eyebrow>
+            <h2 className="mt-3 text-3xl md:text-4xl">Blood-level support across eight areas</h2>
+            <p className="mt-5 text-muted-foreground">
+              EBO3 works in the bloodstream itself. These are the areas people most often explore — see the full,
+              detailed breakdown on the EBO3 / EBOO page. For educational purposes only; individual responses vary.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {HOME_BENEFITS.map((b) => (
+              <div key={b.title} className="rounded-2xl border border-border bg-card/60 p-6">
+                <h3 className="text-base font-medium leading-tight">{b.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{b.body}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link href="/eboo">
+              <Button variant="outline" className="btn-press border-border bg-background/40">
+                See all potential benefits <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
