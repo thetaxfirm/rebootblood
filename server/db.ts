@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -118,6 +118,8 @@ export async function insertQuestionnaireSubmission(data: InsertQuestionnaireSub
 export interface SubmissionListFilter {
   status?: WorkflowStatus;
   treatmentInterest?: TreatmentInterest;
+  /** Filter leads by source. "partner" = partner_inquiry only; "patient" = everything except partner_inquiry. */
+  sourceGroup?: "patient" | "partner";
   limit?: number;
 }
 
@@ -167,12 +169,25 @@ export async function insertLead(data: InsertLead) {
   return rows[0];
 }
 
+/**
+ * Pure predicate describing the source-group split used by the admin Leads view.
+ * Kept standalone so it can be unit-tested without a database, and so the SQL
+ * filter below and any in-memory checks share one definition of "partner".
+ */
+export function leadMatchesSourceGroup(source: string, group?: "patient" | "partner"): boolean {
+  if (group === "partner") return source === "partner_inquiry";
+  if (group === "patient") return source !== "partner_inquiry";
+  return true;
+}
+
 export async function listLeads(filter: SubmissionListFilter = {}) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const conditions = [];
   if (filter.status) conditions.push(eq(leads.status, filter.status));
   if (filter.treatmentInterest) conditions.push(eq(leads.treatmentInterest, filter.treatmentInterest));
+  if (filter.sourceGroup === "partner") conditions.push(eq(leads.source, "partner_inquiry"));
+  if (filter.sourceGroup === "patient") conditions.push(ne(leads.source, "partner_inquiry"));
   const where = conditions.length ? and(...conditions) : undefined;
   return db.select().from(leads).where(where).orderBy(desc(leads.createdAt)).limit(filter.limit ?? 200);
 }

@@ -18,6 +18,15 @@ export const ASSETS = {
   logo: "/manus-storage/logo_mark_b729685e.png",
 } as const;
 
+/**
+ * Partner program terms. Edit DEFAULT_REVENUE_SHARE_PCT here to keep the
+ * calculator default in sync with current program terms — it is the single
+ * source of truth consumed by the economics calculator.
+ */
+export const PARTNER_PROGRAM: { defaultRevenueSharePct: number } = {
+  defaultRevenueSharePct: 30,
+};
+
 export const NAV_LINKS = [
   { label: "EBO3 / EBOO", href: "/eboo" },
   { label: "Plasmapheresis", href: "/plasmapheresis" },

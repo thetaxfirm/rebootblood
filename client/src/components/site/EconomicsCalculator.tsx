@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { PARTNER_PROGRAM } from "@/lib/site";
 
 /**
  * Interactive MSO partner economics calculator.
@@ -27,7 +28,7 @@ export default function EconomicsCalculator() {
   const [cogs, setCogs] = useState(180);
   const [laborHours, setLaborHours] = useState(1.75);
   const [laborRate, setLaborRate] = useState(68);
-  const [sharePct, setSharePct] = useState(30);
+  const [sharePct, setSharePct] = useState(PARTNER_PROGRAM.defaultRevenueSharePct);
   const [sessionsPerWeek, setSessionsPerWeek] = useState(8);
 
   const selectTier = (id: (typeof TIERS)[number]["id"]) => {
@@ -143,7 +144,9 @@ export default function EconomicsCalculator() {
               <span className="text-sm font-medium text-[color:var(--gold)]">{sharePct}%</span>
             </div>
             <Slider value={[sharePct]} min={0} max={60} step={1} onValueChange={(v) => setSharePct(v[0])} />
-            <p className="text-xs text-muted-foreground">Program standard is 30%. Adjust to model scenarios.</p>
+            <p className="text-xs text-muted-foreground">
+              Program standard is {PARTNER_PROGRAM.defaultRevenueSharePct}%. Adjust to model scenarios.
+            </p>
           </div>
 
           <div className="space-y-3">
@@ -219,11 +222,18 @@ export default function EconomicsCalculator() {
           </div>
         </div>
 
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          Planning illustration only. Figures depend on actual consumable costs, labor rates, cash/payer mix, package
-          uptake, and achieved utilization. This is not financial, tax, or legal advice; revenue-share, equipment-placement,
-          and MSO arrangements must be reviewed by qualified healthcare counsel before launch.
-        </p>
+        <div className="rounded-xl border border-border/70 bg-background/40 p-4 text-xs leading-relaxed text-muted-foreground">
+          <p>
+            <strong className="text-foreground">Terms vary by market.</strong> The revenue share, reimbursements, and
+            pricing shown here are illustrative defaults and are negotiable on a per-market, per-partner basis. Final
+            terms are set in your management services agreement.
+          </p>
+          <p className="mt-2">
+            Planning illustration only. Figures depend on actual consumable costs, labor rates, cash/payer mix, package
+            uptake, and achieved utilization. This is not financial, tax, or legal advice; revenue-share,
+            equipment-placement, and MSO arrangements must be reviewed by qualified healthcare counsel before launch.
+          </p>
+        </div>
       </div>
     </div>
   );

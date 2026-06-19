@@ -537,6 +537,60 @@ export const PUBLICATIONS: Publication[] = [
     url: "https://www.ozonedoctor.net/wp-content/uploads/2022/05/Bio-Oxidative-Therapy-for-Podiatrists-for-website.pdf",
     topic: "Foundations / mechanism",
   },
+  {
+    title: "Modulation of Oxidative Stress by Ozone Therapy in the Prevention and Treatment of Chemotherapy-Induced Toxicity",
+    authors: "Clavo B, Rodríguez-Esparragón F, Rodríguez-Abreu D, et al.",
+    venue: "Antioxidants (Basel), 2019",
+    summary:
+      "A review of the proposed rationale for ozone therapy as an adjunct that may modulate oxidative stress and reduce chemotherapy-induced toxicity. A narrative review and prospects piece, not a clinical trial of cancer treatment.",
+    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6943601/",
+    topic: "Oxidative stress / oncology support",
+  },
+  {
+    title: "Ozone Therapy Effects on Biomarkers and Lung Function in Asthma",
+    authors: "Hernández Rosales FA, Calunga Fernández JL, Turrent Figueras J, et al.",
+    venue: "Archives of Medical Research, 2005",
+    summary:
+      "A study reporting reductions in IgE and inflammatory markers and improved lung-function/symptom scores in atopic asthma patients across ozone therapy cycles. Small, uncontrolled clinical study; interpret as exploratory.",
+    url: "https://pubmed.ncbi.nlm.nih.gov/16099337/",
+    topic: "Respiratory / immune modulation",
+  },
+  {
+    title: "Clinical Utility of Ozone Therapy for Musculoskeletal Disorders",
+    authors: "Seyam O, Smith NL, Reid I, et al.",
+    venue: "Medical Gas Research, 2018",
+    summary:
+      "A review surveying applications of oxygen-ozone therapy for musculoskeletal and pain conditions and its proposed anti-inflammatory and analgesic mechanisms. A narrative review summarizing heterogeneous evidence.",
+    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6178642/",
+    topic: "Musculoskeletal / pain",
+  },
+  {
+    title: "Ozone Therapy for Complex Regional Pain Syndrome: Review and Case Report",
+    authors: "Rowen RJ, Robins H",
+    venue: "Current Pain and Headache Reports, 2019",
+    summary:
+      "A review of ozone therapy in complex regional pain syndrome accompanied by a single case report. Hypothesis-generating; a case report cannot establish efficacy.",
+    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6502773/",
+    topic: "Musculoskeletal / pain",
+  },
+  {
+    title: "Ozone Therapy for the Treatment of COVID-19 Pneumonia: A Scoping Review",
+    authors: "Izadi M, Cegolon L, Javanbakht M, et al.",
+    venue: "International Immunopharmacology, 2021",
+    summary:
+      "A scoping review mapping early reports on ozone therapy as an adjunct in COVID-19 pneumonia and calling for controlled trials. Summarizes preliminary, mostly low-quality evidence; not a treatment recommendation.",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7752030/",
+    topic: "Antiviral / respiratory",
+  },
+  {
+    title: "Oxygen-Ozone (O2-O3) Therapy in Peripheral Arterial Disease (PAD): A Review Study",
+    authors: "Juchniewicz H, Lubkowska A",
+    venue: "Therapeutics and Clinical Risk Management, 2020",
+    summary:
+      "A review of oxygen-ozone therapy as a proposed adjunct in peripheral arterial disease, discussing possible effects on tissue oxygenation and healing. A narrative review of limited primary studies.",
+    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7334138/",
+    topic: "Circulation / vascular",
+  },
 ];
 
 export const ALL_ARTICLES: LearnArticle[] = [...PILLARS, ...SPOKES];

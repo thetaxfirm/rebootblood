@@ -84,3 +84,10 @@
 - [x] Partner recruitment page (/partners) with sales-sheet content + apply CTA (routes to submitLead source=partner_inquiry)
 - [x] Interactive partner economics calculator (price/volume, COGS, nurse time, utilization -> clinic & MSO split) at /calculator + embedded in /partners
 - [x] Standalone partner sales sheet + outreach email doc (delivered as file: Partner-Outreach-Kit.md)
+
+## Enhancement: Learning Center additional publications + partner refinements (requested)
+- [x] Add 6 peer-reviewed ozone publications (chemo toxicity, asthma, musculoskeletal, CRPS, COVID-19 pneumonia, PAD) with verified citations + honest framing
+- [x] Centralize calculator default revenue share in one place (PARTNER_PROGRAM.defaultRevenueSharePct in site.ts)
+- [x] Add "Terms vary by market" note near the economics calculator
+- [x] Separate partner_inquiry leads from patient leads in admin dashboard (sub-tabs + sourceGroup filter, scoped CSV export)
+- [x] Vitest: leadMatchesSourceGroup separates partner inquiries from patient leads

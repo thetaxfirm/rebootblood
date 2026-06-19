@@ -30,6 +30,7 @@ import {
 const listFilterSchema = z.object({
   status: workflowStatusEnum.optional(),
   treatmentInterest: treatmentInterestEnum.optional(),
+  sourceGroup: z.enum(["patient", "partner"]).optional(),
 });
 
 /* ----------------------------- Public intake ----------------------------- */

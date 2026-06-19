@@ -10,6 +10,7 @@ import {
   ScrollText,
   LogOut,
   Download,
+  Handshake,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -337,15 +338,45 @@ function SubmissionDrawer({
 /* -------------------------------- Leads -------------------------------- */
 
 function LeadsTab() {
+  return (
+    <Tabs defaultValue="patient">
+      <TabsList>
+        <TabsTrigger value="patient"><Users className="mr-1.5 h-4 w-4" /> Patient leads</TabsTrigger>
+        <TabsTrigger value="partner"><Handshake className="mr-1.5 h-4 w-4" /> Partner inquiries</TabsTrigger>
+      </TabsList>
+      <TabsContent value="patient" className="mt-6">
+        <LeadGroup sourceGroup="patient" emptyLabel="No patient leads captured yet." exportPrefix="patient-leads" showSource />
+      </TabsContent>
+      <TabsContent value="partner" className="mt-6">
+        <LeadGroup sourceGroup="partner" emptyLabel="No partner inquiries yet." exportPrefix="partner-inquiries" showSource={false} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+function LeadGroup({
+  sourceGroup,
+  emptyLabel,
+  exportPrefix,
+  showSource,
+}: {
+  sourceGroup: "patient" | "partner";
+  emptyLabel: string;
+  exportPrefix: string;
+  showSource: boolean;
+}) {
   const [status, setStatus] = useState<WorkflowStatus | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const utils = trpc.useUtils();
-  const list = trpc.admin.listLeads.useQuery({ status: status === "all" ? undefined : status });
+  const list = trpc.admin.listLeads.useQuery({
+    status: status === "all" ? undefined : status,
+    sourceGroup,
+  });
 
   const exportCsv = trpc.admin.exportLeads.useMutation({
     onSuccess: (res) => {
       if (!res.count) return toast.info("No records to export");
-      downloadCsv(res.csv, `leads-${Date.now()}.csv`);
+      downloadCsv(res.csv, `${exportPrefix}-${Date.now()}.csv`);
       toast.success(`Exported ${res.count} record(s)`);
     },
     onError: (e) => toast.error(e.message),
@@ -354,9 +385,12 @@ function LeadsTab() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <FilterSelect value={status} onChange={setStatus} />
+        <div className="flex items-center gap-3">
+          <FilterSelect value={status} onChange={setStatus} />
+          <span className="text-xs text-muted-foreground">{list.data ? `${list.data.length} record(s)` : ""}</span>
+        </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="btn-press border-border" disabled={exportCsv.isPending} onClick={() => exportCsv.mutate({ status: status === "all" ? undefined : status })}>
+          <Button variant="outline" size="sm" className="btn-press border-border" disabled={exportCsv.isPending} onClick={() => exportCsv.mutate({ status: status === "all" ? undefined : status, sourceGroup })}>
             {exportCsv.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />} Export CSV
           </Button>
           <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
@@ -368,9 +402,9 @@ function LeadsTab() {
       <RecordTable
         loading={list.isLoading}
         rows={list.data ?? []}
-        emptyLabel="No leads captured yet."
+        emptyLabel={emptyLabel}
         onOpen={setOpenId}
-        showSource
+        showSource={showSource}
       />
 
       <LeadDrawer
