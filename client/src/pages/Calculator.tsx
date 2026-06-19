@@ -27,7 +27,7 @@ export default function Calculator() {
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-muted-foreground">
               Estimate what a placed {`"EBOO O3 Research Device 2026"`} could add to your practice. The clinic earns a
-              30% revenue share plus reimbursement of consumables and nursing time — with no equipment cost and no
+              revenue share plus reimbursement of consumables and nursing time — with no equipment cost and no
               marketing spend.
             </p>
           </div>

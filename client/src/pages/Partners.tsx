@@ -42,7 +42,7 @@ const VALUE_PROPS = [
   {
     icon: TrendingUp,
     title: "You monetize idle capacity",
-    body: "Turn existing chairs, hours, and nursing staff into a new premium revenue line — 30% share + COGS + nurse time.",
+    body: "Turn existing chairs, hours, and nursing staff into a new premium revenue line — revenue share + COGS + nurse time.",
   },
 ];
 
@@ -111,7 +111,7 @@ export default function Partners() {
             <p className="mt-6 max-w-xl text-lg text-muted-foreground">
               rEBOOtBlood is a Management Services Organization. We place the device, drive the patients, and run billing
               and administration. Your licensed clinicians deliver the treatment and keep full clinical control — and
-              your clinic earns a 30% revenue share plus reimbursed consumables and nursing time.
+              your clinic earns a revenue share plus reimbursed consumables and nursing time.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href="#inquire">
