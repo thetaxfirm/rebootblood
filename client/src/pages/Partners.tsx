@@ -22,6 +22,7 @@ import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import EconomicsCalculator from "@/components/site/EconomicsCalculator";
 import { trpc } from "@/lib/trpc";
 import { ASSETS, SITE } from "@/lib/site";
+import { useSeo } from "@/hooks/useSeo";
 
 const VALUE_PROPS = [
   {
@@ -52,6 +53,11 @@ const RESP = [
 ];
 
 export default function Partners() {
+  useSeo({
+    title: "Partner With rEBOOtBlood — In-Clinic EBO3 / EBOO Program",
+    description:
+      "Bring EBO3 / EBOO ozone blood therapy to your clinic with no equipment cost. Explore the rEBOOtBlood partner program, revenue share, and turnkey support.",
+  });
   const [clinic, setClinic] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -99,7 +105,7 @@ export default function Partners() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.clinicInterior} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.clinicInterior} alt="Modern rEBOOtBlood partner clinic treatment suite interior" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/90 to-background" />
         </div>
         <div className="container relative pt-36 pb-16 md:pt-44 md:pb-24">

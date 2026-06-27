@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/accordion";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildFaqJsonLd } from "@/hooks/useSeo";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE, EBO3_VOLUME_TIERS } from "@/lib/site";
 import { useTierCta } from "@/hooks/useTierCta";
@@ -154,6 +154,7 @@ export default function Eboo() {
     title: "EBO3 / EBOO Ozone Blood Therapy — rEBOOtBlood",
     description:
       "EBO3 / EBOO is an advanced dialysis-style ozone blood therapy with UVBI — filtering, oxygenating, and ozonating your blood to target inflammation and immunity.",
+    jsonLd: buildFaqJsonLd(FAQS),
   });
   return (
     <SiteLayout>

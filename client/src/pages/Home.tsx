@@ -16,6 +16,7 @@ import GuideCapture from "@/components/site/GuideCapture";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE, PLASMAPHERESIS_TIERS, EBO3_VOLUME_TIERS } from "@/lib/site";
 import { useTierCta } from "@/hooks/useTierCta";
+import { useSeo } from "@/hooks/useSeo";
 
 const money = (n: number) => `$${n.toLocaleString()}`;
 
@@ -87,6 +88,11 @@ function TreatmentCard({
 
 export default function Home() {
   const fireTierCta = useTierCta();
+  useSeo({
+    title: "rEBOOtBlood — Advanced EBOO & Plasmapheresis Blood Therapy",
+    description:
+      "Advanced EBO3 / EBOO ozone blood therapy and therapeutic plasmapheresis — dialysis-style procedures designed to modulate inflammation and support immunity.",
+  });
   return (
     <SiteLayout>
       {/* HERO */}

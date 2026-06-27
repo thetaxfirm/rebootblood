@@ -1,5 +1,6 @@
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import { SITE } from "@/lib/site";
+import { useSeo } from "@/hooks/useSeo";
 
 function LegalShell({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }) {
   return (
@@ -19,6 +20,11 @@ function LegalShell({ title, eyebrow, children }: { title: string; eyebrow: stri
 }
 
 export function Privacy() {
+  useSeo({
+    title: "Privacy Policy — rEBOOtBlood",
+    description:
+      "How rEBOOtBlood collects, uses, and protects the information you provide through our eligibility questionnaire and contact forms.",
+  });
   return (
     <LegalShell title="Privacy Policy" eyebrow="Your Privacy">
       <p>
@@ -61,6 +67,11 @@ export function Privacy() {
 }
 
 export function Terms() {
+  useSeo({
+    title: "Terms of Service — rEBOOtBlood",
+    description:
+      "The terms governing your use of the rEBOOtBlood website, including educational-only content and important medical and safety disclaimers.",
+  });
   return (
     <LegalShell title="Terms of Service" eyebrow="Terms">
       <p>

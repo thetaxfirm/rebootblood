@@ -18,7 +18,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildFaqJsonLd } from "@/hooks/useSeo";
 import { ASSETS, PLASMAPHERESIS_TIERS } from "@/lib/site";
 import { useTierCta } from "@/hooks/useTierCta";
 
@@ -54,6 +54,7 @@ export default function Plasmapheresis() {
     title: "Therapeutic Plasmapheresis & Plasma Exchange — rEBOOtBlood",
     description:
       "Therapeutic plasmapheresis (plasma exchange) separates and replaces plasma carrying inflammatory mediators, autoantibodies, and toxins.",
+    jsonLd: buildFaqJsonLd(FAQS),
   });
   return (
     <SiteLayout>

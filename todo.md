@@ -125,3 +125,13 @@
 - [x] Add site-wide MedicalBusiness JSON-LD (name, url, phone, email, areaServed, etc.)
 - [x] Add per-article Article JSON-LD on Learning Center article pages (headline, datePublished/dateModified, author, publisher, mainEntityOfPage)
 - [x] Update sitemap.xml to use bound custom domain (rebootblood.manus.space) and add <lastmod> dates
+
+## Enhancement: FAQPage JSON-LD + canonical (requested)
+- [x] Add FAQPage JSON-LD to EBO3 (/eboo) and Plasmapheresis (/plasmapheresis) built from existing FAQ content
+- [x] Add per-route <link rel="canonical"> via the useSeo hook (absolute URL from SITE.url + current path)
+
+## Enhancement: complete canonical coverage (gap fix)
+- [x] Derive canonical origin in useSeo.ts from SITE.url (single source of truth) instead of a hardcoded string
+- [x] Add useSeo (title + description + canonical) to Home, Eligibility, Partners, Privacy, Terms
+- [x] Fix empty alt on Partners clinic-interior hero image
+- [x] Verify per-route canonical output on /, /partners, /privacy (and existing /eboo, /plasmapheresis, /learn, article)

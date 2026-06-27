@@ -19,6 +19,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import { trpc } from "@/lib/trpc";
 import { SITE } from "@/lib/site";
+import { useSeo } from "@/hooks/useSeo";
 import {
   CONDITION_OPTIONS,
   CONDITION_DESCRIPTIONS,
@@ -122,6 +123,11 @@ function RadioRow({
 }
 
 export default function Eligibility() {
+  useSeo({
+    title: "Eligibility Quiz — EBO3 / EBOO & Plasmapheresis — rEBOOtBlood",
+    description:
+      "Take a few minutes to see whether EBO3 / EBOO ozone therapy or therapeutic plasmapheresis may fit your goals. Our care team reviews every inquiry individually.",
+  });
   const [location, navigate] = useLocation();
   const [step, setStep] = useState(0);
   const [f, setF] = useState<FormState>(INITIAL);
