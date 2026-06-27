@@ -135,3 +135,12 @@
 - [x] Add useSeo (title + description + canonical) to Home, Eligibility, Partners, Privacy, Terms
 - [x] Fix empty alt on Partners clinic-interior hero image
 - [x] Verify per-route canonical output on /, /partners, /privacy (and existing /eboo, /plasmapheresis, /learn, article)
+
+## Enhancement: SEO-targeted EBOO pages (Las Vegas keyword strategy, requested)
+- [x] Optimize /eboo hub meta (title/description) for "eboo therapy / eboo treatment" + add synonym line (EBO2/EBO3/blood oil change)
+- [x] Add EBOO cost page (/eboo/cost) targeting eboo treatment cost / eboo therapy cost / eboo cost / ebo2 therapy cost
+- [x] Add EBOO near-me / Las Vegas local page (/eboo/las-vegas) with MedicalBusiness/MedicalClinic JSON-LD (address, areaServed, geo, telephone)
+- [x] Add Learn page: what-is-eboo-therapy (FAQPage JSON-LD)
+- [x] Add Learn page: ebo2-vs-eboo comparison (introduces/brands EBO3 tier)
+- [x] Add Learn page: blood-oil-change curiosity->conversion bridge
+- [x] Register all new routes + nav links, update sitemap.xml, typecheck + tests, verify live, checkpoint

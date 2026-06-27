@@ -151,9 +151,9 @@ export default function Eboo() {
   const vol = VOLUMES[volIdx];
   const fireTierCta = useTierCta();
   useSeo({
-    title: "EBO3 / EBOO Ozone Blood Therapy — rEBOOtBlood",
+    title: "EBOO Therapy in Las Vegas | EBO3 Ozone Blood Treatment",
     description:
-      "EBO3 / EBOO is an advanced dialysis-style ozone blood therapy with UVBI — filtering, oxygenating, and ozonating your blood to target inflammation and immunity.",
+      "EBOO ozone blood therapy in Las Vegas — physician-supervised EBO3 treatment that filters and oxygenates your blood. Check eligibility today.",
     jsonLd: buildFaqJsonLd(FAQS),
   });
   return (
@@ -174,6 +174,9 @@ export default function Eboo() {
               EBO3 is our advanced EBOO protocol — a continuous, dialysis-style therapy that filters your entire
               blood volume while oxygenating, ozonating, and exposing it to UVBI for a comprehensive systemic reset.
             </p>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground/80">
+              Also known as EBOO treatment, EBO2 therapy, EBO3, or a “blood oil change.”
+            </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/#contact">
                 <Button size="lg" className="btn-press w-full sm:w-auto">Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
@@ -182,6 +185,17 @@ export default function Eboo() {
                 <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/30 sm:w-auto">Take Eligibility Quiz</Button>
               </Link>
             </div>
+            <p className="mt-5 text-sm text-muted-foreground">
+              See{" "}
+              <Link href="/eboo/cost" className="text-[color:var(--gold)] underline-offset-4 hover:underline">
+                EBOO therapy cost &amp; packages
+              </Link>{" "}
+              or{" "}
+              <Link href="/eboo/las-vegas" className="text-[color:var(--gold)] underline-offset-4 hover:underline">
+                EBOO treatment in Las Vegas
+              </Link>
+              .
+            </p>
           </div>
         </div>
       </section>

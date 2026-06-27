@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Eboo from "./pages/Eboo";
+import EbooCost from "./pages/EbooCost";
+import EbooLasVegas from "./pages/EbooLasVegas";
 import Plasmapheresis from "./pages/Plasmapheresis";
 import Eligibility from "./pages/Eligibility";
 import Admin from "./pages/Admin";
@@ -19,6 +21,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/eboo" component={Eboo} />
+      <Route path="/eboo/cost" component={EbooCost} />
+      <Route path="/eboo/las-vegas" component={EbooLasVegas} />
       <Route path="/plasmapheresis" component={Plasmapheresis} />
       <Route path="/eligibility" component={Eligibility} />
       <Route path="/learn" component={Learn} />

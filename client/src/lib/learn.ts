@@ -602,7 +602,164 @@ export const PUBLICATIONS: Publication[] = [
   },
 ];
 
-export const ALL_ARTICLES: LearnArticle[] = [...PILLARS, ...SPOKES];
+/**
+ * SEO landing articles built around high-intent search queries (EBOO/EBO2
+ * therapy, "blood oil change"). They are routable at /learn/:slug and emit
+ * Article + FAQ JSON-LD via ArticleLayout, but are surfaced through a dedicated
+ * "Popular questions" row on the hub rather than the Foundations/Conditions
+ * grids.
+ */
+export const SEO_ARTICLES: LearnArticle[] = [
+  {
+    slug: "what-is-eboo-therapy",
+    kind: "pillar",
+    category: "Explainers",
+    title: "What Is EBOO Therapy? How EBO3 Ozone Blood Treatment Works",
+    excerpt:
+      "What is EBOO therapy? Learn how EBO3 ozone blood treatment filters and oxygenates blood, what a session involves, and who it may help.",
+    deck: "A plain-language explainer of EBOO / EBO3 ozone blood therapy — what it is, how a session works, and how to think about it honestly.",
+    readMinutes: 6,
+    updated: UPDATED,
+    sections: [
+      {
+        heading: "What EBOO therapy is",
+        body: [
+          "EBOO — extracorporeal blood oxygenation and ozonation — is a dialysis-style therapy in which blood is drawn from one arm, treated outside the body in a continuous closed loop, and returned to the other. Because the blood flows in a loop rather than a single bag, a large volume can be treated in one controlled session. People also search for it as EBO2 therapy, EBO3, or informally a ‘blood oil change.’",
+          "EBO3, the protocol we use, extends EBOO by adding whole-blood filtration through a high-flux dialyzer membrane and an integrated stage of ultraviolet blood irradiation (UVBI) — oxygenation, ozonation, filtration, and UV exposure in one session.",
+        ],
+      },
+      {
+        heading: "What happens during an EBOO session",
+        body: [
+          "After a clinician places two IV lines, blood passes through a sterile single-use circuit: a filter captures inflammatory debris and oxidized material, an oxygen-ozone exchange charges the blood, and a UVBI light chamber applies ultraviolet exposure before the oxygen-rich blood is returned. The cycle is continuous and monitored throughout.",
+          "A typical EBO3 session runs about 45–120 minutes depending on whether roughly 3, 4.5, or 6 litres of blood volume are treated — a clinical decision made with the care team during screening.",
+        ],
+      },
+      {
+        heading: "Who EBOO therapy may help — and an honest framing",
+        body: [
+          "Interest in EBOO/EBO3 centers on inflammation, immune balance, circulation, post-viral symptoms, and general wellness optimization. It is important to be clear that these are investigational, research-stage wellness therapies: they are not FDA-approved to diagnose, treat, cure, or prevent any disease, and individual responses vary.",
+          "The responsible next step is screening and consultation rather than self-directed treatment. Our eligibility quiz captures your history and goals so the care team can advise honestly.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is EBOO therapy in simple terms?",
+        a: "EBOO is a dialysis-style ozone blood therapy: blood is drawn, filtered, oxygenated, ozonated (and in EBO3, exposed to UVBI) outside the body in a continuous loop, then returned. It treats a much larger blood volume than an ozone IV.",
+      },
+      {
+        q: "How long does an EBOO session take?",
+        a: "A typical EBO3 / EBOO session runs about 45–120 minutes depending on whether 3L, 4.5L, or 6L of blood volume is treated, with continuous monitoring throughout.",
+      },
+      {
+        q: "Is EBOO therapy FDA-approved?",
+        a: "No. EBOO, EBO2, ozone, and UVBI therapies are not FDA-approved to diagnose, treat, cure, or prevent any disease. They are offered as investigational wellness procedures after screening and informed consent.",
+      },
+    ],
+    related: ["eboo-comparison-guide", "ebo3-eboo-blood-therapy", "blood-oil-change"],
+  },
+  {
+    slug: "ebo2-vs-eboo",
+    kind: "pillar",
+    category: "Comparisons",
+    title: "EBO2 vs EBOO vs EBO3: What's the Difference?",
+    excerpt:
+      "EBO2 vs EBOO vs EBO3 explained — how the ozone blood therapy tiers differ in volume, filtration, and UVBI, and which may be right for you.",
+    deck: "The labels overlap and the marketing is noisy. Here is a calm, side-by-side way to understand EBO2, EBOO, and EBO3.",
+    readMinutes: 5,
+    updated: UPDATED,
+    sections: [
+      {
+        heading: "Why the names overlap",
+        body: [
+          "There is no single regulatory standard for these therapies, so clinics use ‘EBOO,’ ‘EBO2,’ and ‘EBO3’ inconsistently. In broad terms, EBOO and EBO2 describe extracorporeal blood oxygenation and ozonation at different ozone concentrations and flow configurations, while EBO3 is used here for a protocol that also adds whole-blood filtration and UVBI in the same loop.",
+          "Rather than fixating on the label, the useful questions are: how much blood is treated, is the blood filtered, is UVBI included, and what device and safety systems are used?",
+        ],
+      },
+      {
+        heading: "EBO2 vs EBOO vs EBO3, side by side",
+        body: [
+          "EBO2 typically refers to extracorporeal ozonation at a higher gamma (ozone concentration) range. EBOO is the broader extracorporeal oxygenation-and-ozonation approach. Our device supports both an EBOO mode (about 3–5 gamma) and an EBO2 mode (about 20–30 gamma), across a full adjustable 1–35 gamma range.",
+          "EBO3 is the most comprehensive tier: it keeps the continuous extracorporeal loop and adds high-flux whole-blood filtration plus a 5-lamp UVBI light chamber, so filtration, oxygenation, ozonation, and UV exposure all happen in one session.",
+        ],
+      },
+      {
+        heading: "Which tier is right for you",
+        body: [
+          "The right tier depends on your goals, your health history, and a clinician's assessment — not on the name alone. No responsible clinic should tell you which is ‘best’ before understanding your situation.",
+          "Our eligibility quiz is a quick first step that helps the care team recommend a volume and protocol during your consultation.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is the difference between EBO2 and EBOO?",
+        a: "Both are extracorporeal blood ozonation/oxygenation; EBO2 generally refers to a higher ozone-concentration (gamma) configuration, while EBOO is the broader term. Our platform supports an EBOO mode (~3–5 gamma) and an EBO2 mode (~20–30 gamma).",
+      },
+      {
+        q: "Is EBO3 better than EBO2 or EBOO?",
+        a: "EBO3 is the most comprehensive tier because it adds whole-blood filtration and UVBI to the loop, but ‘better’ depends on your goals and clinical picture. The volume and protocol are chosen with your care team.",
+      },
+      {
+        q: "Which one includes UVBI?",
+        a: "UVBI is integrated in the EBO3 protocol via a 5-lamp light chamber. Basic EBOO/EBO2 setups and ozone IVs typically do not include UVBI.",
+      },
+    ],
+    related: ["eboo-comparison-guide", "what-is-eboo-therapy", "ebo3-eboo-blood-therapy"],
+  },
+  {
+    slug: "blood-oil-change",
+    kind: "spoke",
+    category: "Explainers",
+    title: 'Is a "Blood Oil Change" Real? EBOO Ozone Therapy Explained',
+    excerpt:
+      'A “blood oil change” is the nickname for EBOO ozone blood therapy. Here is what it actually is, what it costs, and how to consider it.',
+    deck: 'The viral nickname, explained — what people mean by a “blood oil change,” and what the actual procedure (EBOO / EBO3) involves.',
+    readMinutes: 4,
+    updated: UPDATED,
+    sections: [
+      {
+        heading: 'Where the “blood oil change” nickname comes from',
+        body: [
+          'You may have seen the phrase “blood oil change” (or “human blood oil change”) on social media. It is a colloquial nickname — not a medical term — for EBOO / EBO3 ozone blood therapy, where blood is filtered, oxygenated, and ozonated outside the body and then returned. The ‘oil change’ metaphor refers to the visible filtration of the blood, not to any actual oil.',
+          'The real procedure is a dialysis-style closed-loop therapy performed under clinical supervision. It is the same thing people search for as EBOO treatment, EBO2 therapy, or EBO3.',
+        ],
+      },
+      {
+        heading: 'What the procedure actually does',
+        body: [
+          'In an EBO3 session, blood passes through a high-flux filter, an oxygen-ozone exchange, and a UVBI light chamber in a continuous loop before being returned. A typical session treats about 3–6 litres of blood volume over roughly 45–120 minutes, fully monitored.',
+          'It is best understood as an investigational wellness therapy: it is not FDA-approved to treat any disease, and claims of a dramatic ‘detox’ should be read with healthy skepticism.',
+        ],
+      },
+      {
+        heading: 'What it costs and how to consider it',
+        body: [
+          'EBOO / EBO3 is self-pay and priced by treated blood volume — single sessions start around $1,000, with multi-session packages reducing the per-session cost. See our EBOO cost page for the full breakdown.',
+          'If you are curious, the sensible path is a screening and consultation rather than chasing a viral trend. Our eligibility quiz is a fast first step.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is a 'blood oil change' a real medical procedure?",
+        a: "‘Blood oil change’ is a social-media nickname for EBOO / EBO3 ozone blood therapy — a real, clinically supervised dialysis-style procedure that filters, oxygenates, and ozonates blood. The nickname is informal, not a medical term.",
+      },
+      {
+        q: "How much does a 'blood oil change' (EBOO) cost?",
+        a: "EBOO / EBO3 is self-pay and priced by blood volume — single sessions start around $1,000, with packages lowering the per-session cost. See our EBOO cost page for current pricing.",
+      },
+      {
+        q: "Is it safe?",
+        a: "It has a defined screening process and contraindications (for example, G6PD deficiency is an absolute contraindication) and is performed under clinical monitoring. It remains investigational and is not FDA-approved to treat disease.",
+      },
+    ],
+    related: ["what-is-eboo-therapy", "eboo-comparison-guide", "ebo3-eboo-blood-therapy"],
+  },
+];
+
+export const ALL_ARTICLES: LearnArticle[] = [...PILLARS, ...SPOKES, ...SEO_ARTICLES];
 
 export function getArticle(slug: string): LearnArticle | undefined {
   return ALL_ARTICLES.find((a) => a.slug === slug);

@@ -8,7 +8,7 @@ import ArticleLayout from "@/components/site/ArticleLayout";
 import NotFound from "@/pages/NotFound";
 import { useSeo } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
-import { PILLARS, SPOKES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
+import { PILLARS, SPOKES, SEO_ARTICLES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
 
 function ArticleCard({ a }: { a: LearnArticle }) {
   return (
@@ -82,6 +82,27 @@ function LearnIndex() {
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2">
             {PILLARS.map((a) => (
+              <ArticleCard key={a.slug} a={a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* POPULAR QUESTIONS (SEO explainers) */}
+      <section className="py-20 md:py-28">
+        <div className="container">
+          <div className="max-w-2xl">
+            <Eyebrow>Popular Questions</Eyebrow>
+            <h2 className="mt-3 flex items-center gap-3 text-4xl md:text-5xl">
+              <BookOpen className="h-9 w-9 text-[color:var(--gold)]" /> Quick explainers
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Short, plain-language answers to the questions people ask most about EBOO, EBO2, EBO3, and the
+              “blood oil change” nickname.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {SEO_ARTICLES.map((a) => (
               <ArticleCard key={a.slug} a={a} />
             ))}
           </div>

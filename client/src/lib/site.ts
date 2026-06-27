@@ -9,7 +9,48 @@ export const SITE = {
   email: "care@rebootblood.com",
   emailHref: "mailto:care@rebootblood.com",
   deviceName: "EBOO O3 Research Device 2026",
+  /** Primary service-area city for local SEO. */
+  city: "Las Vegas",
+  region: "NV",
+  regionName: "Nevada",
 } as const;
+
+/**
+ * schema.org MedicalClinic JSON-LD for the Las Vegas local landing page.
+ * Built from SITE constants so contact details stay in one place. `areaServed`
+ * and `geo` are what help surface the clinic for local / "near me" queries.
+ */
+export const LOCAL_BUSINESS_JSONLD: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "MedicalClinic",
+  name: "rEBOOtBlood — EBOO Therapy Las Vegas",
+  url: "https://rebootblood.manus.space/eboo/las-vegas",
+  telephone: "+18885550123",
+  email: "care@rebootblood.com",
+  medicalSpecialty: "Hematology",
+  areaServed: [
+    { "@type": "City", name: "Las Vegas" },
+    { "@type": "City", name: "Henderson" },
+    { "@type": "City", name: "Paradise" },
+    { "@type": "AdministrativeArea", name: "Clark County, Nevada" },
+  ],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Las Vegas",
+    addressRegion: "NV",
+    addressCountry: "US",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 36.1699,
+    longitude: -115.1398,
+  },
+  availableService: [
+    { "@type": "MedicalProcedure", name: "EBOO ozone blood therapy" },
+    { "@type": "MedicalProcedure", name: "EBO3 whole-blood filtration & UVBI" },
+    { "@type": "MedicalProcedure", name: "Therapeutic plasmapheresis (TPE)" },
+  ],
+};
 
 export const ASSETS = {
   heroAbstract: "/manus-storage/hero_blood_abstract_91aac753.png",
