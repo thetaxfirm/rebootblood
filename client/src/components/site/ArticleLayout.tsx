@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import ContactSection from "@/components/site/ContactSection";
+import { useSeo } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
 import { getArticle, type LearnArticle } from "@/lib/learn";
 
@@ -28,12 +29,17 @@ export default function ArticleLayout({ article }: { article: LearnArticle }) {
     .map(getArticle)
     .filter((a): a is LearnArticle => Boolean(a));
 
+  useSeo({
+    title: `${article.title} — rEBOOtBlood Learning Center`,
+    description: article.excerpt.slice(0, 158),
+  });
+
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.heroAbstract} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.heroAbstract} alt="Abstract visualization of oxygenated blood flow" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/90 to-background" />
         </div>
         <div className="container relative pt-36 pb-14 md:pt-44 md:pb-20">

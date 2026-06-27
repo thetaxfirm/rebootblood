@@ -12,8 +12,11 @@ export default function CtaBand({
 }) {
   return (
     <section className="relative overflow-hidden border-y border-border/70">
-      <div className="absolute inset-0">
-        <img src={ASSETS.ctaBand} alt="" className="h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" aria-hidden="true">
+        <div
+          className="h-full w-full bg-cover bg-center opacity-30"
+          style={{ backgroundImage: `url(${ASSETS.ctaBand})` }}
+        />
         <div className="absolute inset-0 bg-background/70" />
       </div>
       <div className="container relative flex flex-col items-center gap-6 py-16 text-center md:py-20">

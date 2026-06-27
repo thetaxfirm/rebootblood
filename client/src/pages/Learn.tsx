@@ -6,6 +6,7 @@ import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
 import ArticleLayout from "@/components/site/ArticleLayout";
 import NotFound from "@/pages/NotFound";
+import { useSeo } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
 import { PILLARS, SPOKES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
 
@@ -27,12 +28,17 @@ function ArticleCard({ a }: { a: LearnArticle }) {
 }
 
 function LearnIndex() {
+  useSeo({
+    title: "Learning Center — EBO3, EBOO, UVBI & Plasmapheresis | rEBOOtBlood",
+    description:
+      "Clear, honest, non-promotional education on EBO3, EBOO, UVBI, and therapeutic plasmapheresis — the science and how these therapies are being studied.",
+  });
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.heroAbstract} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.heroAbstract} alt="Abstract visualization of oxygenated blood flow" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/90 to-background" />
         </div>
         <div className="container relative pt-36 pb-16 md:pt-44 md:pb-24">

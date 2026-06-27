@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/accordion";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
+import { useSeo } from "@/hooks/useSeo";
 import ContactSection from "@/components/site/ContactSection";
 import { ASSETS, SITE, EBO3_VOLUME_TIERS } from "@/lib/site";
 import { useTierCta } from "@/hooks/useTierCta";
@@ -149,12 +150,17 @@ export default function Eboo() {
   const [volIdx, setVolIdx] = useState(1);
   const vol = VOLUMES[volIdx];
   const fireTierCta = useTierCta();
+  useSeo({
+    title: "EBO3 / EBOO Ozone Blood Therapy — rEBOOtBlood",
+    description:
+      "EBO3 / EBOO is an advanced dialysis-style ozone blood therapy with UVBI — filtering, oxygenating, and ozonating your blood to target inflammation and immunity.",
+  });
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.heroAbstract} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.heroAbstract} alt="Abstract visualization of oxygenated blood flow" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/85 to-background" />
         </div>
         <div className="container relative pt-36 pb-16 md:pt-44 md:pb-24">
@@ -242,7 +248,7 @@ export default function Eboo() {
 
           <div className="order-1 lg:order-2">
             <div className="overflow-hidden rounded-3xl border border-border bg-background/40 p-6">
-              <img src={ASSETS.device} alt={SITE.deviceName} className="mx-auto w-full max-w-md object-contain" />
+              <img src={ASSETS.device} alt={`${SITE.deviceName} ozone blood therapy device`} className="mx-auto w-full max-w-md object-contain" />
             </div>
           </div>
         </div>

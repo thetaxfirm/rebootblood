@@ -114,3 +114,9 @@
 
 ## Enhancement: tier-interest date range filter (requested)
 - [x] Add date-range filter (7d / 30d / 90d / All time) to admin "Tier interest" tab; server-side aggregation respects the range + vitest coverage
+
+## Enhancement: per-page SEO + sitemap/robots (requested)
+- [x] Add per-route document head (title + meta description) for EBO3, Plasmapheresis, Learn pages via a reusable SEO/head helper
+- [x] Add descriptive alt text to all images on EBO3, Plasmapheresis, Learn pages (and shared components used there)
+- [x] Add public/robots.txt (allow crawl + sitemap reference)
+- [x] Add public/sitemap.xml covering funnel pages (/, /eboo, /plasmapheresis, /learn, /eligibility, /partners, /privacy, /terms)

@@ -18,6 +18,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
+import { useSeo } from "@/hooks/useSeo";
 import { ASSETS, PLASMAPHERESIS_TIERS } from "@/lib/site";
 import { useTierCta } from "@/hooks/useTierCta";
 
@@ -49,12 +50,17 @@ const FAQS = [
 
 export default function Plasmapheresis() {
   const fireTierCta = useTierCta();
+  useSeo({
+    title: "Therapeutic Plasmapheresis & Plasma Exchange — rEBOOtBlood",
+    description:
+      "Therapeutic plasmapheresis (plasma exchange) separates and replaces plasma carrying inflammatory mediators, autoantibodies, and toxins.",
+  });
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.plasmaAbstract} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.plasmaAbstract} alt="Abstract visualization of plasma separation" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/75 via-background/85 to-background" />
         </div>
         <div className="container relative pt-36 pb-16 md:pt-44 md:pb-24">
@@ -98,7 +104,7 @@ export default function Plasmapheresis() {
             </p>
           </div>
           <div className="overflow-hidden rounded-3xl border border-border">
-            <img src={ASSETS.clinicInterior} alt="Treatment suite" className="h-full w-full object-cover" />
+            <img src={ASSETS.clinicInterior} alt="rEBOOtBlood treatment suite interior" className="h-full w-full object-cover" />
           </div>
         </div>
       </section>
