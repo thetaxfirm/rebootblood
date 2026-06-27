@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/accordion";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import ContactSection from "@/components/site/ContactSection";
+import { useMemo } from "react";
 import { useSeo } from "@/hooks/useSeo";
-import { ASSETS } from "@/lib/site";
+import { ASSETS, SITE } from "@/lib/site";
 import { getArticle, type LearnArticle } from "@/lib/learn";
 
 function fmtDate(iso: string) {
@@ -29,9 +30,34 @@ export default function ArticleLayout({ article }: { article: LearnArticle }) {
     .map(getArticle)
     .filter((a): a is LearnArticle => Boolean(a));
 
+  const articleJsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      description: article.excerpt,
+      image: `${SITE.url}${ASSETS.heroAbstract}`,
+      datePublished: article.updated,
+      dateModified: article.updated,
+      inLanguage: "en",
+      author: { "@type": "Organization", name: SITE.name },
+      publisher: {
+        "@type": "Organization",
+        name: SITE.name,
+        logo: { "@type": "ImageObject", url: `${SITE.url}${ASSETS.logo}` },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${SITE.url}/learn/${article.slug}`,
+      },
+    }),
+    [article],
+  );
+
   useSeo({
     title: `${article.title} — rEBOOtBlood Learning Center`,
     description: article.excerpt.slice(0, 158),
+    jsonLd: articleJsonLd,
   });
 
   return (

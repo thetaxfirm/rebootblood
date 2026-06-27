@@ -120,3 +120,8 @@
 - [x] Add descriptive alt text to all images on EBO3, Plasmapheresis, Learn pages (and shared components used there)
 - [x] Add public/robots.txt (allow crawl + sitemap reference)
 - [x] Add public/sitemap.xml covering funnel pages (/, /eboo, /plasmapheresis, /learn, /eligibility, /partners, /privacy, /terms)
+
+## Enhancement: JSON-LD + sitemap freshness (requested)
+- [x] Add site-wide MedicalBusiness JSON-LD (name, url, phone, email, areaServed, etc.)
+- [x] Add per-article Article JSON-LD on Learning Center article pages (headline, datePublished/dateModified, author, publisher, mainEntityOfPage)
+- [x] Update sitemap.xml to use bound custom domain (rebootblood.manus.space) and add <lastmod> dates

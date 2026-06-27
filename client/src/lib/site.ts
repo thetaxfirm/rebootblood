@@ -2,6 +2,8 @@
 export const SITE = {
   name: "rEBOOtBlood",
   domain: "rEBOOtBlood.com",
+  /** Canonical absolute base URL (bound custom domain) for JSON-LD / sitemap. */
+  url: "https://rebootblood.manus.space",
   phoneDisplay: "(888) 555-0123",
   phoneHref: "tel:+18885550123",
   email: "care@rebootblood.com",

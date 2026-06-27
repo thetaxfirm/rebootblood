@@ -19,14 +19,37 @@ function setMeta(name: string, content: string) {
  * `<title>` and `<meta name="description">` while a page is mounted, then
  * restores the site defaults on unmount so routes never leak metadata into
  * one another. `description` is expected to be 50–160 characters for SEO.
+ *
+ * Optionally injects a page-scoped JSON-LD `<script>` (e.g. Article schema)
+ * that is removed on unmount. Pass a plain object; it is serialized for you.
  */
-export function useSeo({ title, description }: { title: string; description: string }) {
+export function useSeo({
+  title,
+  description,
+  jsonLd,
+}: {
+  title: string;
+  description: string;
+  jsonLd?: Record<string, unknown>;
+}) {
   useEffect(() => {
     document.title = title;
     setMeta("description", description);
+
+    let script: HTMLScriptElement | null = null;
+    if (jsonLd) {
+      script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.setAttribute("data-seo-jsonld", "page");
+      script.text = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    }
+
     return () => {
       document.title = DEFAULT_TITLE;
       setMeta("description", DEFAULT_DESCRIPTION);
+      if (script) script.remove();
     };
-  }, [title, description]);
+    // jsonLd is serialized for comparison so callers can pass inline objects.
+  }, [title, description, jsonLd ? JSON.stringify(jsonLd) : ""]);
 }
