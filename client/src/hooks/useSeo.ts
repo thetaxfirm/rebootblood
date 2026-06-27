@@ -64,7 +64,7 @@ export function useSeo({
 }: {
   title: string;
   description: string;
-  jsonLd?: Record<string, unknown>;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   canonicalPath?: string;
 }) {
   useEffect(() => {
@@ -74,20 +74,23 @@ export function useSeo({
     const path = canonicalPath ?? window.location.pathname;
     setCanonical(`${SITE_URL}${path}`);
 
-    let script: HTMLScriptElement | null = null;
-    if (jsonLd) {
-      script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.setAttribute("data-seo-jsonld", "page");
-      script.text = JSON.stringify(jsonLd);
-      document.head.appendChild(script);
-    }
+    // Accept a single JSON-LD object or an array; emit one <script> per object
+    // so a page can carry e.g. both MedicalClinic and FAQPage schema.
+    const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+    const scripts: HTMLScriptElement[] = blocks.map((block) => {
+      const s = document.createElement("script");
+      s.type = "application/ld+json";
+      s.setAttribute("data-seo-jsonld", "page");
+      s.text = JSON.stringify(block);
+      document.head.appendChild(s);
+      return s;
+    });
 
     return () => {
       document.title = DEFAULT_TITLE;
       setMeta("description", DEFAULT_DESCRIPTION);
       setCanonical(SITE_URL + "/");
-      if (script) script.remove();
+      scripts.forEach((s) => s.remove());
     };
     // jsonLd is serialized for comparison so callers can pass inline objects.
   }, [title, description, canonicalPath, jsonLd ? JSON.stringify(jsonLd) : ""]);

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ASSETS, SITE } from "@/lib/site";
 
@@ -34,8 +34,8 @@ export default function CtaBand({
             </Button>
           </Link>
         </div>
-        <a href={SITE.phoneHref} className="mt-1 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <Phone className="h-4 w-4 text-[color:var(--gold)]" /> Or call {SITE.phoneDisplay}
+        <a href={SITE.emailHref} className="mt-1 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Mail className="h-4 w-4 text-[color:var(--gold)]" /> Or email {SITE.email}
         </a>
       </div>
     </section>

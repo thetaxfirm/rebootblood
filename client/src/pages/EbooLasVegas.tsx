@@ -1,11 +1,30 @@
 import { Link } from "wouter";
-import { ArrowRight, MapPin, Phone, Clock, ShieldCheck } from "lucide-react";
+import { ArrowRight, MapPin, Mail, Clock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildFaqJsonLd } from "@/hooks/useSeo";
 import { ASSETS, SITE, LOCAL_BUSINESS_JSONLD } from "@/lib/site";
+
+const NEIGHBORHOOD_FAQS = [
+  {
+    q: "Do you serve Henderson and Green Valley?",
+    a: "Yes. We regularly see EBOO / EBO3 patients from Henderson and Green Valley, typically a 20–30 minute drive from the Las Vegas metro core. Book online or email us to arrange a time.",
+  },
+  {
+    q: "Do you serve Summerlin and the northwest valley?",
+    a: "Yes. Patients from Summerlin, Centennial Hills, and the northwest Las Vegas valley are welcome. We schedule appointments by blood volume and session length, so reach out and we'll find a convenient slot.",
+  },
+  {
+    q: "What about North Las Vegas, Spring Valley, and Enterprise?",
+    a: "We serve the entire Las Vegas–Paradise metro, including North Las Vegas, Spring Valley, Enterprise, and the wider Clark County area. There is no separate travel fee — pricing is per session.",
+  },
+  {
+    q: "Is EBOO therapy available to visitors traveling to Las Vegas?",
+    a: "Yes. Many patients combine EBOO / EBO3 with a trip to Las Vegas. Complete the eligibility quiz in advance so screening is handled before you arrive and your session is ready to go.",
+  },
+];
 
 const SERVICE_AREAS = [
   "Las Vegas",
@@ -41,7 +60,7 @@ export default function EbooLasVegas() {
     title: "EBOO Treatment Near You in Las Vegas, NV | rEBOOtBlood",
     description:
       "Looking for EBOO treatment near you in Las Vegas? Book physician-supervised EBO3 ozone blood therapy serving the Las Vegas–Henderson metro.",
-    jsonLd: LOCAL_BUSINESS_JSONLD,
+    jsonLd: [LOCAL_BUSINESS_JSONLD, buildFaqJsonLd(NEIGHBORHOOD_FAQS)],
   });
 
   return (
@@ -72,13 +91,13 @@ export default function EbooLasVegas() {
                   Check eligibility <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
               </Link>
-              <a href={SITE.phoneHref}>
+              <a href={SITE.emailHref}>
                 <Button
                   size="lg"
                   variant="outline"
                   className="btn-press w-full border-border bg-background/30 sm:w-auto"
                 >
-                  <Phone className="mr-1.5 h-4 w-4" /> {SITE.phoneDisplay}
+                  <Mail className="mr-1.5 h-4 w-4" /> Email our team
                 </Button>
               </a>
             </div>
@@ -145,9 +164,30 @@ export default function EbooLasVegas() {
         </div>
       </section>
 
+      {/* NEIGHBORHOOD FAQ */}
+      <section className="py-20 md:py-28">
+        <div className="container">
+          <div className="max-w-2xl">
+            <Eyebrow>Local questions</Eyebrow>
+            <h2 className="mt-3 text-4xl md:text-5xl">Serving your neighborhood</h2>
+            <p className="mt-4 text-muted-foreground">
+              Common questions from patients across the Las Vegas valley.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            {NEIGHBORHOOD_FAQS.map((f) => (
+              <div key={f.q} className="rounded-2xl border border-border bg-card/50 p-6">
+                <h3 className="text-lg font-medium">{f.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <CtaBand
         heading="Considering EBOO therapy in Las Vegas?"
-        sub="Check eligibility in two minutes, or call our team to ask about scheduling and what to expect."
+        sub="Check eligibility in two minutes, or email our team to ask about scheduling and what to expect."
       />
       <ContactSection />
     </SiteLayout>

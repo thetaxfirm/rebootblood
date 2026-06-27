@@ -60,7 +60,7 @@ export function Privacy() {
       </p>
       <h2>Contact</h2>
       <p>
-        Questions about this policy can be directed to {SITE.email} or {SITE.phoneDisplay}.
+        Questions about this policy can be directed to {SITE.email}.
       </p>
     </LegalShell>
   );

@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Phone, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { SITE, NAV_LINKS } from "@/lib/site";
 
 export default function SiteFooter() {
@@ -19,9 +19,6 @@ export default function SiteFooter() {
               premium, safety-first standard of care.
             </p>
             <div className="mt-5 flex flex-col gap-2 text-sm">
-              <a href={SITE.phoneHref} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
-                <Phone className="h-4 w-4" /> {SITE.phoneDisplay}
-              </a>
               <a href={SITE.emailHref} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                 <Mail className="h-4 w-4" /> {SITE.email}
               </a>

@@ -1,13 +1,11 @@
 /** Central brand + contact constants and shared asset paths for the site. */
 export const SITE = {
   name: "rEBOOtBlood",
-  domain: "rEBOOtBlood.com",
+  domain: "rebootblood.clinic",
   /** Canonical absolute base URL (bound custom domain) for JSON-LD / sitemap. */
-  url: "https://rebootblood.manus.space",
-  phoneDisplay: "(888) 555-0123",
-  phoneHref: "tel:+18885550123",
-  email: "care@rebootblood.com",
-  emailHref: "mailto:care@rebootblood.com",
+  url: "https://www.rebootblood.clinic",
+  email: "care@rebootblood.clinic",
+  emailHref: "mailto:care@rebootblood.clinic",
   deviceName: "EBOO O3 Research Device 2026",
   /** Primary service-area city for local SEO. */
   city: "Las Vegas",
@@ -24,9 +22,8 @@ export const LOCAL_BUSINESS_JSONLD: Record<string, unknown> = {
   "@context": "https://schema.org",
   "@type": "MedicalClinic",
   name: "rEBOOtBlood — EBOO Therapy Las Vegas",
-  url: "https://rebootblood.manus.space/eboo/las-vegas",
-  telephone: "+18885550123",
-  email: "care@rebootblood.com",
+  url: "https://www.rebootblood.clinic/eboo/las-vegas",
+  email: "care@rebootblood.clinic",
   medicalSpecialty: "Hematology",
   areaServed: [
     { "@type": "City", name: "Las Vegas" },
@@ -138,4 +135,14 @@ export const NAV_LINKS = [
   { label: "Eligibility Quiz", href: "/eligibility" },
   { label: "Partners", href: "/partners" },
   { label: "Contact", href: "/#contact" },
+] as const;
+
+/**
+ * Sub-navigation under the EBO3 / EBOO menu item — surfaces the Cost and
+ * Las Vegas (Locations) landing pages from every page, not just contextual links.
+ */
+export const EBOO_SUBNAV = [
+  { label: "Overview", href: "/eboo", desc: "What EBO3 / EBOO is & how it works" },
+  { label: "Cost", href: "/eboo/cost", desc: "Transparent pricing by blood volume" },
+  { label: "Locations", href: "/eboo/las-vegas", desc: "EBOO therapy in Las Vegas, NV" },
 ] as const;

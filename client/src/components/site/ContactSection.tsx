@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearch } from "wouter";
-import { Phone, Mail, CheckCircle2, Loader2 } from "lucide-react";
+import { Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,12 +128,6 @@ export default function ContactSection() {
           </p>
 
           <div className="mt-8 space-y-4">
-            <a href={SITE.phoneHref} className="flex items-center gap-3 text-lg">
-              <span className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card">
-                <Phone className="h-5 w-5 text-[color:var(--gold)]" />
-              </span>
-              {SITE.phoneDisplay}
-            </a>
             <a href={SITE.emailHref} className="flex items-center gap-3 text-lg">
               <span className="grid h-11 w-11 place-items-center rounded-full border border-border bg-card">
                 <Mail className="h-5 w-5 text-[color:var(--gold)]" />

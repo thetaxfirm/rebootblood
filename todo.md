@@ -144,3 +144,15 @@
 - [x] Add Learn page: ebo2-vs-eboo comparison (introduces/brands EBO3 tier)
 - [x] Add Learn page: blood-oil-change curiosity->conversion bridge
 - [x] Register all new routes + nav links, update sitemap.xml, typecheck + tests, verify live, checkpoint
+
+## Enhancement: custom domain www.rebootblood.clinic + nav + local FAQ (requested)
+- [x] Update SITE.url / canonical origin to https://www.rebootblood.clinic across SITE constants + useSeo
+- [x] Update sitemap.xml URLs to www.rebootblood.clinic (+ refresh lastmod) and robots.txt sitemap reference
+- [x] Update any JSON-LD absolute URLs (MedicalBusiness/MedicalClinic url, logo, sameAs) to the new domain
+- [x] Grep for any remaining manus.space references in client code and fix (none remain)
+- [x] Add "Cost" + "Locations" nav entries (EBOO submenu) reachable from every page
+- [x] Add neighborhood FAQ ("Do you serve Henderson/Summerlin?") on /eboo/las-vegas with FAQPage JSON-LD
+- [x] Update contact email to care@rebootblood.clinic site-wide
+- [x] Remove all published clinic phone references (display, tel: links, JSON-LD telephone, CTAs) — kept lead-form phone input + consent wording per user
+- [x] Typecheck + tests + verify live, save checkpoint
+- [ ] Guide user through publish + Google Search Console sitemap submission

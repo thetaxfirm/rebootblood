@@ -123,7 +123,7 @@ const AFTERCARE = [
   { title: "Rest of the day", body: "Keep your schedule light and prioritize good sleep. Many people feel back to normal — often more energized — by the next morning." },
   { title: "Following days", body: "Resume normal activity as you feel ready. We'll review how you responded and confirm timing for any subsequent sessions in your protocol." },
   { title: "IV site care", body: "Keep the IV site clean and dry. Minor bruising or tenderness is normal and typically resolves within a few days." },
-  { title: "When to call us", body: "Contact us for persistent or worsening symptoms; seek emergency care for chest pain, severe shortness of breath, or fainting that does not resolve." },
+  { title: "When to reach out", body: "Contact us for persistent or worsening symptoms; seek emergency care for chest pain, severe shortness of breath, or fainting that does not resolve." },
 ];
 
 const PREP = [
