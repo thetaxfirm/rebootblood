@@ -43,7 +43,7 @@ export default function Navbar() {
     >
       <nav className="container flex h-16 items-center justify-between md:h-20">
         <button onClick={() => go("/")} className="flex items-center gap-2.5">
-          <img src={SITE && "/manus-storage/logo_mark_b729685e.png"} alt="" className="h-8 w-8 object-contain" />
+          <img src={SITE && "/manus-storage/logo_mark_b729685e.png"} alt="rEBOOtBlood logo" className="h-8 w-8 object-contain" />
           <span className="font-serif text-xl tracking-tight">
             r<span className="text-gradient-garnet">EBOO</span>tBlood
           </span>

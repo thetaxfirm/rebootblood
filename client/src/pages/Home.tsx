@@ -60,7 +60,7 @@ function TreatmentCard({
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border bg-card/60 transition-all duration-300 hover:border-[color:var(--garnet)]/50" style={{ transitionTimingFunction: "var(--ease-out)" }}>
       <div className="relative h-44 overflow-hidden">
-        <img src={image} alt="" className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" style={{ transitionTimingFunction: "var(--ease-out)" }} />
+        <img src={image} alt={`${title} treatment`} className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105" style={{ transitionTimingFunction: "var(--ease-out)" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
       </div>
       <div className="p-7">
@@ -92,7 +92,7 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={ASSETS.heroAbstract} alt="" className="h-full w-full object-cover" />
+          <img src={ASSETS.heroAbstract} alt="Abstract visualization of oxygenated blood flow" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/80 to-background" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-transparent" />
         </div>

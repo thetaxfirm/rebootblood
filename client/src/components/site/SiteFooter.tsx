@@ -9,7 +9,7 @@ export default function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2.5">
-              <img src="/manus-storage/logo_mark_b729685e.png" alt="" className="h-8 w-8 object-contain" />
+              <img src="/manus-storage/logo_mark_b729685e.png" alt="rEBOOtBlood logo" className="h-8 w-8 object-contain" />
               <span className="font-serif text-xl tracking-tight">
                 r<span className="text-gradient-garnet">EBOO</span>tBlood
               </span>
