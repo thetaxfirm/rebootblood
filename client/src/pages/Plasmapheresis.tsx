@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import {
   ArrowRight,
   ClipboardList,
@@ -49,6 +50,7 @@ const FAQS = [
 ];
 
 export default function Plasmapheresis() {
+  const [, navigate] = useLocation();
   const fireTierCta = useTierCta();
   useSeo({
     title: "Therapeutic Plasmapheresis & Plasma Exchange — rEBOOtBlood",
@@ -75,9 +77,7 @@ export default function Plasmapheresis() {
               toxins — then replaces it — to support detoxification, autoimmune balance, and longevity goals.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/#contact">
-                <Button size="lg" className="btn-press w-full sm:w-auto">Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
-              </Link>
+              <Button size="lg" className="btn-press w-full sm:w-auto" onClick={() => goToContact(navigate)}>Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
               <Link href="/eligibility">
                 <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/30 sm:w-auto">Take Eligibility Quiz</Button>
               </Link>
@@ -190,15 +190,19 @@ export default function Plasmapheresis() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}#contact`}>
-                  <Button
+                <Button
                     variant={t.featured ? "default" : "outline"}
                     className={`btn-press mt-7 w-full ${t.featured ? "" : "border-border bg-background/40"}`}
-                    onClick={() => fireTierCta(`Plasmapheresis — ${t.name}`, "book", "plasmapheresis")}
+                    onClick={() => {
+                      fireTierCta(`Plasmapheresis — ${t.name}`, "book", "plasmapheresis");
+                      goToContact(
+                        navigate,
+                        `interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}`,
+                      );
+                    }}
                   >
                     Book this tier
                   </Button>
-                </Link>
                 <Link
                   href={`/eligibility?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${t.name}`)}`}
                   className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"

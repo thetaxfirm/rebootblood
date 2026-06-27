@@ -1,7 +1,8 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { ArrowRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ASSETS, SITE } from "@/lib/site";
+import { goToContact } from "@/lib/goToContact";
 
 export default function CtaBand({
   heading = "Ready to take the next step?",
@@ -10,6 +11,7 @@ export default function CtaBand({
   heading?: string;
   sub?: string;
 }) {
+  const [, navigate] = useLocation();
   return (
     <section className="relative overflow-hidden border-y border-border/70">
       <div className="absolute inset-0" aria-hidden="true">
@@ -23,11 +25,9 @@ export default function CtaBand({
         <h2 className="max-w-2xl text-3xl md:text-4xl">{heading}</h2>
         <p className="max-w-xl text-muted-foreground">{sub}</p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/#contact">
-            <Button size="lg" className="btn-press w-full sm:w-auto">
-              Request Appointment <ArrowRight className="ml-1.5 h-4 w-4" />
-            </Button>
-          </Link>
+          <Button size="lg" className="btn-press w-full sm:w-auto" onClick={() => goToContact(navigate)}>
+            Request Appointment <ArrowRight className="ml-1.5 h-4 w-4" />
+          </Button>
           <Link href="/eligibility">
             <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/40 sm:w-auto">
               Take Eligibility Quiz

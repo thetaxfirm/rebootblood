@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, ShieldCheck, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -273,7 +274,7 @@ export default function Eligibility() {
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button className="btn-press" onClick={() => navigate("/")}>Return Home</Button>
-              <Button variant="outline" className="btn-press border-border bg-background/40" onClick={() => navigate("/#contact")}>
+              <Button variant="outline" className="btn-press border-border bg-background/40" onClick={() => goToContact(navigate)}>
                 Contact the Team
               </Button>
             </div>

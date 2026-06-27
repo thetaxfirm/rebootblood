@@ -1,4 +1,5 @@
-import { Link, useParams } from "wouter";
+import { Link, useParams, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import { ArrowRight, Clock, BookOpen, GraduationCap, FileText, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
@@ -28,6 +29,7 @@ function ArticleCard({ a }: { a: LearnArticle }) {
 }
 
 function LearnIndex() {
+  const [, navigate] = useLocation();
   useSeo({
     title: "Learning Center — EBO3, EBOO, UVBI & Plasmapheresis | rEBOOtBlood",
     description:
@@ -57,11 +59,14 @@ function LearnIndex() {
                   Take Eligibility Quiz <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/#contact">
-                <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/30 sm:w-auto">
-                  Book Consultation
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                variant="outline"
+                className="btn-press w-full border-border bg-background/30 sm:w-auto"
+                onClick={() => goToContact(navigate)}
+              >
+                Book Consultation
+              </Button>
             </div>
           </div>
         </div>

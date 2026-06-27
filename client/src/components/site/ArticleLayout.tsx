@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import { ArrowRight, ArrowLeft, Clock, ShieldCheck, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,7 @@ function fmtDate(iso: string) {
 }
 
 export default function ArticleLayout({ article }: { article: LearnArticle }) {
+  const [, navigate] = useLocation();
   const quizHref = article.conditionValue
     ? `/eligibility?condition=${encodeURIComponent(article.conditionValue)}`
     : "/eligibility";
@@ -143,11 +145,13 @@ export default function ArticleLayout({ article }: { article: LearnArticle }) {
                   Take Eligibility Quiz <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/#contact">
-                <Button variant="outline" className="btn-press mt-2 w-full border-border bg-background/30">
-                  Book a Consultation
-                </Button>
-              </Link>
+              <Button
+                variant="outline"
+                className="btn-press mt-2 w-full border-border bg-background/30"
+                onClick={() => goToContact(navigate)}
+              >
+                Book a Consultation
+              </Button>
             </div>
 
             {related.length > 0 && (

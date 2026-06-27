@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import {
   ArrowRight,
   Droplets,
@@ -149,6 +150,7 @@ const FAQS = [
 export default function Eboo() {
   const [volIdx, setVolIdx] = useState(1);
   const vol = VOLUMES[volIdx];
+  const [, navigate] = useLocation();
   const fireTierCta = useTierCta();
   useSeo({
     title: "EBOO Therapy in Las Vegas | EBO3 Ozone Blood Treatment",
@@ -178,9 +180,7 @@ export default function Eboo() {
               Also known as EBOO treatment, EBO2 therapy, EBO3, or a “blood oil change.”
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/#contact">
-                <Button size="lg" className="btn-press w-full sm:w-auto">Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
-              </Link>
+              <Button size="lg" className="btn-press w-full sm:w-auto" onClick={() => goToContact(navigate)}>Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" /></Button>
               <Link href="/eligibility">
                 <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/30 sm:w-auto">Take Eligibility Quiz</Button>
               </Link>
@@ -531,15 +531,19 @@ export default function Eboo() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/?interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}#contact`}>
-                  <Button
+                <Button
                     variant={p.featured ? "default" : "outline"}
                     className={`btn-press mt-6 w-full ${p.featured ? "" : "border-border bg-background/40"}`}
-                    onClick={() => fireTierCta(`EBO3 ${vol.key} — ${p.name}`, "book", "eboo")}
+                    onClick={() => {
+                      fireTierCta(`EBO3 ${vol.key} — ${p.name}`, "book", "eboo");
+                      goToContact(
+                        navigate,
+                        `interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}`,
+                      );
+                    }}
                   >
                     Book this tier
                   </Button>
-                </Link>
                 <Link
                   href={`/eligibility?interest=eboo&volume=${encodeURIComponent(vol.key)}&tier=${encodeURIComponent(`EBO3 ${vol.key} — ${p.name}`)}`}
                   className="mt-2 block text-center text-xs font-medium text-[color:var(--gold)] underline-offset-4 hover:underline"

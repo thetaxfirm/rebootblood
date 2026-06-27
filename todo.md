@@ -155,4 +155,45 @@
 - [x] Update contact email to care@rebootblood.clinic site-wide
 - [x] Remove all published clinic phone references (display, tel: links, JSON-LD telephone, CTAs) — kept lead-form phone input + consent wording per user
 - [x] Typecheck + tests + verify live, save checkpoint
-- [ ] Guide user through publish + Google Search Console sitemap submission
+- [x] Guide user through publish + Google Search Console sitemap submission
+
+## Bugfix: strip OAuth params (?code=, state, etc.) from address bar after login (requested)
+- [ ] Add pure, tested helper stripAuthParamsFromUrl(url) in shared/ that removes code/state/scope/authuser/prompt/error/error_description, preserves other params + hash
+- [ ] Call it via history.replaceState on mount in SiteLayout (public routes) and DashboardLayout (admin)
+- [ ] Add vitest coverage for the helper
+- [ ] Typecheck + tests, verify in preview, save checkpoint
+
+## Integration: LinkArtemis article sync -> Learning Center (review-before-publish) (requested)
+- [ ] Store LINKARTEMIS_API_KEY as a server-side secret (not exposed to client)
+- [ ] Read references/periodic-updates.md before building the scheduled sync
+- [ ] Add la_articles table (la_id, title, slug, excerpt, meta_description, hero_image_url, keywords, language_code, content_html, content_markdown, status: pending/published/hidden, syncedAt, publishedAt)
+- [ ] Server: LinkArtemis API client (list + detail) using X-API-Key, with rate-limit/error handling
+- [ ] Server: sync helper that upserts new completed articles as status=pending; pure mapping helper unit-tested
+- [ ] tRPC adminProcedure: la.sync (manual trigger), la.list (by status), la.setStatus (publish/hide)
+- [ ] Public tRPC: list published la_articles + get by slug for Learning Center
+- [ ] Admin UI: "Synced articles" tab with Sync now, preview, Publish/Hide actions
+- [ ] Learning Center: render published synced articles via existing ArticleLayout (SEO/JSON-LD + medical disclaimer)
+- [ ] Scheduled daily sync (heartbeat) pulling new articles into pending queue
+- [ ] tsc + vitest, verify live sync (0 articles today -> empty state), checkpoint
+
+## Integration: LinkArtemis article sync -> Learning Center (review-before-publish) (requested)
+- [ ] Store LINKARTEMIS_API_KEY as a server-side secret (not exposed to client)
+- [ ] Read references/periodic-updates.md before building the scheduled sync
+- [ ] Add la_articles table + server client + sync helper (pending queue)
+- [ ] tRPC admin: la.sync / la.list / la.setStatus; public: list published + get by slug
+- [ ] Admin UI "Synced articles" tab + render published in Learning Center via ArticleLayout
+- [ ] Scheduled daily sync; tsc + vitest; verify live; checkpoint
+
+## Bug: "Book Consultation" button does nothing on /#contact (requested)
+- [ ] Reproduce on home + other pages, find why #contact does not scroll to contact form
+- [ ] Fix navbar/CTA so Book Consultation reliably scrolls to / navigates to the contact section
+- [ ] Verify in preview on home and a sub-page; checkpoint
+
+## Notification content: push contact + intent to owner (care@rebootblood.clinic) — Option 1
+- [x] Fix "Book Consultation" scroll-to-#contact across all CTAs (shared goToContact helper)
+- [x] Build a shared notification-body formatter (contact + intent; exclude sensitive health-screening answers for questionnaire)
+- [x] submitLead: include name, email, phone, interest, source, selected tier, message in notification body
+- [x] submitQuestionnaire: include name, email, phone, preferred contact, location, age, interest, EBO3 volume, goals + note that health screening answers are in the secure dashboard
+- [x] Guide form ("Talk to Our Team") routes through submitLead — covered by the same formatter
+- [x] Unit tests for the notification-body formatter (4 tests; verifies health answers excluded)
+- [x] tsc + vitest green (47 tests); checkpoint

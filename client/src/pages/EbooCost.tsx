@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import { ArrowRight, Check, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +44,7 @@ const COST_FAQS = [
 ];
 
 export default function EbooCost() {
+  const [, navigate] = useLocation();
   useSeo({
     title: "EBOO Therapy Cost in Las Vegas | EBO3 Pricing & Packages",
     description:
@@ -78,15 +80,14 @@ export default function EbooCost() {
                   Check eligibility <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/#contact">
-                <Button
+              <Button
                   size="lg"
                   variant="outline"
                   className="btn-press w-full border-border bg-background/30 sm:w-auto"
+                  onClick={() => goToContact(navigate)}
                 >
                   Book Consultation
                 </Button>
-              </Link>
             </div>
           </div>
         </div>

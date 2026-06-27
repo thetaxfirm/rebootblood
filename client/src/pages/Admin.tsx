@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { hasAuthParams, stripAuthParamsFromUrl } from "@shared/stripAuthParams";
 import {
   ShieldCheck,
   Lock,
@@ -82,6 +83,15 @@ function downloadCsv(csv: string, filename: string) {
 
 export default function Admin() {
   const { user, loading, logout } = useAuth();
+
+  // Strip any lingering OAuth callback params (?code=&state=) after sign-in.
+  useEffect(() => {
+    if (!hasAuthParams(window.location.search)) return;
+    const cleaned = stripAuthParamsFromUrl(
+      window.location.pathname + window.location.search + window.location.hash,
+    );
+    window.history.replaceState(window.history.state, "", cleaned);
+  }, []);
 
   if (loading) {
     return (

@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EBOO_SUBNAV, NAV_LINKS, SITE } from "@/lib/site";
+import { goToContact } from "@/lib/goToContact";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -33,7 +34,9 @@ export default function Navbar() {
   const go = (href: string) => {
     setOpen(false);
     setEbooOpen(false);
-    if (href.startsWith("/#")) {
+    if (href === "/#contact") {
+      goToContact(navigate);
+    } else if (href.startsWith("/#")) {
       const id = href.slice(2);
       if (window.location.pathname === "/") {
         document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });

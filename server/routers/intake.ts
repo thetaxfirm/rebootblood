@@ -15,6 +15,10 @@ import {
   type LeadPayload,
 } from "@shared/forms";
 import {
+  formatLeadNotification,
+  formatQuestionnaireNotification,
+} from "@shared/notificationBody";
+import {
   insertQuestionnaireSubmission,
   listQuestionnaireSubmissions,
   getQuestionnaireSubmissionByPublicId,
@@ -68,10 +72,12 @@ export const intakeRouter = router({
         detail: `interest=${input.treatmentInterest}`,
       });
 
-      // Operational alert to clinic owner (no PHI in the body).
+      // Operational alert to clinic owner. Includes contact + intent so the
+      // care team can act, but intentionally omits clinical screening answers
+      // (those stay in the encrypted, audited admin dashboard).
       void notifyOwner({
-        title: "New patient eligibility submission",
-        content: `A new eligibility questionnaire was submitted (ref ${publicId}). Interest: ${TREATMENT_INTEREST_LABELS[input.treatmentInterest]}. View securely in the admin dashboard.`,
+        title: `New eligibility submission — ${[payload.firstName, payload.lastName].filter(Boolean).join(" ") || "patient"}`,
+        content: formatQuestionnaireNotification({ publicId, payload }),
       }).catch(() => undefined);
 
       return { success: true, reference: publicId } as const;
@@ -127,10 +133,17 @@ export const intakeRouter = router({
       detail: `source=${input.source || "lead_form"}`,
     });
 
-    // HARD REQUIREMENT: owner notification on every lead submission.
+    // HARD REQUIREMENT: owner notification on every lead submission. Now
+    // includes the captured contact details + intent in the body so the care
+    // team can follow up directly (Option 1, per owner request).
     const delivered = await notifyOwner({
-      title: "New lead — Talk to Our Team",
-      content: `A new lead was captured (ref ${publicId}) with interest in ${TREATMENT_INTEREST_LABELS[input.treatmentInterest]}${selectedTier ? ` (tier: ${selectedTier})` : ""}. Open the admin dashboard to view contact details securely.`,
+      title: `New lead — ${payload.name || "website"}${selectedTier ? ` (${selectedTier})` : ""}`,
+      content: formatLeadNotification({
+        publicId,
+        payload,
+        source: input.source || "lead_form",
+        selectedTier: selectedTier || null,
+      }),
     }).catch(() => false);
 
     return { success: true, reference: publicId, notified: !!delivered } as const;

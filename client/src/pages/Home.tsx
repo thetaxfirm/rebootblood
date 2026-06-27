@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { goToContact } from "@/lib/goToContact";
 import {
   ArrowRight,
   Droplets,
@@ -87,6 +88,7 @@ function TreatmentCard({
 }
 
 export default function Home() {
+  const [, navigate] = useLocation();
   const fireTierCta = useTierCta();
   useSeo({
     title: "rEBOOtBlood — Advanced EBOO & Plasmapheresis Blood Therapy",
@@ -119,11 +121,13 @@ export default function Home() {
               wellness at the cellular level.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/#contact">
-                <Button size="lg" className="btn-press w-full sm:w-auto">
-                  Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                className="btn-press w-full sm:w-auto"
+                onClick={() => goToContact(navigate)}
+              >
+                Book Consultation <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
               <Link href="/eligibility">
                 <Button size="lg" variant="outline" className="btn-press w-full border-border bg-background/30 sm:w-auto">
                   Take Eligibility Quiz
@@ -241,18 +245,21 @@ export default function Home() {
                   <p className="mt-4 rounded-lg border border-border bg-background/40 px-3 py-2 text-xs text-muted-foreground">
                     Packages: 3 for {money(vol.pkg3)} &middot; 6 for {money(vol.pkg6)}
                   </p>
-                  <Link
-                    href={`/?interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} session`)}#contact`}
-                    className="mt-auto pt-6"
-                  >
+                  <div className="mt-auto pt-6">
                     <Button
                       variant={featured ? "default" : "outline"}
                       className={`btn-press w-full ${featured ? "" : "border-border bg-background/40"}`}
-                      onClick={() => fireTierCta(`EBO3 ${vol.key} session`, "book", "eboo")}
+                      onClick={() => {
+                        fireTierCta(`EBO3 ${vol.key} session`, "book", "eboo");
+                        goToContact(
+                          navigate,
+                          `interest=eboo&tier=${encodeURIComponent(`EBO3 ${vol.key} session`)}`,
+                        );
+                      }}
                     >
                       Book this tier
                     </Button>
-                  </Link>
+                  </div>
                 </div>
               );
             })}
@@ -304,15 +311,19 @@ export default function Home() {
                   ))}
                 </ul>
                 <div className="mt-auto flex flex-col gap-2 pt-7">
-                  <Link href={`/?interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${tier.name}`)}#contact`}>
-                    <Button
+                  <Button
                       variant={tier.featured ? "default" : "outline"}
                       className={`btn-press w-full ${tier.featured ? "" : "border-border bg-background/40"}`}
-                      onClick={() => fireTierCta(`Plasmapheresis — ${tier.name}`, "book", "plasmapheresis")}
+                      onClick={() => {
+                        fireTierCta(`Plasmapheresis — ${tier.name}`, "book", "plasmapheresis");
+                        goToContact(
+                          navigate,
+                          `interest=plasmapheresis&tier=${encodeURIComponent(`Plasmapheresis — ${tier.name}`)}`,
+                        );
+                      }}
                     >
                       Book this tier
                     </Button>
-                  </Link>
                   <Link href="/plasmapheresis#pricing">
                     <Button variant="ghost" className="btn-press w-full text-muted-foreground hover:text-foreground">
                       View {tier.name} details <ArrowRight className="ml-1.5 h-4 w-4" />
