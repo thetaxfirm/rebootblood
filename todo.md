@@ -158,36 +158,36 @@
 - [x] Guide user through publish + Google Search Console sitemap submission
 
 ## Bugfix: strip OAuth params (?code=, state, etc.) from address bar after login (requested)
-- [ ] Add pure, tested helper stripAuthParamsFromUrl(url) in shared/ that removes code/state/scope/authuser/prompt/error/error_description, preserves other params + hash
-- [ ] Call it via history.replaceState on mount in SiteLayout (public routes) and DashboardLayout (admin)
-- [ ] Add vitest coverage for the helper
-- [ ] Typecheck + tests, verify in preview, save checkpoint
+- [x] Add pure, tested helper stripAuthParams in shared/stripAuthParams.ts (removes code/state/scope/authuser/prompt/error/error_description, preserves other params + hash)
+- [x] Call it via history.replaceState on mount in SiteLayout (public routes) and Admin (admin)
+- [x] Added vitest coverage for the helper
+- [x] tsc + vitest green; checkpoint f7d06781
 
-## Integration: LinkArtemis article sync -> Learning Center (review-before-publish) (requested)
-- [ ] Store LINKARTEMIS_API_KEY as a server-side secret (not exposed to client)
-- [ ] Read references/periodic-updates.md before building the scheduled sync
-- [ ] Add la_articles table (la_id, title, slug, excerpt, meta_description, hero_image_url, keywords, language_code, content_html, content_markdown, status: pending/published/hidden, syncedAt, publishedAt)
-- [ ] Server: LinkArtemis API client (list + detail) using X-API-Key, with rate-limit/error handling
-- [ ] Server: sync helper that upserts new completed articles as status=pending; pure mapping helper unit-tested
-- [ ] tRPC adminProcedure: la.sync (manual trigger), la.list (by status), la.setStatus (publish/hide)
-- [ ] Public tRPC: list published la_articles + get by slug for Learning Center
-- [ ] Admin UI: "Synced articles" tab with Sync now, preview, Publish/Hide actions
-- [ ] Learning Center: render published synced articles via existing ArticleLayout (SEO/JSON-LD + medical disclaimer)
-- [ ] Scheduled daily sync (heartbeat) pulling new articles into pending queue
-- [ ] tsc + vitest, verify live sync (0 articles today -> empty state), checkpoint
+## Integration: LinkArtemis article sync -> Learning Center (SUPERSEDED — see "Option A" + auto-publish + daily cron sections below)
+- [x] Store LINKARTEMIS_API_KEY as a server-side secret (env.ts wiring)
+- [x] Daily auto-sync built per periodic-updates pattern: POST /api/scheduled/syncLinkArtemis in server/_core/scheduled.ts, mounted in server/_core/index.ts before Vite fallthrough
+- [x] synced_articles table (remote id, slug, title, excerpt, meta_description, hero image, keywords, content_html, status, source, timestamps) + migration pushed
+- [x] Server LinkArtemis API client (list + detail) with error handling (server/_core/linkartemis.ts)
+- [x] Sync helper: idempotent upsert-by-remote-id; pure mapping helper unit-tested
+- [x] tRPC adminProcedure: content.runSync / content.listSynced / content.setStatus (audit-logged)
+- [x] Public tRPC: content.listPublished + content.getPublishedBySlug for Learning Center
+- [x] Admin "Articles" tab: Sync now, preview drawer, Publish/Hide/Re-queue
+- [x] Learning Center: render published synced articles via SyncedArticleLayout (SEO/JSON-LD + medical disclaimer)
+- [x] Scheduled daily sync (heartbeat) — POST /api/scheduled/syncLinkArtemis, daily cron created (task_uid MBsuHnFDuvYQDaLK4tpNnf, 09:00 UTC)
+- [x] tsc + vitest green; live sync verified end-to-end; checkpoint eb4eaedd
 
-## Integration: LinkArtemis article sync -> Learning Center (review-before-publish) (requested)
-- [ ] Store LINKARTEMIS_API_KEY as a server-side secret (not exposed to client)
-- [ ] Read references/periodic-updates.md before building the scheduled sync
-- [ ] Add la_articles table + server client + sync helper (pending queue)
-- [ ] tRPC admin: la.sync / la.list / la.setStatus; public: list published + get by slug
-- [ ] Admin UI "Synced articles" tab + render published in Learning Center via ArticleLayout
-- [ ] Scheduled daily sync; tsc + vitest; verify live; checkpoint
+## Integration: LinkArtemis article sync (DUPLICATE — fully covered by the sections above and below)
+- [x] Store LINKARTEMIS_API_KEY as a server-side secret (done)
+- [x] Daily auto-sync handler + cron created (done; see section above)
+- [x] synced_articles table + server client + sync helper (done)
+- [x] tRPC admin: runSync / listSynced / setStatus; public: listPublished + getPublishedBySlug (done)
+- [x] Admin "Articles" tab + render published in Learning Center (done)
+- [x] Scheduled daily sync; tsc + vitest; verified live; checkpoint eb4eaedd
 
-## Bug: "Book Consultation" button does nothing on /#contact (requested)
-- [ ] Reproduce on home + other pages, find why #contact does not scroll to contact form
-- [ ] Fix navbar/CTA so Book Consultation reliably scrolls to / navigates to the contact section
-- [ ] Verify in preview on home and a sub-page; checkpoint
+## Bug: "Book Consultation" button does nothing on /#contact (requested) (FIXED — see goToContact helper)
+- [x] Implemented shared goToContact() helper (client/src/lib/goToContact.ts) for reliable scroll/navigate to #contact
+- [x] Wired goToContact() across all CTAs: Navbar, Home, Eboo, Plasmapheresis, Learn, EbooCost, CtaBand, ArticleLayout, Eligibility
+- [x] Checkpoint f7d06781 saved after wiring goToContact across all CTAs
 
 ## Notification content: push contact + intent to owner (care@rebootblood.clinic) — Option 1
 - [x] Fix "Book Consultation" scroll-to-#contact across all CTAs (shared goToContact helper)
@@ -212,7 +212,7 @@
 - [x] Admin "Articles" tab: Sync now, list, preview drawer, Publish/Hide/Re-queue
 - [x] Learning Center: render published synced articles ("From our blog" section + /learn/:slug sanitized-HTML renderer w/ SEO + JSON-LD + disclaimer); hand-authored slugs take priority
 - [x] Verify tsc + vitest (66 tests); live sync run (fetched 1, inserted 1, published + public read OK); checkpoint; report
-- [ ] (Optional follow-up) Scheduled daily auto-sync via heartbeat — currently manual "Sync now" only, pending user go-ahead
+- [x] (Follow-up DONE) Scheduled daily auto-sync via heartbeat implemented: POST /api/scheduled/syncLinkArtemis + daily cron (task_uid MBsuHnFDuvYQDaLK4tpNnf, 09:00 UTC), verified end-to-end; checkpoint eb4eaedd
 
 ## Content: adapt "Is EBOO Therapy Safe?" article from myrevived.com (review-before-publish, requested)
 - [x] Rewrite article to rebootblood voice; removed other clinic name, address, phone, Dr. name, outbound links/images (banned-term scan clean)
