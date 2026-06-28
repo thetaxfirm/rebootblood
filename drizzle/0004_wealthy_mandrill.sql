@@ -1,0 +1,22 @@
+CREATE TABLE `synced_articles` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`source` varchar(32) NOT NULL DEFAULT 'linkartemis',
+	`remoteId` varchar(64) NOT NULL,
+	`slug` varchar(200) NOT NULL,
+	`title` text NOT NULL,
+	`excerpt` text,
+	`metaDescription` text,
+	`heroImageUrl` text,
+	`keywords` text,
+	`languageCode` varchar(16),
+	`contentHtml` text NOT NULL,
+	`status` enum('pending','published','hidden') NOT NULL DEFAULT 'pending',
+	`remoteCreatedAt` timestamp,
+	`publishedAt` timestamp,
+	`lastSyncedAt` timestamp NOT NULL DEFAULT (now()),
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `synced_articles_id` PRIMARY KEY(`id`),
+	CONSTRAINT `synced_articles_remoteId_unique` UNIQUE(`remoteId`),
+	CONSTRAINT `synced_articles_slug_unique` UNIQUE(`slug`)
+);

@@ -13,4 +13,8 @@ export const ENV = {
    * Falls back to JWT_SECRET-derived key in dev if unset (NOT for production PHI).
    */
   phiEncryptionKey: process.env.PHI_ENCRYPTION_KEY ?? "",
+  /** app.linkartemis.com API key (X-API-Key) for the server-side article sync. */
+  linkArtemisApiKey: process.env.LINKARTEMIS_API_KEY ?? "",
+  /** LinkArtemis API base URL (override via env for testing if ever needed). */
+  linkArtemisApiUrl: process.env.LINKARTEMIS_API_URL ?? "https://app.linkartemis.com/api/v1",
 };

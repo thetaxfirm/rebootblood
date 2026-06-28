@@ -140,3 +140,49 @@ export const tierEvents = mysqlTable("tier_events", {
 
 export type TierEvent = typeof tierEvents.$inferSelect;
 export type InsertTierEvent = typeof tierEvents.$inferInsert;
+
+
+/**
+ * Articles synced from LinkArtemis (app.linkartemis.com) AI SEO platform.
+ *
+ * These are PUBLIC marketing/education articles (no PHI). The integration is
+ * review-before-publish: a sync pulls completed LinkArtemis articles in as
+ * `pending`; an admin must explicitly `published` them before they appear in
+ * the public Learning Center. `hidden` lets an admin pull a published article
+ * back without deleting the synced copy.
+ *
+ * `remoteId` is the LinkArtemis article UUID — the idempotency key for sync
+ * upserts (never look up by slug/title for sync). `contentHtml` stores the
+ * sanitized article body (sanitization happens before insert/update).
+ */
+export const syncedArticles = mysqlTable("synced_articles", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Upstream provider, currently always "linkartemis". */
+  source: varchar("source", { length: 32 }).default("linkartemis").notNull(),
+  /** Upstream article id (UUID). Unique idempotency key for sync upserts. */
+  remoteId: varchar("remoteId", { length: 64 }).notNull().unique(),
+  /** URL slug used under /learn/:slug. Unique across synced articles. */
+  slug: varchar("slug", { length: 200 }).notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt"),
+  metaDescription: text("metaDescription"),
+  heroImageUrl: text("heroImageUrl"),
+  /** JSON-encoded string[] of keywords from the provider. */
+  keywords: text("keywords"),
+  languageCode: varchar("languageCode", { length: 16 }),
+  /** Sanitized HTML body (allowlisted tags only; no scripts). */
+  contentHtml: text("contentHtml").notNull(),
+  /** Review workflow status. Articles are never public until "published". */
+  status: mysqlEnum("status", ["pending", "published", "hidden"]).default("pending").notNull(),
+  /** Provider-reported creation time (ISO string preserved as ms epoch). */
+  remoteCreatedAt: timestamp("remoteCreatedAt"),
+  /** When an admin first moved this article to "published". */
+  publishedAt: timestamp("publishedAt"),
+  /** Last time the sync touched this row. */
+  lastSyncedAt: timestamp("lastSyncedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SyncedArticle = typeof syncedArticles.$inferSelect;
+export type InsertSyncedArticle = typeof syncedArticles.$inferInsert;

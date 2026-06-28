@@ -197,3 +197,19 @@
 - [x] Guide form ("Talk to Our Team") routes through submitLead — covered by the same formatter
 - [x] Unit tests for the notification-body formatter (4 tests; verifies health answers excluded)
 - [x] tsc + vitest green (47 tests); checkpoint
+
+
+## Integration: LinkArtemis article sync (Option A — review-before-publish)
+- [x] Add `synced_articles` DB table (remote id, slug, title, excerpt, meta_description, hero image, keywords, content_html, status pending/published/hidden, source, timestamps, lastSyncedAt) + push migration
+- [x] Store `LINKARTEMIS_API_KEY` as a server secret (env.ts wiring)
+- [x] Server LinkArtemis client (list + get) in server/_core/linkartemis.ts
+- [x] Pure HTML sanitizer for incoming article HTML (allowlist tags/attrs, strip scripts) — sanitize-html
+- [x] db.ts helpers: upsertSyncedArticle, listSyncedArticles, getPublishedSyncedArticleBySlug, setSyncedArticleStatus
+- [x] Pure sync mapper + idempotent upsert-by-remote-id helper (tests)
+- [x] tRPC admin procedures: content.listSynced, content.runSync, content.setStatus (audit-logged); public content.getPublishedBySlug + content.listPublished
+- [x] Mount content router in routers.ts
+- [x] Unit tests: sanitizer, sync mapper/upsert, slug-namespacing/collision guard, status transitions (18 unit + 1 live)
+- [x] Admin "Articles" tab: Sync now, list, preview drawer, Publish/Hide/Re-queue
+- [x] Learning Center: render published synced articles ("From our blog" section + /learn/:slug sanitized-HTML renderer w/ SEO + JSON-LD + disclaimer); hand-authored slugs take priority
+- [x] Verify tsc + vitest (66 tests); live sync run (fetched 1, inserted 1, published + public read OK); checkpoint; report
+- [ ] (Optional follow-up) Scheduled daily auto-sync via heartbeat — currently manual "Sync now" only, pending user go-ahead

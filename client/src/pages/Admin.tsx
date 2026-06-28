@@ -16,6 +16,11 @@ import {
   ArrowDown,
   ArrowUpDown,
   BarChart3,
+  Newspaper,
+  ExternalLink,
+  CheckCircle2,
+  EyeOff,
+  Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -180,11 +185,13 @@ function AdminPanel({ email, onLogout }: { email: string; onLogout: () => void }
             <TabsTrigger value="submissions"><FileText className="mr-1.5 h-4 w-4" /> Submissions</TabsTrigger>
             <TabsTrigger value="leads"><Users className="mr-1.5 h-4 w-4" /> Leads</TabsTrigger>
             <TabsTrigger value="tiers"><BarChart3 className="mr-1.5 h-4 w-4" /> Tier interest</TabsTrigger>
+            <TabsTrigger value="articles"><Newspaper className="mr-1.5 h-4 w-4" /> Articles</TabsTrigger>
             <TabsTrigger value="audit"><ScrollText className="mr-1.5 h-4 w-4" /> Audit log</TabsTrigger>
           </TabsList>
           <TabsContent value="submissions" className="mt-6"><SubmissionsTab /></TabsContent>
           <TabsContent value="leads" className="mt-6"><LeadsTab /></TabsContent>
           <TabsContent value="tiers" className="mt-6"><TierStatsTab /></TabsContent>
+          <TabsContent value="articles" className="mt-6"><ArticlesTab /></TabsContent>
           <TabsContent value="audit" className="mt-6"><AuditTab /></TabsContent>
         </Tabs>
       </main>
@@ -646,6 +653,221 @@ function StatPill({ label, value }: { label: string; value: number }) {
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="font-serif text-2xl tabular-nums">{value}</p>
     </div>
+  );
+}
+
+/* ----------------------- Articles (LinkArtemis sync) ----------------------- */
+
+type SyncedStatus = "pending" | "published" | "hidden";
+
+const SYNCED_STATUS_META: Record<SyncedStatus, { label: string; cls: string }> = {
+  pending: {
+    label: "Pending review",
+    cls: "bg-[oklch(0.5_0.13_25)]/25 text-[color:var(--gold)] border-[color:var(--gold)]/30",
+  },
+  published: {
+    label: "Published",
+    cls: "bg-[oklch(0.5_0.13_150)]/20 text-emerald-300 border-emerald-500/30",
+  },
+  hidden: { label: "Hidden", cls: "bg-muted text-muted-foreground border-border" },
+};
+
+function SyncedStatusBadge({ status }: { status: SyncedStatus }) {
+  const m = SYNCED_STATUS_META[status];
+  return <Badge variant="outline" className={m.cls}>{m.label}</Badge>;
+}
+
+function ArticlesTab() {
+  const [statusFilter, setStatusFilter] = useState<SyncedStatus | "all">("all");
+  const [openId, setOpenId] = useState<number | null>(null);
+  const utils = trpc.useUtils();
+
+  const list = trpc.content.listSynced.useQuery(
+    statusFilter === "all" ? undefined : { status: statusFilter },
+  );
+
+  const runSync = trpc.content.runSync.useMutation({
+    onSuccess: (s) => {
+      toast.success(
+        `Sync complete — ${s.inserted} new, ${s.updated} updated${s.skipped ? `, ${s.skipped} skipped` : ""}${s.errors.length ? `, ${s.errors.length} error(s)` : ""}`,
+      );
+      utils.content.listSynced.invalidate();
+      utils.content.listPublished.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as SyncedStatus | "all")}>
+          <SelectTrigger className="h-9 w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All articles</SelectItem>
+            <SelectItem value="pending">Pending review</SelectItem>
+            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="hidden">Hidden</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            className="btn-press"
+            disabled={runSync.isPending}
+            onClick={() => runSync.mutate()}
+          >
+            {runSync.isPending ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-1.5 h-4 w-4" />}
+            Sync from LinkArtemis
+          </Button>
+          <Button variant="outline" size="sm" className="btn-press border-border" onClick={() => list.refetch()}>
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Refresh
+          </Button>
+        </div>
+      </div>
+
+      <p className="mb-4 text-xs text-muted-foreground">
+        Articles are pulled from your LinkArtemis workspace as <strong>pending</strong> and stay private until you
+        publish them. Published articles appear in the public Learning Center at <code>/learn/&lt;slug&gt;</code> with the
+        standard educational disclaimer. Review each article for medical-claim accuracy before publishing.
+      </p>
+
+      <div className="rounded-xl border border-border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Last synced</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {list.isLoading && (
+              <TableRow><TableCell colSpan={5} className="py-10 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin text-muted-foreground" /></TableCell></TableRow>
+            )}
+            {!list.isLoading && (list.data?.length ?? 0) === 0 && (
+              <TableRow><TableCell colSpan={5} className="py-10 text-center text-muted-foreground">No synced articles yet. Click “Sync from LinkArtemis” to pull completed articles.</TableCell></TableRow>
+            )}
+            {list.data?.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell className="max-w-[22rem] text-sm font-medium">{a.title}</TableCell>
+                <TableCell className="font-mono text-xs text-muted-foreground">{a.slug}</TableCell>
+                <TableCell><SyncedStatusBadge status={a.status as SyncedStatus} /></TableCell>
+                <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{fmt(a.lastSyncedAt)}</TableCell>
+                <TableCell className="text-right">
+                  <Button size="sm" variant="outline" className="btn-press border-border" onClick={() => setOpenId(a.id)}>
+                    <Eye className="mr-1.5 h-3.5 w-3.5" /> Review
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <ArticleReviewDrawer
+        id={openId}
+        onClose={() => setOpenId(null)}
+        onChanged={() => {
+          utils.content.listSynced.invalidate();
+          utils.content.listPublished.invalidate();
+        }}
+      />
+    </div>
+  );
+}
+
+function ArticleReviewDrawer({
+  id,
+  onClose,
+  onChanged,
+}: {
+  id: number | null;
+  onClose: () => void;
+  onChanged: () => void;
+}) {
+  const detail = trpc.content.getSynced.useQuery({ id: id ?? 0 }, { enabled: !!id });
+  const setStatus = trpc.content.setStatus.useMutation({
+    onSuccess: () => {
+      toast.success("Article updated");
+      detail.refetch();
+      onChanged();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+  const a = detail.data;
+  const status = (a?.status ?? "pending") as SyncedStatus;
+
+  return (
+    <Sheet open={!!id} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
+        <SheetHeader>
+          <SheetTitle className="font-serif">Review article</SheetTitle>
+          <SheetDescription>Synced from LinkArtemis · review before publishing</SheetDescription>
+        </SheetHeader>
+
+        {detail.isLoading && (
+          <div className="grid place-items-center py-16"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+        )}
+
+        {a && (
+          <div className="mt-6 space-y-5 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              <SyncedStatusBadge status={status} />
+              {status === "published" && (
+                <a
+                  href={`/learn/${a.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  View live <ExternalLink className="h-3 w-3" />
+                </a>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {status !== "published" && (
+                <Button size="sm" className="btn-press" disabled={setStatus.isPending} onClick={() => id && setStatus.mutate({ id, status: "published" })}>
+                  <CheckCircle2 className="mr-1.5 h-4 w-4" /> Publish
+                </Button>
+              )}
+              {status === "published" && (
+                <Button size="sm" variant="outline" className="btn-press border-border" disabled={setStatus.isPending} onClick={() => id && setStatus.mutate({ id, status: "hidden" })}>
+                  <EyeOff className="mr-1.5 h-4 w-4" /> Unpublish (hide)
+                </Button>
+              )}
+              {status !== "pending" && (
+                <Button size="sm" variant="outline" className="btn-press border-border" disabled={setStatus.isPending} onClick={() => id && setStatus.mutate({ id, status: "pending" })}>
+                  <Undo2 className="mr-1.5 h-4 w-4" /> Move to pending
+                </Button>
+              )}
+            </div>
+
+            <div className="h-px bg-border" />
+            <Field label="Title">{a.title}</Field>
+            <Field label="Slug"><code className="text-xs">{a.slug}</code></Field>
+            {a.excerpt && <Field label="Excerpt">{a.excerpt}</Field>}
+            {a.metaDescription && <Field label="Meta description">{a.metaDescription}</Field>}
+            {a.keywords.length > 0 && <Field label="Keywords">{a.keywords.join(", ")}</Field>}
+            {a.heroImageUrl && (
+              <div>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Hero image</p>
+                <img src={a.heroImageUrl} alt="" className="mt-2 max-h-40 rounded-lg border border-border object-cover" />
+              </div>
+            )}
+
+            <div className="h-px bg-border" />
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Content preview</p>
+            <div
+              className="article-html max-h-[28rem] overflow-y-auto rounded-lg border border-border bg-card/40 p-4"
+              dangerouslySetInnerHTML={{ __html: a.contentHtml }}
+            />
+          </div>
+        )}
+      </SheetContent>
+    </Sheet>
   );
 }
 

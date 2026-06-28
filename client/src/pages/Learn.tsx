@@ -6,7 +6,10 @@ import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import CtaBand from "@/components/site/CtaBand";
 import ContactSection from "@/components/site/ContactSection";
 import ArticleLayout from "@/components/site/ArticleLayout";
+import SyncedArticleLayout from "@/components/site/SyncedArticleLayout";
 import NotFound from "@/pages/NotFound";
+import { Loader2, Newspaper } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 import { useSeo } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
 import { PILLARS, SPOKES, SEO_ARTICLES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
@@ -25,6 +28,44 @@ function ArticleCard({ a }: { a: LearnArticle }) {
         <ArrowRight className="ml-auto h-4 w-4 text-[color:var(--gold)] transition-transform group-hover:translate-x-0.5" />
       </span>
     </Link>
+  );
+}
+
+function BlogSection() {
+  const { data } = trpc.content.listPublished.useQuery();
+  const posts = data ?? [];
+  if (posts.length === 0) return null;
+  return (
+    <section className="border-t border-border/70 py-20 md:py-28">
+      <div className="container">
+        <div className="max-w-2xl">
+          <Eyebrow>From our blog</Eyebrow>
+          <h2 className="mt-3 flex items-center gap-3 text-4xl md:text-5xl">
+            <Newspaper className="h-9 w-9 text-[color:var(--gold)]" /> Latest articles
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Fresh, regularly published education on blood therapy and related wellness topics.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {posts.map((p) => (
+            <Link
+              key={p.slug}
+              href={`/learn/${p.slug}`}
+              className="group flex h-full flex-col rounded-2xl border border-border bg-card/60 p-7 transition-colors hover:border-[color:var(--gold)]/50"
+            >
+              <span className="text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">Article</span>
+              <h3 className="mt-3 text-xl leading-snug transition-colors group-hover:text-foreground">{p.title}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-4">{p.excerpt || p.metaDescription}</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-xs text-muted-foreground">
+                Read article
+                <ArrowRight className="ml-auto h-4 w-4 text-[color:var(--gold)] transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -186,6 +227,8 @@ function LearnIndex() {
         </div>
       </section>
 
+      <BlogSection />
+
       <CtaBand
         heading="Have a question the articles didn't answer?"
         sub="Our care team can walk you through your options in a private consultation."
@@ -195,11 +238,29 @@ function LearnIndex() {
   );
 }
 
+/** Renders a published LinkArtemis article, or NotFound while/if unavailable. */
+function SyncedArticleRoute({ slug }: { slug: string }) {
+  const { data, isLoading } = trpc.content.getPublishedBySlug.useQuery({ slug });
+  if (isLoading) {
+    return (
+      <SiteLayout>
+        <div className="grid min-h-[60vh] place-items-center">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      </SiteLayout>
+    );
+  }
+  if (!data) return <NotFound />;
+  return <SyncedArticleLayout article={data} />;
+}
+
 export default function Learn() {
   const params = useParams();
   const slug = (params as { slug?: string }).slug;
   if (!slug) return <LearnIndex />;
   const article = getArticle(slug);
-  if (!article) return <NotFound />;
+  // Hand-authored articles take precedence; otherwise fall back to a published
+  // synced (LinkArtemis) article with the same slug.
+  if (!article) return <SyncedArticleRoute slug={slug} />;
   return <ArticleLayout article={article} />;
 }

@@ -29,6 +29,13 @@
       "when": 1781838155915,
       "tag": "0003_bouncy_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1782669156513,
+      "tag": "0004_wealthy_mandrill",
+      "breakpoints": true
     }
   ]
 }

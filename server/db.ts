@@ -11,6 +11,8 @@ import {
   InsertAuditLog,
   tierEvents,
   InsertTierEvent,
+  syncedArticles,
+  InsertSyncedArticle,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -333,4 +335,106 @@ export async function getDashboardCounts() {
     leadsTotal: Number(leadTotal?.count ?? 0),
     leadsNew: Number(leadNew?.count ?? 0),
   };
+}
+
+
+/* --------------------------- Synced articles (LinkArtemis) --------------------------- */
+
+export type SyncedArticleStatus = "pending" | "published" | "hidden";
+
+/**
+ * Upsert a synced article by its unique `remoteId` (idempotent). Existing rows
+ * keep their review `status` and `publishedAt` — a re-sync only refreshes the
+ * content/metadata, it never silently re-publishes or un-publishes. Returns
+ * "inserted" | "updated" so the sync can report a summary.
+ */
+export async function upsertSyncedArticle(
+  data: InsertSyncedArticle,
+): Promise<"inserted" | "updated"> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await db
+    .select({ id: syncedArticles.id })
+    .from(syncedArticles)
+    .where(eq(syncedArticles.remoteId, data.remoteId))
+    .limit(1);
+  if (existing.length) {
+    await db
+      .update(syncedArticles)
+      .set({
+        slug: data.slug,
+        title: data.title,
+        excerpt: data.excerpt,
+        metaDescription: data.metaDescription,
+        heroImageUrl: data.heroImageUrl,
+        keywords: data.keywords,
+        languageCode: data.languageCode,
+        contentHtml: data.contentHtml,
+        remoteCreatedAt: data.remoteCreatedAt,
+        lastSyncedAt: new Date(),
+      })
+      .where(eq(syncedArticles.remoteId, data.remoteId));
+    return "updated";
+  }
+  await db.insert(syncedArticles).values(data);
+  return "inserted";
+}
+
+/** Admin: list synced articles, optionally filtered by status. Newest first. */
+export async function listSyncedArticles(status?: SyncedArticleStatus) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const where = status ? eq(syncedArticles.status, status) : undefined;
+  return db
+    .select()
+    .from(syncedArticles)
+    .where(where)
+    .orderBy(desc(syncedArticles.createdAt))
+    .limit(500);
+}
+
+/** Admin: get one synced article by id (any status). */
+export async function getSyncedArticleById(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const rows = await db.select().from(syncedArticles).where(eq(syncedArticles.id, id)).limit(1);
+  return rows[0];
+}
+
+/** Public: published synced articles only (for the Learning Center list). */
+export async function listPublishedSyncedArticles() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db
+    .select()
+    .from(syncedArticles)
+    .where(eq(syncedArticles.status, "published"))
+    .orderBy(desc(syncedArticles.publishedAt));
+}
+
+/** Public: a single published synced article by slug (null if not published). */
+export async function getPublishedSyncedArticleBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const rows = await db
+    .select()
+    .from(syncedArticles)
+    .where(and(eq(syncedArticles.slug, slug), eq(syncedArticles.status, "published")))
+    .limit(1);
+  return rows[0];
+}
+
+/**
+ * Admin: change review status. Sets `publishedAt` the first time an article
+ * becomes "published" (idempotent — does not overwrite an earlier publish time).
+ */
+export async function setSyncedArticleStatus(id: number, status: SyncedArticleStatus) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const current = await getSyncedArticleById(id);
+  const set: Partial<InsertSyncedArticle> = { status };
+  if (status === "published" && current && !current.publishedAt) {
+    set.publishedAt = new Date();
+  }
+  await db.update(syncedArticles).set(set).where(eq(syncedArticles.id, id));
 }
