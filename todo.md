@@ -213,3 +213,10 @@
 - [x] Learning Center: render published synced articles ("From our blog" section + /learn/:slug sanitized-HTML renderer w/ SEO + JSON-LD + disclaimer); hand-authored slugs take priority
 - [x] Verify tsc + vitest (66 tests); live sync run (fetched 1, inserted 1, published + public read OK); checkpoint; report
 - [ ] (Optional follow-up) Scheduled daily auto-sync via heartbeat — currently manual "Sync now" only, pending user go-ahead
+
+## Content: adapt "Is EBOO Therapy Safe?" article from myrevived.com (review-before-publish, requested)
+- [x] Rewrite article to rebootblood voice; removed other clinic name, address, phone, Dr. name, outbound links/images (banned-term scan clean)
+- [x] Keep safety/FDA framing + contraindications + FAQ; aligned disclaimer (educational, non-claim, investigational)
+- [x] Insert as a PENDING article in the review queue (source=manual) so user reviews before publishing
+- [x] Verified stored + listed as pending; renders at /learn/is-eboo-therapy-safe-fda-risks once published (slug router serves any published synced article); NOT auto-published
+- [x] No source code changed (data-only insert via existing helpers); tsc/tests unaffected; checkpoint; report
