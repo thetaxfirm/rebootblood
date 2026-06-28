@@ -220,3 +220,11 @@
 - [x] Insert as a PENDING article in the review queue (source=manual) so user reviews before publishing
 - [x] Verified stored + listed as pending; renders at /learn/is-eboo-therapy-safe-fda-risks once published (slug router serves any published synced article); NOT auto-published
 - [x] No source code changed (data-only insert via existing helpers); tsc/tests unaffected; checkpoint; report
+
+## Feature: daily LinkArtemis auto-sync (Heartbeat cron, review-before-publish preserved)
+- [x] Add /api/scheduled/syncLinkArtemis handler: cron-auth (sdk.authenticateRequest, user.isCron), inline syncLinkArtemis(), idempotent, try/catch JSON error
+- [x] Mount handler in server/_core/index.ts before Vite/static fallthrough (verified: POST returns 403 for non-cron)
+- [x] Unit test for the handler (4 tests: rejects non-cron, auth-throw, runs sync, 500 JSON error)
+- [x] tsc clean + vitest green (70 tests)
+- [ ] Checkpoint; ask user to Deploy (required before scheduling)
+- [ ] After deploy: create daily cron via manus-heartbeat (0 0 9 * * * UTC); verify with Run Now / logs; report
