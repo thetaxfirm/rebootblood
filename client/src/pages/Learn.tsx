@@ -10,7 +10,7 @@ import SyncedArticleLayout from "@/components/site/SyncedArticleLayout";
 import NotFound from "@/pages/NotFound";
 import { Loader2, Newspaper } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildBreadcrumbJsonLd } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
 import { PILLARS, SPOKES, SEO_ARTICLES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
 
@@ -75,6 +75,10 @@ function LearnIndex() {
     title: "Learning Center — EBO3, EBOO, UVBI & Plasmapheresis | rEBOOtBlood",
     description:
       "Clear, honest, non-promotional education on EBO3, EBOO, UVBI, and therapeutic plasmapheresis — the science and how these therapies are being studied.",
+    jsonLd: buildBreadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Learning Center", path: "/learn" },
+    ]),
   });
   return (
     <SiteLayout>

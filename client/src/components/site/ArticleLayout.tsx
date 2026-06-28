@@ -11,7 +11,7 @@ import {
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import ContactSection from "@/components/site/ContactSection";
 import { useMemo } from "react";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildBreadcrumbJsonLd } from "@/hooks/useSeo";
 import { ASSETS, SITE } from "@/lib/site";
 import { getArticle, type LearnArticle } from "@/lib/learn";
 
@@ -56,10 +56,22 @@ export default function ArticleLayout({ article }: { article: LearnArticle }) {
     [article],
   );
 
+  const breadcrumbJsonLd = useMemo(
+    () =>
+      buildBreadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Learning Center", path: "/learn" },
+        { name: article.title, path: `/learn/${article.slug}` },
+      ]),
+    [article.title, article.slug],
+  );
+
   useSeo({
     title: `${article.title} — rEBOOtBlood Learning Center`,
     description: article.excerpt.slice(0, 158),
-    jsonLd: articleJsonLd,
+    jsonLd: [articleJsonLd, breadcrumbJsonLd],
+    ogType: "article",
+    image: ASSETS.heroAbstract,
   });
 
   return (

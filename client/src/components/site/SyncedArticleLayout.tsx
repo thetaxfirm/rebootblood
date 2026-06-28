@@ -5,7 +5,7 @@ import { ArrowRight, ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteLayout, { Eyebrow } from "@/components/site/SiteLayout";
 import ContactSection from "@/components/site/ContactSection";
-import { useSeo } from "@/hooks/useSeo";
+import { useSeo, buildBreadcrumbJsonLd } from "@/hooks/useSeo";
 import { ASSETS, SITE } from "@/lib/site";
 
 export type SyncedArticleView = {
@@ -64,10 +64,22 @@ export default function SyncedArticleLayout({ article }: { article: SyncedArticl
     [article, isoDate],
   );
 
+  const breadcrumbJsonLd = useMemo(
+    () =>
+      buildBreadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Learning Center", path: "/learn" },
+        { name: article.title, path: `/learn/${article.slug}` },
+      ]),
+    [article.title, article.slug],
+  );
+
   useSeo({
     title: `${article.title} — rEBOOtBlood Learning Center`,
     description: (article.metaDescription || article.excerpt).slice(0, 158),
-    jsonLd: articleJsonLd,
+    jsonLd: [articleJsonLd, breadcrumbJsonLd],
+    ogType: "article",
+    image: article.heroImageUrl || ASSETS.heroAbstract,
   });
 
   return (

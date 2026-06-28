@@ -236,3 +236,13 @@
 - [x] tsc clean + vitest green (70 tests); sync test still valid (injects own upsert stub)
 - [x] Ran live sync: LinkArtemis article auto-published; manual "Is EBOO Therapy Safe?" published; both render at /learn/:slug (verified screenshots)
 - [x] Checkpoint; ask user to redeploy (auto-publish change must ship to prod for the daily cron); report
+
+## SEO: OG/Twitter tags + BreadcrumbList JSON-LD
+- [x] Extend useSeo hook: emit og:* (title/description/type/url/image/site_name) + twitter:* (card/title/description/image) tags; manage/cleanup on unmount
+- [x] Allow useSeo to accept multiple JSON-LD blocks (existing Article/Medical + new BreadcrumbList)
+- [x] Hand-authored ArticleLayout: add OG/Twitter (article type, hero image) + BreadcrumbList (Home > Learning Center > article)
+- [x] SyncedArticleLayout: add OG/Twitter (hero image) + BreadcrumbList
+- [x] Use absolute URLs (https://www.rebootblood.clinic) for og:url/og:image/breadcrumb items (verified absolute in rendered DOM)
+- [x] Added OG/Twitter to all public pages (every page calls useSeo → gets defaults); BreadcrumbList on Learn index
+- [x] Extracted pure helpers to shared/seo.ts; unit-tested (8 tests: toAbsoluteUrl, buildBreadcrumbJsonLd, buildFaqJsonLd)
+- [x] tsc clean + vitest green (78 tests); verified rendered <meta>/<script> via CDP on 3 pages (article: MedicalBusiness+Article+BreadcrumbList, 6 OG + 4 Twitter); checkpoint; report
