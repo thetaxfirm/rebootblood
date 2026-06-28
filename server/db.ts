@@ -343,9 +343,13 @@ export async function getDashboardCounts() {
 export type SyncedArticleStatus = "pending" | "published" | "hidden";
 
 /**
- * Upsert a synced article by its unique `remoteId` (idempotent). Existing rows
- * keep their review `status` and `publishedAt` — a re-sync only refreshes the
- * content/metadata, it never silently re-publishes or un-publishes. Returns
+ * Upsert a synced article by its unique `remoteId` (idempotent).
+ *
+ * AUTO-PUBLISH (Option b): every sync forces `status = "published"` on both
+ * insert and update — overriding any prior "pending" or "hidden" state — and
+ * stamps `publishedAt` the first time it becomes published. Admins can still
+ * manually Hide an article afterward via `setSyncedArticleStatus`, though a
+ * later re-sync of the same remote article will publish it again. Returns
  * "inserted" | "updated" so the sync can report a summary.
  */
 export async function upsertSyncedArticle(
@@ -353,8 +357,9 @@ export async function upsertSyncedArticle(
 ): Promise<"inserted" | "updated"> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  const now = new Date();
   const existing = await db
-    .select({ id: syncedArticles.id })
+    .select({ id: syncedArticles.id, publishedAt: syncedArticles.publishedAt })
     .from(syncedArticles)
     .where(eq(syncedArticles.remoteId, data.remoteId))
     .limit(1);
@@ -371,12 +376,17 @@ export async function upsertSyncedArticle(
         languageCode: data.languageCode,
         contentHtml: data.contentHtml,
         remoteCreatedAt: data.remoteCreatedAt,
-        lastSyncedAt: new Date(),
+        lastSyncedAt: now,
+        status: "published",
+        // Preserve the original publish time; only set it if missing.
+        publishedAt: existing[0].publishedAt ?? now,
       })
       .where(eq(syncedArticles.remoteId, data.remoteId));
     return "updated";
   }
-  await db.insert(syncedArticles).values(data);
+  await db
+    .insert(syncedArticles)
+    .values({ ...data, status: "published", publishedAt: data.publishedAt ?? now });
   return "inserted";
 }
 

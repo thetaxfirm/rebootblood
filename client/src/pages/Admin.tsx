@@ -726,9 +726,10 @@ function ArticlesTab() {
       </div>
 
       <p className="mb-4 text-xs text-muted-foreground">
-        Articles are pulled from your LinkArtemis workspace as <strong>pending</strong> and stay private until you
-        publish them. Published articles appear in the public Learning Center at <code>/learn/&lt;slug&gt;</code> with the
-        standard educational disclaimer. Review each article for medical-claim accuracy before publishing.
+        Articles are pulled from your LinkArtemis workspace and <strong>auto-published</strong> to the public Learning
+        Center at <code>/learn/&lt;slug&gt;</code> (with the standard educational disclaimer) as soon as they sync. Because
+        nothing is held for review, check published articles for medical-claim accuracy and use <strong>Hide</strong>
+        to pull any article down. Note: a later re-sync of the same article will publish it again.
       </p>
 
       <div className="rounded-xl border border-border">
@@ -803,8 +804,8 @@ function ArticleReviewDrawer({
     <Sheet open={!!id} onOpenChange={(o) => !o && onClose()}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle className="font-serif">Review article</SheetTitle>
-          <SheetDescription>Synced from LinkArtemis · review before publishing</SheetDescription>
+          <SheetTitle className="font-serif">Article</SheetTitle>
+          <SheetDescription>Synced from LinkArtemis · auto-published — use Hide to take it down</SheetDescription>
         </SheetHeader>
 
         {detail.isLoading && (

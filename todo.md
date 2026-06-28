@@ -226,5 +226,13 @@
 - [x] Mount handler in server/_core/index.ts before Vite/static fallthrough (verified: POST returns 403 for non-cron)
 - [x] Unit test for the handler (4 tests: rejects non-cron, auth-throw, runs sync, 500 JSON error)
 - [x] tsc clean + vitest green (70 tests)
-- [ ] Checkpoint; ask user to Deploy (required before scheduling)
-- [ ] After deploy: create daily cron via manus-heartbeat (0 0 9 * * * UTC); verify with Run Now / logs; report
+- [x] Checkpoint; user deployed (published to production)
+- [x] Created daily cron via manus-heartbeat (0 0 9 * * * UTC, task_uid MBsuHnFDuvYQDaLK4tpNnf, enabled); verified end-to-end with a one-time trigger (HTTP 200, summary fetched=1 updated=1 errors=0) then deleted the temp cron; prod endpoint guarded (403 unauth)
+
+## Change: auto-publish synced articles (Option b)
+- [x] Sync upsert: force status=published on insert AND on update (overrides pending/hidden) — Option b
+- [x] Set publishedAt when auto-publishing if not already set (preserves earlier publish time)
+- [x] Keep admin Hide control (manual Hide still works post-publish); updated Articles tab copy to reflect auto-publish
+- [x] tsc clean + vitest green (70 tests); sync test still valid (injects own upsert stub)
+- [x] Ran live sync: LinkArtemis article auto-published; manual "Is EBOO Therapy Safe?" published; both render at /learn/:slug (verified screenshots)
+- [x] Checkpoint; ask user to redeploy (auto-publish change must ship to prod for the daily cron); report
