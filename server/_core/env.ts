@@ -17,4 +17,10 @@ export const ENV = {
   linkArtemisApiKey: process.env.LINKARTEMIS_API_KEY ?? "",
   /** LinkArtemis API base URL (override via env for testing if ever needed). */
   linkArtemisApiUrl: process.env.LINKARTEMIS_API_URL ?? "https://app.linkartemis.com/api/v1",
+  /** GoDaddy production API key (sso-key id), server-side only. */
+  godaddyApiKey: process.env.GODADDY_API_KEY ?? "",
+  /** GoDaddy production API secret, server-side only. */
+  godaddyApiSecret: process.env.GODADDY_API_SECRET ?? "",
+  /** GoDaddy API base URL (production by default; OTE endpoint can be set for testing). */
+  godaddyApiUrl: process.env.GODADDY_API_URL ?? "https://api.godaddy.com",
 };

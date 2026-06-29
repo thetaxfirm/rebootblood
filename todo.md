@@ -248,19 +248,19 @@
 - [x] tsc clean + vitest green (78 tests); verified rendered <meta>/<script> via CDP on 3 pages (article: MedicalBusiness+Article+BreadcrumbList, 6 OG + 4 Twitter); checkpoint; report
 
 ## Content: adapt & publish 10 eboomedical.com articles (Option A — non-claim voice, cite author; skip 2 off-brand)
-- [ ] Skip off-brand: "Joe Rogan-linked clinic / BJJ star" (anti-EBOO + names competitor) and "Orlando Bloom" (promotes competing UK clinic)
-- [ ] does-eboo-treatment-really-work — adapt non-claim, cite author, insert
-- [ ] observed-reduction-in-urinary-toxin-eboo — case-report summary, cite Di Paolo et al. source, insert
-- [ ] clinical-and-biological-implications-of-eboo-ozone-therapy — cite Di Paolo/Gaggiotti/Galli (PMID 16156950), insert
-- [ ] bryce-harper-tries-eboo-therapy — adapt news, remove other-clinic identifiers, cite author, insert
-- [ ] changing-the-game-for-sports-injury-recovery — adapt non-claim, cite author, insert
-- [ ] eboo-therapy-as-the-oil-change-for-the-body — adapt non-claim, remove named physician/clinic, cite author, insert
-- [ ] does-eboo-remove-heavy-metals — adapt to investigational framing, cite author, insert
-- [ ] eboo-therapy-for-lyme-disease — adapt non-claim (already balanced), cite author, insert
-- [ ] eboo-uv-light-therapy — soften aggressive stats to "reported/proponents", cite Biana Borchenko/source, insert
-- [ ] who-invented-eboo-therapy — adapt history piece (mostly factual), cite author, insert
-- [ ] Verify all render at /learn/:slug with disclaimer + author citation; banned-term scan for competitor names
-- [ ] Checkpoint + report
+- [x] Skip off-brand: "Joe Rogan-linked clinic / BJJ star" (anti-EBOO + names competitor) and "Orlando Bloom" (promotes competing UK clinic)
+- [x] does-eboo-treatment-really-work — adapted non-claim, cited Kim Look, inserted (slug does-eboo-really-work)
+- [x] observed-reduction-in-urinary-toxin-eboo — case-report summary, cited source, inserted (slug eboo-urinary-toxin-case-report)
+- [x] clinical-and-biological-implications-of-eboo-ozone-therapy — cited Di Paolo/Gaggiotti/Galli (PMID 16156950), inserted (slug eboo-clinical-biological-implications)
+- [x] bryce-harper-tries-eboo-therapy — adapted, removed individual name + other-clinic identifiers, inserted (slug eboo-athlete-wellness-spotlight)
+- [x] changing-the-game-for-sports-injury-recovery — adapted non-claim, inserted (slug athletes-and-eboo-recovery-trend)
+- [x] eboo-therapy-as-the-oil-change-for-the-body — adapted non-claim, removed named physician/clinic, inserted (slug eboo-blood-oil-change-explainer)
+- [x] does-eboo-remove-heavy-metals — adapted to investigational framing, inserted (slug eboo-remove-heavy-metals)
+- [x] eboo-therapy-for-lyme-disease — adapted non-claim, cited source, inserted (slug eboo-and-lyme-supportive-care)
+- [x] eboo-uv-light-therapy — softened aggressive stats, cited Biana Borchenko, inserted (slug eboo-uv-light-therapy-explained)
+- [x] who-invented-eboo-therapy — adapted history piece, cited Ralph Montague, inserted (slug who-invented-eboo-therapy)
+- [x] Verified render at /learn/:slug with disclaimer + author citation; competitor/celebrity names removed; tsc clean
+- [x] Checkpoint fb2157d3 + report
 
 
 ## Content: publish 10 adapted eboomedical.com articles to Learning Center (requested)
@@ -272,3 +272,14 @@
 - [x] Rendered "Source & attribution" citation block in ArticleLayout when byline present
 - [x] Surfaced articles in new "More on EBOO" section on Learn index (Learn.tsx)
 - [x] tsc --noEmit clean; verified /learn index + 2 article pages render with citation + disclaimer via screenshot
+
+
+## Integration: GoDaddy REST API (DNS + availability + registration) (requested)
+- [x] Validate GoDaddy credentials against production API (domains list, availability, DNS records all HTTP 200)
+- [x] Store GODADDY_API_KEY + GODADDY_API_SECRET as project secrets (server-side only); env.ts wired
+- [x] Build GoDaddy API client (server/_core/godaddy.ts): list domains, check availability, suggest, get/replace/add DNS records
+- [x] tRPC adminProcedure router (server/routers/godaddy.ts): status, listDomains, checkAvailability, suggestDomains, getRecords, replaceRecords, addRecords; wired into appRouter
+- [x] Admin UI: "Domains" tab in /admin (domains list, availability search + suggestions, DNS record viewer + add-record form)
+- [x] Vitest: pure helpers (auth header, hasCredentials, validateDnsRecord) + LIVE credential validation against production API (4/4 pass)
+- [x] tsc clean + vitest green (82 tests incl. live GoDaddy auth); verified Domains tab renders in /admin; checkpoint + report
+- Note: domain registration/purchase intentionally NOT one-click (avoids accidental charges); done on request

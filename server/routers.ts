@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { intakeRouter, adminRouter } from "./routers/intake";
 import { contentRouter } from "./routers/content";
+import { godaddyRouter } from "./routers/godaddy";
 
 export const appRouter = router({
   system: systemRouter,
@@ -20,6 +21,7 @@ export const appRouter = router({
   intake: intakeRouter,
   admin: adminRouter,
   content: contentRouter,
+  godaddy: godaddyRouter,
 });
 
 export type AppRouter = typeof appRouter;

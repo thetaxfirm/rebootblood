@@ -21,6 +21,10 @@ import {
   CheckCircle2,
   EyeOff,
   Undo2,
+  Globe,
+  Search,
+  Network,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -28,6 +32,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -187,12 +192,14 @@ function AdminPanel({ email, onLogout }: { email: string; onLogout: () => void }
             <TabsTrigger value="tiers"><BarChart3 className="mr-1.5 h-4 w-4" /> Tier interest</TabsTrigger>
             <TabsTrigger value="articles"><Newspaper className="mr-1.5 h-4 w-4" /> Articles</TabsTrigger>
             <TabsTrigger value="audit"><ScrollText className="mr-1.5 h-4 w-4" /> Audit log</TabsTrigger>
+            <TabsTrigger value="godaddy"><Globe className="mr-1.5 h-4 w-4" /> Domains</TabsTrigger>
           </TabsList>
           <TabsContent value="submissions" className="mt-6"><SubmissionsTab /></TabsContent>
           <TabsContent value="leads" className="mt-6"><LeadsTab /></TabsContent>
           <TabsContent value="tiers" className="mt-6"><TierStatsTab /></TabsContent>
           <TabsContent value="articles" className="mt-6"><ArticlesTab /></TabsContent>
           <TabsContent value="audit" className="mt-6"><AuditTab /></TabsContent>
+          <TabsContent value="godaddy" className="mt-6"><GoDaddyTab /></TabsContent>
         </Tabs>
       </main>
     </div>
@@ -1010,4 +1017,189 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Flag({ v, danger }: { v: string; danger?: boolean }) {
   return <span className={danger ? "font-medium text-[color:var(--garnet)]" : ""}>{v}</span>;
+}
+
+/* ------------------------------- GoDaddy tab ------------------------------- */
+
+function GoDaddyTab() {
+  const status = trpc.godaddy.status.useQuery();
+  const domains = trpc.godaddy.listDomains.useQuery(undefined, { enabled: status.data?.configured === true });
+  const [selected, setSelected] = useState<string | null>(null);
+
+  if (status.isLoading) {
+    return <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Checking GoDaddy connection…</div>;
+  }
+  if (!status.data?.configured) {
+    return (
+      <div className="rounded-xl border border-border bg-card/50 p-6 text-sm text-muted-foreground">
+        GoDaddy is not configured. Add <code>GODADDY_API_KEY</code> and <code>GODADDY_API_SECRET</code> in project secrets.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <AvailabilitySearch />
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr]">
+        <DomainsList
+          domains={domains.data ?? []}
+          loading={domains.isLoading}
+          selected={selected}
+          onSelect={setSelected}
+          onRefresh={() => domains.refetch()}
+        />
+        <DnsRecords domain={selected} />
+      </div>
+    </div>
+  );
+}
+
+function AvailabilitySearch() {
+  const [domain, setDomain] = useState("");
+  const [query, setQuery] = useState<string | null>(null);
+  const avail = trpc.godaddy.checkAvailability.useQuery(
+    { domain: query ?? "" },
+    { enabled: Boolean(query), retry: false },
+  );
+  const suggest = trpc.godaddy.suggestDomains.useQuery(
+    { query: query ?? "", limit: 8 },
+    { enabled: Boolean(query), retry: false },
+  );
+
+  return (
+    <div className="rounded-xl border border-border bg-card/50 p-5">
+      <h3 className="flex items-center gap-2 text-lg font-medium"><Search className="h-4 w-4 text-[color:var(--gold)]" /> Check domain availability</h3>
+      <form
+        className="mt-4 flex gap-2"
+        onSubmit={(e) => { e.preventDefault(); if (domain.trim()) setQuery(domain.trim().toLowerCase()); }}
+      >
+        <Input placeholder="example.com" value={domain} onChange={(e) => setDomain(e.target.value)} className="max-w-sm" />
+        <Button type="submit" disabled={!domain.trim()}>Check</Button>
+      </form>
+      {query && (
+        <div className="mt-4 space-y-3 text-sm">
+          {avail.isLoading ? (
+            <span className="flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Checking…</span>
+          ) : avail.error ? (
+            <span className="text-[color:var(--garnet)]">{avail.error.message}</span>
+          ) : avail.data ? (
+            <div className="flex items-center gap-3">
+              <Badge variant={avail.data.available ? "default" : "secondary"}>
+                {avail.data.available ? "Available" : "Taken"}
+              </Badge>
+              <span className="font-medium">{avail.data.domain}</span>
+              {avail.data.available && avail.data.price != null && (
+                <span className="text-muted-foreground">~{(avail.data.price / 1_000_000).toFixed(2)} {avail.data.currency ?? "USD"}/yr</span>
+              )}
+            </div>
+          ) : null}
+          {suggest.data && suggest.data.length > 0 && (
+            <div>
+              <p className="mt-2 text-xs uppercase tracking-wide text-muted-foreground">Suggestions</p>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {suggest.data.map((d) => (
+                  <button key={d} onClick={() => { setDomain(d); setQuery(d); }} className="rounded-full border border-border px-3 py-1 text-xs hover:border-[color:var(--gold)]">{d}</button>
+                ))}
+              </div>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">Registration / purchase is intentionally not wired to a one-click button to avoid accidental charges. Tell me a domain to register and I'll complete it for you.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DomainsList({
+  domains, loading, selected, onSelect, onRefresh,
+}: {
+  domains: Array<{ domain: string; status: string; expires: string | null; renewAuto: boolean }>;
+  loading: boolean; selected: string | null; onSelect: (d: string) => void; onRefresh: () => void;
+}) {
+  const active = domains.filter((d) => d.status === "ACTIVE");
+  return (
+    <div className="rounded-xl border border-border bg-card/50 p-5">
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-lg font-medium"><Globe className="h-4 w-4 text-[color:var(--gold)]" /> Your domains <span className="text-sm text-muted-foreground">({active.length} active)</span></h3>
+        <Button variant="outline" size="sm" onClick={onRefresh}><RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Refresh</Button>
+      </div>
+      {loading ? (
+        <div className="mt-4 flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading domains…</div>
+      ) : (
+        <div className="mt-4 max-h-[420px] space-y-1 overflow-y-auto">
+          {active.length === 0 && <p className="text-sm text-muted-foreground">No active domains found.</p>}
+          {active.map((d) => (
+            <button
+              key={d.domain}
+              onClick={() => onSelect(d.domain)}
+              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${selected === d.domain ? "bg-[color:var(--gold)]/15 text-foreground" : "hover:bg-card"}`}
+            >
+              <span className="font-medium">{d.domain}</span>
+              <span className="text-xs text-muted-foreground">{d.expires ? `exp ${new Date(d.expires).toLocaleDateString()}` : ""}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DnsRecords({ domain }: { domain: string | null }) {
+  const utils = trpc.useUtils();
+  const records = trpc.godaddy.getRecords.useQuery({ domain: domain ?? "" }, { enabled: Boolean(domain), retry: false });
+  const addRecords = trpc.godaddy.addRecords.useMutation({
+    onSuccess: () => { toast.success("DNS record added"); if (domain) utils.godaddy.getRecords.invalidate({ domain }); setForm({ type: "A", name: "", data: "", ttl: 3600 }); },
+    onError: (e) => toast.error(e.message),
+  });
+  type RecType = "A" | "AAAA" | "CNAME" | "MX" | "TXT" | "NS" | "SRV";
+  const [form, setForm] = useState<{ type: RecType; name: string; data: string; ttl: number }>({ type: "A", name: "", data: "", ttl: 3600 });
+
+  if (!domain) {
+    return <div className="flex items-center justify-center rounded-xl border border-dashed border-border p-10 text-sm text-muted-foreground">Select a domain to view and edit its DNS records.</div>;
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-card/50 p-5">
+      <h3 className="flex items-center gap-2 text-lg font-medium"><Network className="h-4 w-4 text-[color:var(--gold)]" /> DNS records — {domain}</h3>
+      {records.isLoading ? (
+        <div className="mt-4 flex items-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading records…</div>
+      ) : records.error ? (
+        <p className="mt-4 text-sm text-[color:var(--garnet)]">{records.error.message}</p>
+      ) : (
+        <div className="mt-4 max-h-[300px] overflow-y-auto">
+          <Table>
+            <TableHeader>
+              <TableRow><TableHead>Type</TableHead><TableHead>Name</TableHead><TableHead>Value</TableHead><TableHead>TTL</TableHead></TableRow>
+            </TableHeader>
+            <TableBody>
+              {(records.data ?? []).map((r, i) => (
+                <TableRow key={`${r.type}-${r.name}-${i}`}>
+                  <TableCell><Badge variant="secondary">{r.type}</Badge></TableCell>
+                  <TableCell className="font-mono text-xs">{r.name}</TableCell>
+                  <TableCell className="max-w-[260px] truncate font-mono text-xs" title={r.data}>{r.data}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{r.ttl ?? ""}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <form
+        className="mt-5 grid grid-cols-2 gap-2 border-t border-border pt-4 sm:grid-cols-5"
+        onSubmit={(e) => { e.preventDefault(); if (domain) addRecords.mutate({ domain, records: [form] }); }}
+      >
+        <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v as RecType }))}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>{["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV"].map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+        </Select>
+        <Input placeholder="name (@ or sub)" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+        <Input placeholder="value" value={form.data} onChange={(e) => setForm((f) => ({ ...f, data: e.target.value }))} className="sm:col-span-2" />
+        <Button type="submit" disabled={addRecords.isPending || !form.name || !form.data}>
+          {addRecords.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="mr-1 h-3.5 w-3.5" /> Add</>}
+        </Button>
+      </form>
+      <p className="mt-2 text-xs text-muted-foreground">Adding a record appends to the zone. Changes are written live to GoDaddy.</p>
+    </div>
+  );
 }
