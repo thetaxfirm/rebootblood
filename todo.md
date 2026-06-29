@@ -283,3 +283,11 @@
 - [x] Vitest: pure helpers (auth header, hasCredentials, validateDnsRecord) + LIVE credential validation against production API (4/4 pass)
 - [x] tsc clean + vitest green (82 tests incl. live GoDaddy auth); verified Domains tab renders in /admin; checkpoint + report
 - Note: domain registration/purchase intentionally NOT one-click (avoids accidental charges); done on request
+
+
+## SEO: enforce www as canonical host (requested)
+- [x] Add pure helper canonicalRedirectTarget + canonicalHostRedirect middleware (server/_core/canonicalHost.ts): apex rebootblood.clinic -> 301 https://www.rebootblood.clinic, preserves path+query; leaves www / *.manus.space / localhost untouched
+- [x] Wire middleware first in server/_core/index.ts (before body parser/routes)
+- [x] Vitest coverage (server/canonicalHost.test.ts)
+- [x] tsc clean + vitest green (91 tests incl. 9 canonicalHost); checkpoint saved
+- [ ] User publishes; then re-verify apex->www 301 live after publish
