@@ -12,7 +12,7 @@ import { Loader2, Newspaper } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useSeo, buildBreadcrumbJsonLd } from "@/hooks/useSeo";
 import { ASSETS } from "@/lib/site";
-import { PILLARS, SPOKES, SEO_ARTICLES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
+import { PILLARS, SPOKES, SEO_ARTICLES, EXTERNAL_ARTICLES, PUBLICATIONS, PUBLICATIONS_LAST_REVIEWED, getArticle, type LearnArticle } from "@/lib/learn";
 
 function ArticleCard({ a }: { a: LearnArticle }) {
   return (
@@ -174,6 +174,28 @@ function LearnIndex() {
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {SPOKES.map((a) => (
+              <ArticleCard key={a.slug} a={a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ADAPTED EXPLAINERS (external, attributed) */}
+      <section className="border-t border-border/70 py-20 md:py-28">
+        <div className="container">
+          <div className="max-w-2xl">
+            <Eyebrow>Explained &amp; Adapted</Eyebrow>
+            <h2 className="mt-3 flex items-center gap-3 text-4xl md:text-5xl">
+              <BookOpen className="h-9 w-9 text-[color:var(--gold)]" /> More on EBOO
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Deeper explainers and research notes on EBOO — origins, the evidence, toxins and heavy metals, athlete
+              recovery, and more. Each is adapted into our non-promotional voice and credits its original author and
+              source.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {EXTERNAL_ARTICLES.map((a) => (
               <ArticleCard key={a.slug} a={a} />
             ))}
           </div>

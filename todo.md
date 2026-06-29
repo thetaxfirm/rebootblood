@@ -246,3 +246,29 @@
 - [x] Added OG/Twitter to all public pages (every page calls useSeo → gets defaults); BreadcrumbList on Learn index
 - [x] Extracted pure helpers to shared/seo.ts; unit-tested (8 tests: toAbsoluteUrl, buildBreadcrumbJsonLd, buildFaqJsonLd)
 - [x] tsc clean + vitest green (78 tests); verified rendered <meta>/<script> via CDP on 3 pages (article: MedicalBusiness+Article+BreadcrumbList, 6 OG + 4 Twitter); checkpoint; report
+
+## Content: adapt & publish 10 eboomedical.com articles (Option A — non-claim voice, cite author; skip 2 off-brand)
+- [ ] Skip off-brand: "Joe Rogan-linked clinic / BJJ star" (anti-EBOO + names competitor) and "Orlando Bloom" (promotes competing UK clinic)
+- [ ] does-eboo-treatment-really-work — adapt non-claim, cite author, insert
+- [ ] observed-reduction-in-urinary-toxin-eboo — case-report summary, cite Di Paolo et al. source, insert
+- [ ] clinical-and-biological-implications-of-eboo-ozone-therapy — cite Di Paolo/Gaggiotti/Galli (PMID 16156950), insert
+- [ ] bryce-harper-tries-eboo-therapy — adapt news, remove other-clinic identifiers, cite author, insert
+- [ ] changing-the-game-for-sports-injury-recovery — adapt non-claim, cite author, insert
+- [ ] eboo-therapy-as-the-oil-change-for-the-body — adapt non-claim, remove named physician/clinic, cite author, insert
+- [ ] does-eboo-remove-heavy-metals — adapt to investigational framing, cite author, insert
+- [ ] eboo-therapy-for-lyme-disease — adapt non-claim (already balanced), cite author, insert
+- [ ] eboo-uv-light-therapy — soften aggressive stats to "reported/proponents", cite Biana Borchenko/source, insert
+- [ ] who-invented-eboo-therapy — adapt history piece (mostly factual), cite author, insert
+- [ ] Verify all render at /learn/:slug with disclaimer + author citation; banned-term scan for competitor names
+- [ ] Checkpoint + report
+
+
+## Content: publish 10 adapted eboomedical.com articles to Learning Center (requested)
+- [x] Fetched all 12 source articles; identified authors (Kim Look, Jason DeLeon, Ralph Montague, Biana Borchenko; Di Paolo et al. for the research abstract)
+- [x] User chose Option A (adapt to non-claim voice) and skip off-brand pieces
+- [x] Skipped 2 off-brand posts (Joe Rogan/BJJ piece critical of EBOO + names competitor Ways2Well; Orlando Bloom piece promoting Clarify Clinics)
+- [x] Added LearnByline type + optional byline field to LearnArticle in client/src/lib/learn.ts
+- [x] Authored 10 adapted articles in EXTERNAL_ARTICLES (non-claim voice, competitor/celebrity names removed, FDA/educational framing); added to ALL_ARTICLES for routing
+- [x] Rendered "Source & attribution" citation block in ArticleLayout when byline present
+- [x] Surfaced articles in new "More on EBOO" section on Learn index (Learn.tsx)
+- [x] tsc --noEmit clean; verified /learn index + 2 article pages render with citation + disclaimer via screenshot

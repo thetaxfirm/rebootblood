@@ -121,6 +121,23 @@ export default function ArticleLayout({ article }: { article: LearnArticle }) {
               </div>
             ))}
 
+            {/* Attribution / citation for externally adapted articles */}
+            {article.byline && (
+              <div className="mb-6 rounded-xl border border-border bg-card/40 p-5 text-sm leading-relaxed text-muted-foreground">
+                <strong className="text-foreground">Source &amp; attribution.</strong> Adapted from{" "}
+                <a
+                  href={article.byline.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-foreground underline underline-offset-2 hover:text-[color:var(--gold)]"
+                >
+                  the original article
+                </a>{" "}
+                by {article.byline.author}, published at {article.byline.sourceName}.
+                {article.byline.note ? ` ${article.byline.note}` : ""}
+              </div>
+            )}
+
             {/* Non-claim / educational disclaimer */}
             <div className="rounded-xl border border-border bg-card/50 p-5 text-sm leading-relaxed text-muted-foreground">
               <strong className="text-foreground">Educational information only.</strong> This article is provided for

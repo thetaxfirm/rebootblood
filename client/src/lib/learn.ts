@@ -11,9 +11,26 @@
 export type LearnSection = { heading: string; body: string[] };
 export type LearnFaq = { q: string; a: string };
 
+/**
+ * Optional attribution for articles adapted from an external source. When
+ * present, ArticleLayout renders a citation block crediting the original
+ * author/publisher. Used for the EXTERNAL_ARTICLES group (content adapted from
+ * third-party explainers into rEBOOtBlood's non-claim, educational voice).
+ */
+export type LearnByline = {
+  /** Original author or editorial credit, e.g. "Kim Look". */
+  author: string;
+  /** Original publisher/site name, e.g. "EBOO Medical (eboomedical.com)". */
+  sourceName: string;
+  /** Canonical URL of the original article. */
+  sourceUrl: string;
+  /** Optional note clarifying adaptation, shown in the citation block. */
+  note?: string;
+};
+
 export type LearnArticle = {
   slug: string;
-  kind: "pillar" | "spoke";
+  kind: "pillar" | "spoke" | "external";
   category: string;
   title: string;
   /** Short SEO/meta + hub-card description. */
@@ -28,6 +45,8 @@ export type LearnArticle = {
   faqs: LearnFaq[];
   /** Slugs of related articles to cross-link. */
   related: string[];
+  /** Optional attribution when the article is adapted from an external source. */
+  byline?: LearnByline;
 };
 
 const UPDATED = "2026-06-19";
@@ -759,7 +778,474 @@ export const SEO_ARTICLES: LearnArticle[] = [
   },
 ];
 
-export const ALL_ARTICLES: LearnArticle[] = [...PILLARS, ...SPOKES, ...SEO_ARTICLES];
+/**
+ * Articles adapted from third-party explainers into rEBOOtBlood's non-claim,
+ * educational voice. The topic and useful background are retained, but strong
+ * efficacy/marketing claims are softened to "proponents report / evidence is
+ * limited," competitor and clinic names are removed, and the standard
+ * educational disclaimer applies. Each carries a `byline` crediting the
+ * original author/source, rendered as a citation block by ArticleLayout.
+ *
+ * Source: EBOO Medical (eboomedical.com) editorial team — primarily Kim Look
+ * (Regenerative Medicine Specialist), Jason DeLeon (EBOO Specialist), and
+ * Ralph Montague (longevity author), with specific bylines where the original
+ * post named one. Two off-brand source posts (one critical of EBOO and naming
+ * a competing clinic; one promoting a specific overseas clinic) were
+ * intentionally excluded.
+ */
+const EBOOMED = "EBOO Medical (eboomedical.com)";
+const EXTERNAL_UPDATED = "2026-06-28";
+
+export const EXTERNAL_ARTICLES: LearnArticle[] = [
+  {
+    slug: "does-eboo-really-work",
+    kind: "external",
+    category: "Explainers",
+    title: "Does EBOO Treatment Really Work? Examining the Evidence",
+    excerpt:
+      "‘Does EBOO really work?’ is one of the most-searched questions about blood ozone therapy. Here is an honest look at the proposed mechanisms, what the research does and does not show, and how to think about it.",
+    deck:
+      "A measured look at the biological rationale behind EBOO, the state of the evidence, and why screening matters more than promises.",
+    readMinutes: 7,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "What EBOO is designed to do",
+        body: [
+          "EBOO — extracorporeal blood oxygenation and ozonation — is an evolution of older ozone therapies that processes a larger volume of blood (commonly up to about 1.5 litres per session in basic configurations) through a controlled loop of oxygenation and ozonation before returning it to the body. Rather than a single injection, it is a continuous, monitored process.",
+          "Proponents describe several proposed mechanisms: supporting mitochondrial energy production through improved oxygen delivery, modulating inflammation, improving the flow characteristics of blood and microcirculation, and stimulating the body’s own antioxidant systems through a controlled (hormetic) oxidative stimulus. These are hypotheses and observations from practitioners and laboratory work, not settled clinical fact.",
+        ],
+      },
+      {
+        heading: "What the research does — and does not — show",
+        body: [
+          "EBOO specifically has limited long-term clinical-trial data. The broader ozone-therapy literature reports laboratory and small-study signals — for example, changes in red-blood-cell flexibility, shifts in inflammatory markers such as IL-6 and TNF-α, and stimulation of antioxidant enzymes — but much of this evidence is preliminary, heterogeneous, or uncontrolled.",
+          "It is important to be clear: EBOO, EBO2, ozone, and UVBI are not FDA-approved to diagnose, treat, cure, or prevent any disease. Reports of benefit, including patient testimonials, are not a substitute for controlled trials, and individual responses vary widely.",
+        ],
+      },
+      {
+        heading: "How to think about whether it is right for you",
+        body: [
+          "EBOO is best understood as an investigational wellness optimizer rather than a cure. Where it is considered, it is most reasonable as one strategic component within a broader, clinician-guided plan — alongside nutrition, sleep, stress management, and conventional care — not as a replacement for any of those.",
+          "The responsible next step is a comprehensive evaluation: a clinician reviews your history, current status, and goals, and explains honestly what is and is not known. Our eligibility quiz is a quick first step before that conversation.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "So does EBOO actually work?",
+        a: "There is a plausible biological rationale and encouraging preliminary and anecdotal reports, but high-quality clinical-trial evidence for EBOO specifically is limited. It is investigational and not FDA-approved to treat any disease; honest expectations and clinician screening are essential.",
+      },
+      {
+        q: "Is one session enough?",
+        a: "Practitioners typically describe a series rather than a single session, because any cumulative effects are thought to build over a protocol. Your care team will discuss what, if anything, is reasonable for you — no fixed outcome is promised.",
+      },
+    ],
+    related: ["what-is-eboo-therapy", "eboo-comparison-guide", "ebo3-eboo-blood-therapy"],
+    byline: {
+      author: "Kim Look",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/does-eboo-treatment-really-work/",
+      note: "Adapted and edited into rEBOOtBlood’s non-claim, educational voice; efficacy language softened and patient/celebrity references removed.",
+    },
+  },
+  {
+    slug: "eboo-urinary-toxin-case-report",
+    kind: "external",
+    category: "Research notes",
+    title: "Observed Reduction in Urinary Toxins After EBOO: A Case Report",
+    excerpt:
+      "A single published case report describes reductions in urinary mycotoxins, heavy metals, and environmental toxins after two EBOO treatment cycles. Here is a plain-language summary and why it should be read cautiously.",
+    deck:
+      "What one case report observed about toxin levels after EBOO — and the important limits of a single, uncontrolled report.",
+    readMinutes: 4,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "What the case report described",
+        body: [
+          "EBOO is an ex-vivo blood-filtration technique with similarities to hemodialysis. A published case report followed an 88-year-old woman with chronic iron-deficiency anemia who presented with elevated urinary levels of mycotoxins, heavy metals, and environmental toxins. She underwent two treatment cycles, each consisting of three sequential EBOO sessions.",
+          "Urinary toxin-to-creatinine ratios were measured at baseline, after the first cycle, and after the second. From baseline to the end of the second series, the report noted average decreases of roughly 64.8% for mycotoxins, 25.7% for heavy metals, and 55.1% for environmental toxins. Notably, nickel increased over the period, and hemoglobin remained relatively stable.",
+        ],
+      },
+      {
+        heading: "How to read this responsibly",
+        body: [
+          "A single case report cannot establish that a therapy works. External exposure factors were not controlled, there was no control group, and one metal moved in the opposite direction. The authors themselves framed the findings as suggesting EBOO may warrant further investigation as a supportive approach — not as proof.",
+          "This is consistent with how we present all such literature: educational and transparent, not a claim of efficacy. EBOO is investigational and not FDA-approved to remove toxins or treat any condition.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does this prove EBOO removes toxins?",
+        a: "No. It is one small, uncontrolled case report. It is hypothesis-generating and warrants further study; it does not establish efficacy, and one metal (nickel) actually rose during the period.",
+      },
+    ],
+    related: ["eboo-remove-heavy-metals", "eboo-for-mold-and-toxins", "eboo-comparison-guide"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/observed-reduction-in-urinary-toxin-eboo/",
+      note: "Summarized from a third-party case report shared by the source. Read the original report for full methods and limitations.",
+    },
+  },
+  {
+    slug: "eboo-clinical-biological-implications",
+    kind: "external",
+    category: "Research notes",
+    title: "Clinical and Biological Implications of EBOO Ozone Therapy",
+    excerpt:
+      "A foundational research abstract (Di Paolo, Gaggiotti & Galli) on the biology of extracorporeal blood ozonation — summarized in plain language, with its preliminary nature kept front and center.",
+    deck:
+      "What an early peer-reviewed paper described about EBOO’s biology and proposed clinical applications — and why it remains preliminary.",
+    readMinutes: 5,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "The biological rationale",
+        body: [
+          "The rationale for ozone therapy rests on a controlled interaction between pro-oxidants (ozone) and the body’s antioxidant systems — a measured oxidative stimulus that some research suggests may be relevant in certain immune and chronic degenerative conditions. Immune and endothelial (blood-vessel-lining) cells are considered primary targets of these effects.",
+          "Ozone has been used via autohemotherapy (treating a small volume of blood) for roughly four decades with encouraging observations, though broad clinical validation and standardization remain limited.",
+        ],
+      },
+      {
+        heading: "What the EBOO paper reported",
+        body: [
+          "The paper described EBOO as a higher-volume method: a high-efficiency system treating up to several litres of heparinized blood during about an hour of extracorporeal circulation with an oxygen–ozone mixture, compared with roughly 250 ml in conventional autohemotherapy. The protocol it described spanned several weeks of sessions and could be integrated with dialysis systems.",
+          "Biochemically, the authors reported a several-fold rise in oxidative markers (TBARS) and a corresponding drop in plasma protein thiols without significant red-cell hemolysis, proposing these as practical indicators for monitoring response. They reported promising signals in serious vascular conditions while calling for further controlled study.",
+        ],
+      },
+      {
+        heading: "An honest framing",
+        body: [
+          "This is foundational, hypothesis-generating work, not large-scale proof of efficacy. We cite it for education and transparency. EBOO remains investigational and is not FDA-approved to treat the conditions discussed in the literature.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Who authored the original research?",
+        a: "The abstract is credited to N. Di Paolo, E. Gaggiotti, and F. Galli (PMID 16156950). It is an early paper describing EBOO’s biology and proposed applications and should be read as preliminary.",
+      },
+    ],
+    related: ["ebo3-eboo-blood-therapy", "eboo-comparison-guide", "uvbi-ultraviolet-blood-irradiation"],
+    byline: {
+      author: "Di Paolo N, Gaggiotti E, Galli F (original research) — via EBOO Medical",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/clinical-and-biological-implications-of-eboo-ozone-therapy/",
+      note: "Plain-language summary of a third-party peer-reviewed abstract (PMID 16156950). See the original for full detail.",
+    },
+  },
+  {
+    slug: "athletes-and-eboo-recovery-trend",
+    kind: "external",
+    category: "Trends",
+    title: "Why Some Athletes Are Exploring EBOO for Recovery",
+    excerpt:
+      "High-performing athletes have drawn attention to blood ozone therapy as part of the modern recovery toolkit. Here is what the interest is about — and a realistic, non-promotional framing.",
+    deck:
+      "From ice baths to high-tech recovery: where EBOO fits in the conversation, and why visibility is not the same as proof.",
+    readMinutes: 5,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "A high-tech recovery trend",
+        body: [
+          "Athlete recovery has grown into a sophisticated field, from hyperbaric oxygen and red-light therapy to advanced rehab equipment. In that context, EBOO — in which blood is drawn, filtered, enriched with oxygen and ozone, and reinfused — has been discussed by some athletes and practitioners as a possible tool for managing oxidative stress, circulation, and inflammation associated with intense training and injury recovery.",
+          "Some public figures in professional sport have shared their own EBOO sessions, which has pushed the therapy further into mainstream conversation.",
+        ],
+      },
+      {
+        heading: "What proponents suggest — with a caveat",
+        body: [
+          "Advocates propose that improved oxygen delivery and reduced oxidative stress could, in theory, support tissue recovery. These are mechanistic hypotheses; EBOO is not proven to accelerate healing, and it remains controversial in mainstream sports medicine precisely because rigorous clinical evidence is limited.",
+          "Visibility among elite athletes reflects interest and access, not validated efficacy. Anyone considering EBOO for recovery should treat it as investigational and discuss it with a qualified clinician.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does EBOO speed up injury recovery?",
+        a: "There is no high-quality clinical evidence establishing that EBOO speeds recovery. The interest is based on proposed mechanisms and anecdotal reports. It is investigational and not FDA-approved for this use.",
+      },
+    ],
+    related: ["what-is-eboo-therapy", "does-eboo-really-work", "eboo-for-longevity"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/changing-the-game-for-sports-injury-recovery/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; specific athlete names, dollar figures, and third-party clinic references removed.",
+    },
+  },
+  {
+    slug: "eboo-athlete-wellness-spotlight",
+    kind: "external",
+    category: "Trends",
+    title: "Public Interest in EBOO: The Athlete Wellness Spotlight",
+    excerpt:
+      "When a professional athlete shares an EBOO session publicly, interest spikes. Here is a calm explainer of what the procedure involves and why coverage is not the same as clinical proof.",
+    deck:
+      "What people are actually seeing when an athlete posts an EBOO session — and how to separate the procedure from the hype.",
+    readMinutes: 4,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "What the procedure involves",
+        body: [
+          "In the sessions athletes have shared publicly, blood is drawn, circulated outside the body where it is exposed to an oxygen–ozone mixture and high-grade filtration, and then returned. A portion of the patient’s blood is processed in a continuous loop over the course of a session.",
+          "The benefits proponents typically list — improved circulation, reduced inflammation, immune support, more energy, and toxin removal — are proposed effects, not established outcomes.",
+        ],
+      },
+      {
+        heading: "Why visibility isn’t evidence",
+        body: [
+          "Public interest from high-performance circles has raised EBOO’s profile, but the therapy remains controversial in the broader medical community because clinical research is limited. A celebrity or athlete trying something says nothing about whether it is safe or effective for you.",
+          "EBOO is investigational and not FDA-approved to treat any condition. If you are curious, the sensible path is screening and a clinician conversation rather than following a trend.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is EBOO safe because famous athletes do it?",
+        a: "Celebrity use is not a safety or efficacy signal. EBOO has defined contraindications and should only be performed by qualified clinicians after screening. It remains investigational.",
+      },
+    ],
+    related: ["athletes-and-eboo-recovery-trend", "what-is-eboo-therapy", "does-eboo-really-work"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/bryce-harper-tries-eboo-therapy/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; the specific individual’s name and identifying details were removed.",
+    },
+  },
+  {
+    slug: "eboo-blood-oil-change-explainer",
+    kind: "external",
+    category: "Explainers",
+    title: "EBOO as an ‘Oil Change for the Body’: What That Means",
+    excerpt:
+      "Patients sometimes describe EBOO as feeling like ‘an oil change’ because of the visible filtration of blood. Here is what that nickname actually refers to, and a grounded view of the reported benefits.",
+    deck:
+      "Where the ‘oil change’ metaphor comes from, what the procedure does, and why it is investigational.",
+    readMinutes: 4,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "Where the metaphor comes from",
+        body: [
+          "In EBOO, blood is withdrawn from one arm, filtered, oxygenated, and ozonated, and then returned through the other arm. Patients often remark on the visible contrast — darker blood leaving the body and lighter, pinker blood returning — which is where the informal ‘oil change’ comparison comes from. It is a metaphor about filtration, not a literal description.",
+        ],
+      },
+      {
+        heading: "What practitioners report — and the limits",
+        body: [
+          "Some integrative practitioners report improvements in energy and bloodwork among patients, and describe using EBOO for symptom-driven cases such as long-standing peripheral neuropathy, with the broad aim of reducing inflammation and supporting recovery. They also point to research interest in chronic infections, autoimmune conditions, and metabolic concerns.",
+          "These are clinical observations and hypotheses, not proof. Most clinicians agree oxidative stress contributes to many diseases, but that general principle does not establish that EBOO treats them. EBOO is investigational and not FDA-approved, and it does not treat conditions like diabetes directly.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is EBOO literally an oil change for your blood?",
+        a: "No. ‘Oil change’ is an informal metaphor patients use for the visible filtration of blood during EBOO. The procedure is a clinically supervised, dialysis-style loop — and it is investigational, not a proven detox.",
+      },
+    ],
+    related: ["blood-oil-change", "what-is-eboo-therapy", "does-eboo-really-work"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/eboo-therapy-as-the-oil-change-for-the-body/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; the named physician and his clinic were removed.",
+    },
+  },
+  {
+    slug: "eboo-remove-heavy-metals",
+    kind: "external",
+    category: "Explainers",
+    title: "Does EBOO Remove Heavy Metals? An Honest Look",
+    excerpt:
+      "‘Detox’ and ‘heavy-metal removal’ are among the most common EBOO claims online. Here is what the proposed mechanisms are, and why the evidence does not support treating it as a proven chelation method.",
+    deck:
+      "The proposed detox mechanisms behind EBOO, the metals people ask about, and a careful, non-claim framing.",
+    readMinutes: 5,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "The proposed mechanisms",
+        body: [
+          "Proponents suggest EBOO may support the body’s own detoxification in a few ways: by improving circulation so the organs of elimination are better supplied; through ozone’s oxidative action, which is proposed to alter some compounds in the blood; and by generally supporting immune and metabolic function. Heavy metals such as lead, mercury, cadmium, and arsenic accumulate from environmental and occupational exposure and are genuinely harmful at sufficient levels.",
+        ],
+      },
+      {
+        heading: "Why this must be framed carefully",
+        body: [
+          "It is important to be precise: EBOO is not an established, FDA-approved chelation or heavy-metal-removal therapy. The mechanisms above are hypotheses, and clinical evidence that EBOO meaningfully lowers body burden of specific metals is limited (a small case report is discussed in our research notes). Genuine heavy-metal toxicity is a medical diagnosis that requires evaluation and, where indicated, proven treatment under a clinician.",
+          "If you are worried about heavy-metal exposure, the right first step is testing and a clinician’s assessment — not self-directed ‘detox.’ EBOO, where considered at all, would be investigational and adjunctive.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Can EBOO chelate heavy metals out of my body?",
+        a: "EBOO is not a proven or FDA-approved chelation therapy. Some proposed mechanisms and a small case report exist, but the evidence is limited. Suspected heavy-metal toxicity should be evaluated and treated by a clinician using validated methods.",
+      },
+    ],
+    related: ["eboo-urinary-toxin-case-report", "eboo-for-mold-and-toxins", "what-is-eboo-therapy"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/does-eboo-remove-heavy-metals/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; absolute claims softened to proposed mechanisms with explicit limits.",
+    },
+  },
+  {
+    slug: "eboo-and-lyme-supportive-care",
+    kind: "external",
+    category: "Conditions",
+    title: "EBOO and Lyme Disease: Supportive Care, Not a Cure",
+    excerpt:
+      "Some integrative practitioners explore EBOO as supportive care for lingering Lyme symptoms. Here is a balanced overview — what it might address, what the evidence says, and why antibiotics remain the standard of care.",
+    deck:
+      "A careful look at EBOO as a possible adjunct for chronic Lyme symptoms — emphatically not a replacement for evidence-based treatment.",
+    readMinutes: 5,
+    updated: EXTERNAL_UPDATED,
+    conditionValue: "Lyme disease",
+    sections: [
+      {
+        heading: "Lyme disease and lingering symptoms",
+        body: [
+          "Lyme disease is caused by the bacterium Borrelia and is usually treated effectively with antibiotics when caught early. Some people experience persistent symptoms afterward — fatigue, brain fog, joint or muscle pain, and sleep disturbance — sometimes described as Post-Treatment Lyme Disease Syndrome (PTLDS). This is where some integrative practitioners discuss adjuncts like EBOO.",
+        ],
+      },
+      {
+        heading: "How EBOO is proposed to help — and the evidence",
+        body: [
+          "Proposed rationales include enhancing oxygen delivery to inflamed tissue, ozone’s general antimicrobial action, supporting circulation and the body’s detoxification, and modulating an over-active immune response. These are hypotheses; they have not been confirmed in large trials.",
+          "The honest evidence picture: EBOO is not FDA-approved for Lyme, no large peer-reviewed trials validate it for Lyme or PTLDS, and general ozone research cannot be directly extrapolated to EBOO. Importantly, the bacteria largely reside in tissues rather than the bloodstream, so ‘cleaning’ blood does not target the infection where it lives.",
+        ],
+      },
+      {
+        heading: "A responsible approach",
+        body: [
+          "If EBOO is considered at all for chronic Lyme symptoms, it should be viewed as adjunctive and supportive — never a standalone or a substitute for antibiotics guided by a Lyme-literate physician or infectious-disease specialist. It is also not recommended for people with certain blood disorders or G6PD deficiency.",
+          "Always consult your physician before pursuing EBOO, and do not delay evidence-based treatment.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Can EBOO cure Lyme disease?",
+        a: "No. EBOO is not a cure and is not FDA-approved for Lyme. Standard care is antibiotics guided by a clinician. EBOO is, at most, an investigational adjunct for lingering symptoms and does not target bacteria residing in tissues.",
+      },
+      {
+        q: "Is EBOO safe for everyone with Lyme?",
+        a: "No. It is not recommended for people with certain blood disorders, hyperthyroidism, or G6PD deficiency, and may cause transient fatigue or flu-like symptoms. Screening by a clinician is essential.",
+      },
+    ],
+    related: ["eboo-for-lyme-disease", "what-is-eboo-therapy", "eboo-comparison-guide"],
+    byline: {
+      author: "EBOO Medical editorial team",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/eboo-therapy-for-lyme-disease/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; balanced framing and antibiotics-as-standard-of-care emphasis retained.",
+    },
+  },
+  {
+    slug: "eboo-uv-light-therapy-explained",
+    kind: "external",
+    category: "Explainers",
+    title: "EBOO + UV Light Therapy: What It Is",
+    excerpt:
+      "EBOO is sometimes combined with ultraviolet blood irradiation (UVBI) in a single session. Here is a plain explainer of what that adds — with the marketing statistics deliberately set aside.",
+    deck:
+      "How UV light is combined with blood ozonation, what proponents claim, and why precise, modest framing matters.",
+    readMinutes: 5,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "What ‘EBOO + UV light’ means",
+        body: [
+          "Some protocols integrate three steps in one session: extracorporeal blood filtration, oxygen–ozone saturation, and a stage of ultraviolet (UV) blood irradiation. Processing happens in a continuous loop over roughly an hour, treating a larger volume of blood than a simple ozone IV. This combined approach is closely related to what we describe as EBO3.",
+        ],
+      },
+      {
+        heading: "A note on the bold numbers you may see",
+        body: [
+          "Marketing materials for EBOO + UV often quote dramatic percentages — large drops in inflammatory markers, big jumps in energy metabolism, near-total ‘detox.’ We deliberately do not repeat those figures as facts. Many come from small, uncontrolled, or vendor-sponsored sources and should be treated with caution.",
+          "The honest position: UVBI and ozone therapies are investigational and not FDA-approved to treat any disease. The rationale for combining them is a protocol-design choice, not a guarantee of added benefit, and the clinical evidence for UVBI specifically remains limited.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does adding UV light make EBOO more effective?",
+        a: "Combining UVBI with ozonation is a protocol-design choice based on proposed complementary mechanisms, not proven added benefit. UVBI evidence is limited and it is not FDA-approved to treat disease.",
+      },
+      {
+        q: "Why don’t you cite the big percentage improvements?",
+        a: "Many widely circulated EBOO + UV statistics come from small, uncontrolled, or promotional sources. We present this topic conservatively and avoid repeating unverified numbers as fact.",
+      },
+    ],
+    related: ["uvbi-ultraviolet-blood-irradiation", "what-is-eboo-therapy", "ebo3-eboo-blood-therapy"],
+    byline: {
+      author: "Biana Borchenko",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/eboo-uv-light-therapy/",
+      note: "Adapted into rEBOOtBlood’s non-claim voice; aggressive efficacy statistics and pricing/clinic-selection claims intentionally omitted.",
+    },
+  },
+  {
+    slug: "who-invented-eboo-therapy",
+    kind: "external",
+    category: "Foundations",
+    title: "Who Invented EBOO Therapy? Origins and Development",
+    excerpt:
+      "EBOO grew out of decades of medical ozone research. Here is a brief, factual history — from early ozone autohemotherapy to the high-volume extracorporeal systems used today.",
+    deck:
+      "The roots of EBOO in ozone medicine, the figures who shaped the field, and how the modern extracorporeal approach developed.",
+    readMinutes: 6,
+    updated: EXTERNAL_UPDATED,
+    sections: [
+      {
+        heading: "Roots in medical ozone",
+        body: [
+          "Using ozone therapeutically is not new. Medical ozone has been practiced since the early twentieth century, primarily in Europe, in forms such as ozonated oils, insufflations, and Major Autohemotherapy (MAH), in which a small amount of blood is withdrawn, mixed with ozone, and reinfused.",
+          "A pivotal figure in modern ozone medicine is Dr. Velio Bocci, a professor emeritus of physiology at the University of Siena, whose research from the 1990s onward helped explain ozone’s proposed biological mechanisms — modulating oxidative stress, activating the immune system, and influencing oxygen metabolism. He did not invent EBOO, but his work helped legitimize the field that inspired it.",
+        ],
+      },
+      {
+        heading: "The development of EBOO",
+        body: [
+          "EBOO emerged in the early 2000s from the work of biomedical researchers and engineers — with significant contributions from Italian teams — who sought to overcome the small volumes of MAH by treating a much larger volume of blood in a closed-loop extracorporeal system. The design goals included continuous oxygen and ozone exposure, a dialysis-style filtration membrane, and hemodynamic stability using medical-grade materials.",
+          "Over time, systems added high-efficiency filters, programmable ozone generators, single-use biocompatible tubing, and real-time monitoring. In some configurations, blood is recirculated and ozonated multiple times in a session — an approach sometimes called recirculatory hemoperfusion.",
+        ],
+      },
+      {
+        heading: "No single inventor — and still investigational",
+        body: [
+          "No single individual holds a public claim to inventing EBOO; it developed collaboratively across researchers, ozone-therapy pioneers, and equipment manufacturers, with various proprietary systems used under different names. It has seen growing adoption in integrative clinics in the US, Europe, and Asia.",
+          "As interest grows, it remains important to note that EBOO is still considered experimental or adjunctive in conventional medicine, with large-scale clinical trials limited or ongoing. It is not FDA-approved to treat any disease.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Who invented EBOO therapy?",
+        a: "There is no single inventor. EBOO developed in the early 2000s through collaboration among biomedical researchers (notably Italian teams), ozone-therapy pioneers, and equipment manufacturers, building on foundational ozone research by figures such as Dr. Velio Bocci.",
+      },
+    ],
+    related: ["ebo3-eboo-blood-therapy", "uvbi-ultraviolet-blood-irradiation", "what-is-eboo-therapy"],
+    byline: {
+      author: "Ralph Montague",
+      sourceName: EBOOMED,
+      sourceUrl: "https://eboomedical.com/who-invented-eboo-therapy/",
+      note: "Adapted into rEBOOtBlood’s educational voice; this history piece is largely factual with light editing for tone.",
+    },
+  },
+];
+
+export const ALL_ARTICLES: LearnArticle[] = [...PILLARS, ...SPOKES, ...SEO_ARTICLES, ...EXTERNAL_ARTICLES];
 
 export function getArticle(slug: string): LearnArticle | undefined {
   return ALL_ARTICLES.find((a) => a.slug === slug);
