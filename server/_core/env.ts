@@ -23,4 +23,8 @@ export const ENV = {
   godaddyApiSecret: process.env.GODADDY_API_SECRET ?? "",
   /** GoDaddy API base URL (production by default; OTE endpoint can be set for testing). */
   godaddyApiUrl: process.env.GODADDY_API_URL ?? "https://api.godaddy.com",
+  /** SMTP sender address (Google Workspace). */
+  smtpUser: process.env.SMTP_USER ?? "",
+  /** Google App Password for SMTP authentication. */
+  smtpAppPassword: process.env.SMTP_APP_PASSWORD ?? "",
 };

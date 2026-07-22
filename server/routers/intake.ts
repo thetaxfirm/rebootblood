@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { TRPCError } from "@trpc/server";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
 import { notifyOwner } from "../_core/notification";
+import { sendEmail, formatLeadEmail, formatQuestionnaireEmail } from "../_core/email";
 import { recordAudit, requestIpHash } from "../_core/audit";
 import { encryptJson, decryptJson } from "../_core/phi";
 import {
@@ -80,6 +81,21 @@ export const intakeRouter = router({
         content: formatQuestionnaireNotification({ publicId, payload }),
       }).catch(() => undefined);
 
+      // Email notification to care@rebootblood.clinic (non-PHI contact + intent only).
+      void sendEmail(
+        formatQuestionnaireEmail({
+          name: [payload.firstName, payload.lastName].filter(Boolean).join(" "),
+          email: payload.email,
+          phone: payload.phone,
+          preferredContact: payload.preferredContact,
+          interest: input.treatmentInterest,
+          volume: payload.ebo3Volume ?? undefined,
+          selectedTier: (payload as any).selectedTier ?? undefined,
+          location: [payload.city, payload.state].filter(Boolean).join(", "),
+          goals: payload.goals?.join(", "),
+        })
+      ).catch(() => undefined);
+
       return { success: true, reference: publicId } as const;
     }),
 
@@ -145,6 +161,19 @@ export const intakeRouter = router({
         selectedTier: selectedTier || null,
       }),
     }).catch(() => false);
+
+    // Email notification to care@rebootblood.clinic (non-PHI contact + intent).
+    void sendEmail(
+      formatLeadEmail({
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone ?? undefined,
+        interest: input.treatmentInterest,
+        source: input.source || "lead_form",
+        selectedTier: selectedTier || undefined,
+        message: payload.message ?? undefined,
+      })
+    ).catch(() => undefined);
 
     return { success: true, reference: publicId, notified: !!delivered } as const;
   }),

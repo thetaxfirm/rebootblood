@@ -291,3 +291,11 @@
 - [x] Vitest coverage (server/canonicalHost.test.ts)
 - [x] tsc clean + vitest green (91 tests incl. 9 canonicalHost); checkpoint saved
 - [ ] User publishes; then re-verify apex->www 301 live after publish
+
+
+## Email: automated delivery to care@rebootblood.clinic (requested)
+- [x] Store SMTP_USER + SMTP_APP_PASSWORD as project secrets; add to env.ts
+- [x] Install nodemailer; create email helper (server/_core/email.ts): Google Workspace SMTP, formatLeadEmail, formatQuestionnaireEmail
+- [x] Wire sendEmail into submitLead + submitQuestionnaire (non-PHI contact + intent only; health-screening answers excluded per HIPAA)
+- [x] Vitest: 4 formatter tests + LIVE SMTP credential verification (5/5 pass)
+- [x] tsc clean + 96 tests pass; checkpoint
