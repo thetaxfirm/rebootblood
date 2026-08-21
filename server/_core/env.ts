@@ -27,4 +27,8 @@ export const ENV = {
   smtpUser: process.env.SMTP_USER ?? "",
   /** Google App Password for SMTP authentication. */
   smtpAppPassword: process.env.SMTP_APP_PASSWORD ?? "",
+  /** Google OAuth 2.0 Client ID for admin login. */
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
+  /** Google OAuth 2.0 Client Secret for admin login. */
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
 };

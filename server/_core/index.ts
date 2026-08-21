@@ -30,17 +30,23 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
-async function startServer() {
+/**
+ * Create and configure the Express app.
+ * Exported so Vercel's serverless entry can import it without starting a listener.
+ */
+export function createApp() {
   const app = express();
-  const server = createServer(app);
+
   // Enforce canonical host (apex rebootblood.clinic -> www.rebootblood.clinic).
-  // Must run before any body parsing / routes so redirects are cheap.
   app.use(canonicalHostRedirect);
-  // Configure body parser with larger size limit for file uploads
+
+  // Body parser
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
   // tRPC API
   app.use(
     "/api/trpc",
@@ -49,9 +55,16 @@ async function startServer() {
       createContext,
     })
   );
-  // Scheduled (Heartbeat cron) callbacks. Must be registered before the
-  // Vite/static fallthrough — /api/scheduled/* is not auto-registered.
+
+  // Scheduled sync endpoint
   app.post("/api/scheduled/syncLinkArtemis", syncLinkArtemisScheduledHandler);
+
+  return app;
+}
+
+async function startServer() {
+  const app = createApp();
+  const server = createServer(app);
 
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
@@ -72,4 +85,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+// Only start the listener when running directly (not imported by Vercel)
+if (process.env.VERCEL !== "1") {
+  startServer().catch(console.error);
+}

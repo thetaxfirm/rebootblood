@@ -1,25 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
-import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
 
 type CookieCall = {
   name: string;
-  options: Record<string, unknown>;
+  options?: Record<string, unknown>;
 };
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
-function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] } {
+function createAuthContext() {
   const clearedCookies: CookieCall[] = [];
+  const state = { logoutCalled: false, sessionDestroyed: false };
 
   const user: AuthenticatedUser = {
     id: 1,
-    openId: "sample-user",
-    email: "sample@example.com",
-    name: "Sample User",
-    loginMethod: "manus",
-    role: "user",
+    openId: "google_12345",
+    email: "care@rebootblood.clinic",
+    name: "Admin User",
+    loginMethod: "google",
+    role: "admin",
     createdAt: new Date(),
     updatedAt: new Date(),
     lastSignedIn: new Date(),
@@ -30,33 +30,38 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
     req: {
       protocol: "https",
       headers: {},
-    } as TrpcContext["req"],
+      logout: (cb: () => void) => {
+        state.logoutCalled = true;
+        cb();
+      },
+      session: {
+        destroy: (cb: () => void) => {
+          state.sessionDestroyed = true;
+          cb();
+        },
+      },
+    } as any,
     res: {
-      clearCookie: (name: string, options: Record<string, unknown>) => {
+      clearCookie: (name: string, options?: Record<string, unknown>) => {
         clearedCookies.push({ name, options });
       },
     } as TrpcContext["res"],
   };
 
-  return { ctx, clearedCookies };
+  return { ctx, clearedCookies, state };
 }
 
 describe("auth.logout", () => {
-  it("clears the session cookie and reports success", async () => {
-    const { ctx, clearedCookies } = createAuthContext();
+  it("destroys the Passport session, clears connect.sid cookie, and reports success", async () => {
+    const { ctx, clearedCookies, state } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.auth.logout();
 
     expect(result).toEqual({ success: true });
+    expect(state.logoutCalled).toBe(true);
+    expect(state.sessionDestroyed).toBe(true);
     expect(clearedCookies).toHaveLength(1);
-    expect(clearedCookies[0]?.name).toBe(COOKIE_NAME);
-    expect(clearedCookies[0]?.options).toMatchObject({
-      maxAge: -1,
-      secure: true,
-      sameSite: "none",
-      httpOnly: true,
-      path: "/",
-    });
+    expect(clearedCookies[0]?.name).toBe("connect.sid");
   });
 });

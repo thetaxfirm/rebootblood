@@ -1,5 +1,3 @@
-import { COOKIE_NAME } from "@shared/const";
-import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { intakeRouter, adminRouter } from "./routers/intake";
@@ -11,8 +9,14 @@ export const appRouter = router({
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      // Destroy the Passport/express-session
+      if ((ctx.req as any).logout) {
+        (ctx.req as any).logout(() => {});
+      }
+      if ((ctx.req as any).session?.destroy) {
+        (ctx.req as any).session.destroy(() => {});
+      }
+      ctx.res.clearCookie("connect.sid");
       return {
         success: true,
       } as const;

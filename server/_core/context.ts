@@ -1,6 +1,6 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
-import { sdk } from "./sdk";
+import { getSessionUser } from "./oauth";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
@@ -11,14 +11,8 @@ export type TrpcContext = {
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
-  let user: User | null = null;
-
-  try {
-    user = await sdk.authenticateRequest(opts.req);
-  } catch (error) {
-    // Authentication is optional for public procedures.
-    user = null;
-  }
+  // Use Passport session (Google OAuth) instead of Manus SDK
+  const user: User | null = getSessionUser(opts.req) ?? null;
 
   return {
     req: opts.req,
