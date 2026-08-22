@@ -1,37 +1,53 @@
 import type { Request, Response } from "express";
-import { sdk } from "./sdk";
+import { sdk, type AuthenticatedUser } from "./sdk";
 import { syncLinkArtemis } from "./linkartemis";
 import { upsertSyncedArticle } from "../db";
 import { recordAudit } from "./audit";
-import type { AuthenticatedUser } from "./sdk";
 
 /**
  * Project-level Heartbeat callback: daily auto-sync of LinkArtemis articles.
  *
- * The platform POSTs here on the cron schedule (see references/periodic-updates.md).
- * It runs the same sync the admin "Sync now" button uses — a single API pull +
- * idempotent DB upsert. New articles land as "pending"; existing rows keep their
- * review status, so nothing is ever auto-published.
+ * Supports two auth modes:
+ *   1. Manus Heartbeat: sdk.authenticateRequest → user.isCron + taskUid
+ *   2. Vercel Cron: Authorization header matches CRON_SECRET env var
  *
- * Contract notes:
- *  - Auth: only cron-authenticated requests (`user.isCron`) may trigger it.
- *  - Idempotent: re-running upserts by remoteId; safe for the platform's retries.
- *  - Errors: 500 returns a JSON-encoded error so the platform Investigate flow
- *    can surface it verbatim. 5xx/429 are retried up to 3 times by the platform.
+ * Idempotent: re-running upserts by remoteId; safe for retries.
  */
+
+function isVercelCronAuthorized(req: any): boolean {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return false;
+  const authHeader = req.headers?.["authorization"] ?? "";
+  return authHeader === `Bearer ${cronSecret}`;
+}
+
 export async function syncLinkArtemisScheduledHandler(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    let user: AuthenticatedUser;
-    try {
-      user = await sdk.authenticateRequest(req);
-    } catch {
-      res.status(403).json({ error: "cron-only" });
-      return;
+    // Auth: accept either Manus Heartbeat cron OR Vercel CRON_SECRET
+    let isAuthorized = false;
+    let authSource = "unknown";
+
+    // Try Vercel cron auth first (simpler, no async)
+    if (isVercelCronAuthorized(req)) {
+      isAuthorized = true;
+      authSource = "vercel-cron";
+    } else {
+      // Fall back to Manus Heartbeat auth
+      try {
+        const user: AuthenticatedUser = await sdk.authenticateRequest(req);
+        if (user.isCron && user.taskUid) {
+          isAuthorized = true;
+          authSource = "manus-heartbeat";
+        }
+      } catch {
+        // Not authenticated via Manus either
+      }
     }
-    if (!user.isCron || !user.taskUid) {
+
+    if (!isAuthorized) {
       res.status(403).json({ error: "cron-only" });
       return;
     }
@@ -40,12 +56,12 @@ export async function syncLinkArtemisScheduledHandler(
 
     // Audit the automated sync (targetType "system"; no PHI involved).
     await recordAudit(
-      { req, user },
+      { req, user: null },
       {
         action: "content.sync.scheduled",
         targetType: "system",
         detail:
-          `taskUid=${user.taskUid} fetched=${summary.fetched} ` +
+          `source=${authSource} fetched=${summary.fetched} ` +
           `inserted=${summary.inserted} updated=${summary.updated} ` +
           `skipped=${summary.skipped} errors=${summary.errors.length}`,
       },
