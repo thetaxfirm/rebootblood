@@ -1,9 +1,9 @@
 /**
  * Vercel Serverless Function entry point.
- * Imports the pre-built Express app from the esbuild bundle.
+ * This file is the source that esbuild bundles into api/_bundle.mjs.
+ * Vercel deploys api/_bundle.mjs as the actual function.
+ *
+ * NOTE: If you see this file, the build hasn't run yet.
+ * The actual deployed function is api/_bundle.mjs (built by `pnpm build`).
  */
-import { createApp } from "../dist/index.js";
-
-const app = createApp();
-
-export default app;
+export { default } from "./_bundle.mjs";

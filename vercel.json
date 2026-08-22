@@ -4,15 +4,13 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "dist/public",
   "installCommand": "pnpm install --frozen-lockfile",
-  "framework": null,
   "functions": {
-    "api/index.js": {
-      "includeFiles": "dist/**",
+    "api/_bundle.mjs": {
       "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/api/(.*)", "destination": "/api/_bundle.mjs" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "crons": [
@@ -22,3 +20,4 @@
     }
   ]
 }
+
