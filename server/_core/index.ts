@@ -1,15 +1,10 @@
 import "dotenv/config";
-import express from "express";
 import { createServer } from "http";
 import net from "net";
-import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
-import { registerStorageProxy } from "./storageProxy";
-import { appRouter } from "../routers";
-import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { syncLinkArtemisScheduledHandler } from "./scheduled";
-import { canonicalHostRedirect } from "./canonicalHost";
+import { createApp } from "./app";
+
+export { createApp } from "./app";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -28,38 +23,6 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
     }
   }
   throw new Error(`No available port found starting from ${startPort}`);
-}
-
-/**
- * Create and configure the Express app.
- * Exported so Vercel's serverless entry can import it without starting a listener.
- */
-export function createApp() {
-  const app = express();
-
-  // Enforce canonical host (apex rebootblood.clinic -> www.rebootblood.clinic).
-  app.use(canonicalHostRedirect);
-
-  // Body parser
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-
-  registerStorageProxy(app);
-  registerOAuthRoutes(app);
-
-  // tRPC API
-  app.use(
-    "/api/trpc",
-    createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
-  );
-
-  // Scheduled sync endpoint
-  app.post("/api/scheduled/syncLinkArtemis", syncLinkArtemisScheduledHandler);
-
-  return app;
 }
 
 async function startServer() {

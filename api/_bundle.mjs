@@ -1,8 +1,5 @@
-// server/_core/index.ts
-import "dotenv/config";
-import express2 from "express";
-import { createServer } from "http";
-import net from "net";
+// server/_core/app.ts
+import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 // server/_core/oauth.ts
@@ -1636,11 +1633,11 @@ var GoDaddyError = class extends Error {
     this.status = status;
   }
 };
-async function gdFetch(path3, init = {}, { key = ENV.godaddyApiKey, secret = ENV.godaddyApiSecret, baseUrl = ENV.godaddyApiUrl } = {}) {
+async function gdFetch(path, init = {}, { key = ENV.godaddyApiKey, secret = ENV.godaddyApiSecret, baseUrl = ENV.godaddyApiUrl } = {}) {
   if (!key || !secret) {
     throw new GoDaddyError("GoDaddy credentials are not configured.", 500);
   }
-  const res = await fetch(`${baseUrl}${path3}`, {
+  const res = await fetch(`${baseUrl}${path}`, {
     ...init,
     headers: {
       Authorization: buildGoDaddyAuthHeader(key, secret),
@@ -1838,212 +1835,6 @@ async function createContext(opts) {
     res: opts.res,
     user
   };
-}
-
-// server/_core/vite.ts
-import express from "express";
-import fs2 from "fs";
-import { nanoid as nanoid2 } from "nanoid";
-import path2 from "path";
-import { createServer as createViteServer } from "vite";
-
-// vite.config.ts
-import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
-import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
-import fs from "node:fs";
-import path from "node:path";
-import { defineConfig } from "vite";
-import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
-var PROJECT_ROOT = import.meta.dirname;
-var LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
-var MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024;
-var TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6);
-function ensureLogDir() {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
-  }
-}
-function trimLogFile(logPath, maxSize) {
-  try {
-    if (!fs.existsSync(logPath) || fs.statSync(logPath).size <= maxSize) {
-      return;
-    }
-    const lines = fs.readFileSync(logPath, "utf-8").split("\n");
-    const keptLines = [];
-    let keptBytes = 0;
-    const targetSize = TRIM_TARGET_BYTES;
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const lineBytes = Buffer.byteLength(`${lines[i]}
-`, "utf-8");
-      if (keptBytes + lineBytes > targetSize) break;
-      keptLines.unshift(lines[i]);
-      keptBytes += lineBytes;
-    }
-    fs.writeFileSync(logPath, keptLines.join("\n"), "utf-8");
-  } catch {
-  }
-}
-function writeToLogFile(source, entries) {
-  if (entries.length === 0) return;
-  ensureLogDir();
-  const logPath = path.join(LOG_DIR, `${source}.log`);
-  const lines = entries.map((entry) => {
-    const ts = (/* @__PURE__ */ new Date()).toISOString();
-    return `[${ts}] ${JSON.stringify(entry)}`;
-  });
-  fs.appendFileSync(logPath, `${lines.join("\n")}
-`, "utf-8");
-  trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
-}
-function vitePluginManusDebugCollector() {
-  return {
-    name: "manus-debug-collector",
-    transformIndexHtml(html) {
-      if (process.env.NODE_ENV === "production") {
-        return html;
-      }
-      return {
-        html,
-        tags: [
-          {
-            tag: "script",
-            attrs: {
-              src: "/__manus__/debug-collector.js",
-              defer: true
-            },
-            injectTo: "head"
-          }
-        ]
-      };
-    },
-    configureServer(server) {
-      server.middlewares.use("/__manus__/logs", (req, res, next) => {
-        if (req.method !== "POST") {
-          return next();
-        }
-        const handlePayload = (payload) => {
-          if (payload.consoleLogs?.length > 0) {
-            writeToLogFile("browserConsole", payload.consoleLogs);
-          }
-          if (payload.networkRequests?.length > 0) {
-            writeToLogFile("networkRequests", payload.networkRequests);
-          }
-          if (payload.sessionEvents?.length > 0) {
-            writeToLogFile("sessionReplay", payload.sessionEvents);
-          }
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ success: true }));
-        };
-        const reqBody = req.body;
-        if (reqBody && typeof reqBody === "object") {
-          try {
-            handlePayload(reqBody);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
-          return;
-        }
-        let body = "";
-        req.on("data", (chunk) => {
-          body += chunk.toString();
-        });
-        req.on("end", () => {
-          try {
-            const payload = JSON.parse(body);
-            handlePayload(payload);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
-        });
-      });
-    }
-  };
-}
-var plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
-var vite_config_default = defineConfig({
-  plugins,
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets")
-    }
-  },
-  envDir: path.resolve(import.meta.dirname),
-  root: path.resolve(import.meta.dirname, "client"),
-  publicDir: path.resolve(import.meta.dirname, "client", "public"),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true
-  },
-  server: {
-    host: true,
-    allowedHosts: [
-      ".manuspre.computer",
-      ".manus.computer",
-      ".manus-asia.computer",
-      ".manuscomputer.ai",
-      ".manusvm.computer",
-      "localhost",
-      "127.0.0.1"
-    ],
-    fs: {
-      strict: true,
-      deny: ["**/.*"]
-    }
-  }
-});
-
-// server/_core/vite.ts
-async function setupVite(app2, server) {
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
-    allowedHosts: true
-  };
-  const vite = await createViteServer({
-    ...vite_config_default,
-    configFile: false,
-    server: serverOptions,
-    appType: "custom"
-  });
-  app2.use(vite.middlewares);
-  app2.use("*", async (req, res, next) => {
-    const url = req.originalUrl;
-    try {
-      const clientTemplate = path2.resolve(
-        import.meta.dirname,
-        "../..",
-        "client",
-        "index.html"
-      );
-      let template = await fs2.promises.readFile(clientTemplate, "utf-8");
-      template = template.replace(
-        `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid2()}"`
-      );
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
-    } catch (e) {
-      vite.ssrFixStacktrace(e);
-      next(e);
-    }
-  });
-}
-function serveStatic(app2) {
-  const distPath = process.env.NODE_ENV === "development" ? path2.resolve(import.meta.dirname, "../..", "dist", "public") : path2.resolve(import.meta.dirname, "public");
-  if (!fs2.existsSync(distPath)) {
-    console.error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`
-    );
-  }
-  app2.use(express.static(distPath));
-  app2.use("*", (_req, res) => {
-    res.sendFile(path2.resolve(distPath, "index.html"));
-  });
 }
 
 // shared/_core/errors.ts
@@ -2355,8 +2146,8 @@ function canonicalRedirectTarget(hostHeader, originalUrl) {
   if (!hostHeader) return null;
   const host = hostHeader.split(":")[0].trim().toLowerCase();
   if (host !== APEX) return null;
-  const path3 = originalUrl || "/";
-  return `https://${CANONICAL_HOST}${path3}`;
+  const path = originalUrl || "/";
+  return `https://${CANONICAL_HOST}${path}`;
 }
 function canonicalHostRedirect(req, res, next) {
   const target = canonicalRedirectTarget(req.headers.host, req.originalUrl);
@@ -2367,29 +2158,12 @@ function canonicalHostRedirect(req, res, next) {
   next();
 }
 
-// server/_core/index.ts
-function isPortAvailable(port) {
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    server.listen(port, () => {
-      server.close(() => resolve(true));
-    });
-    server.on("error", () => resolve(false));
-  });
-}
-async function findAvailablePort(startPort = 3e3) {
-  for (let port = startPort; port < startPort + 20; port++) {
-    if (await isPortAvailable(port)) {
-      return port;
-    }
-  }
-  throw new Error(`No available port found starting from ${startPort}`);
-}
+// server/_core/app.ts
 function createApp() {
-  const app2 = express2();
+  const app2 = express();
   app2.use(canonicalHostRedirect);
-  app2.use(express2.json({ limit: "50mb" }));
-  app2.use(express2.urlencoded({ limit: "50mb", extended: true }));
+  app2.use(express.json({ limit: "50mb" }));
+  app2.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app2);
   registerOAuthRoutes(app2);
   app2.use(
@@ -2401,26 +2175,6 @@ function createApp() {
   );
   app2.post("/api/scheduled/syncLinkArtemis", syncLinkArtemisScheduledHandler);
   return app2;
-}
-async function startServer() {
-  const app2 = createApp();
-  const server = createServer(app2);
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app2, server);
-  } else {
-    serveStatic(app2);
-  }
-  const preferredPort = parseInt(process.env.PORT || "3000");
-  const port = await findAvailablePort(preferredPort);
-  if (port !== preferredPort) {
-    console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
-  }
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
-  });
-}
-if (process.env.VERCEL !== "1") {
-  startServer().catch(console.error);
 }
 
 // api/_entry.ts
