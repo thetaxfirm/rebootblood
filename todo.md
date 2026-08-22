@@ -299,3 +299,11 @@
 - [x] Wire sendEmail into submitLead + submitQuestionnaire (non-PHI contact + intent only; health-screening answers excluded per HIPAA)
 - [x] Vitest: 4 formatter tests + LIVE SMTP credential verification (5/5 pass)
 - [x] tsc clean + 96 tests pass; checkpoint
+
+## Migration: repair Vercel serverless deployment and verify production (requested)
+- [ ] Fix vercel.json so the functions pattern targets a checked-in Serverless Function entry rather than generated api/_bundle.mjs
+- [ ] Build and test the corrected serverless entry locally; push the fix to GitHub
+- [ ] Verify rebootblood.vercel.app frontend, tRPC API, and Google OAuth redirect flow
+- [ ] Verify automated submission email delivery from the Vercel deployment
+- [ ] Configure GoDaddy DNS records supplied by Vercel for www and apex; verify SSL and canonical redirect
+- [ ] Save final checkpoint and report verified migration state

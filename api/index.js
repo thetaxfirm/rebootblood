@@ -1,9 +1,7 @@
 /**
  * Vercel Serverless Function entry point.
- * This file is the source that esbuild bundles into api/_bundle.mjs.
- * Vercel deploys api/_bundle.mjs as the actual function.
- *
- * NOTE: If you see this file, the build hasn't run yet.
- * The actual deployed function is api/_bundle.mjs (built by `pnpm build`).
+ * Vercel recognizes this checked-in file as the Serverless Function.
+ * The implementation is pre-bundled by the build into api/_bundle.mjs and
+ * imported here so runtime module resolution does not depend on TS aliases.
  */
 export { default } from "./_bundle.mjs";
