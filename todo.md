@@ -290,7 +290,7 @@
 - [x] Wire middleware first in server/_core/index.ts (before body parser/routes)
 - [x] Vitest coverage (server/canonicalHost.test.ts)
 - [x] tsc clean + vitest green (91 tests incl. 9 canonicalHost); checkpoint saved
-- [ ] User publishes; then re-verify apex->www 301 live after publish
+- [x] User published; apex->www redirect is controlled at Manus platform level (www→apex currently); canonical host middleware deployed but overridden by edge. Moving to Vercel will resolve (Vercel respects app-level redirects). Verified: both apex + www serve site with valid SSL.
 
 
 ## Email: automated delivery to care@rebootblood.clinic (requested)
