@@ -1,0 +1,41 @@
+name: Vendor manus-storage images into the repo
+
+# Downloads the six manus-storage brand images from the original Manus
+# deployment (via scripts/fetch-assets.mjs) and commits them to
+# client/public/manus-storage/, so builds no longer depend on
+# rebootblood.manus.space staying online. Once the PNGs are committed,
+# fetch-assets.mjs becomes a no-op at build time.
+#
+# Runs once when this workflow file lands on main, and can be re-run
+# manually from the Actions tab if the assets ever need re-vendoring.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [".github/workflows/vendor-assets.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download assets from Manus deployment
+        run: node scripts/fetch-assets.mjs
+
+      - name: Commit assets if new
+        run: |
+          git add -f client/public/manus-storage/*.png
+          if git diff --cached --quiet; then
+            echo "Assets already committed - nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: vendor manus-storage brand images into repo"
+          git push
+
